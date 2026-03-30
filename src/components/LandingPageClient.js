@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import VisitTracker from "@/components/VisitTracker";
-import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconCheck, IconStar, IconChart, IconFree, IconRocket, IconLock, IconPhone, IconTool, IconTrophy, IconMsg, IconTarget, IconClock, IconVideo, IconEdit, IconSparkle, IconBox } from "@/components/Icons";
+import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconCheck, IconStar, IconChart, IconFree, IconRocket, IconLock, IconPhone, IconTool, IconTrophy, IconMsg, IconTarget, IconClock, IconVideo, IconEdit, IconSparkle, IconBox, IconBook } from "@/components/Icons";
 
 const categories = [
     { icon: <IconComputer size={36} />, title: "Computer Course", subtitle: "Basic to Advanced learning" },
