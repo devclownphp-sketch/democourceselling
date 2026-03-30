@@ -1,29 +1,5 @@
 [
   {
-    "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\courses\\[slug]\\page.js",
-    "timestamp": 1774876745239,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\admin\\AdminShell.js",
-    "timestamp": 1774876748782,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
-    "timestamp": 1774876766595,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
-    "timestamp": 1774876802890,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
     "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\globals.css",
     "timestamp": 1774876832088,
     "focus": false,
@@ -56,6 +32,30 @@
   {
     "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\.gitignore",
     "timestamp": 1774882061042,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\globals.css",
+    "timestamp": 1774883616166,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
+    "timestamp": 1774883755264,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\PublicNavbar.js",
+    "timestamp": 1774883780774,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\.gitignore",
+    "timestamp": 1774883809859,
     "focus": false,
     "openLocation": 0
   }

@@ -45,17 +45,27 @@ next-env.d.ts
 # lock files (bun)
 bun.lockb
 
-# browser-pilot / blender-toolkit (Claude plugins)
+# Claude / AI plugins
 .browser-pilot/
 .blender-toolkit/
+.claude/
+claude-context/
 
 # OS files
 Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # logs
 logs/
 *.log
+
+# misc generated
+.turbo/
+.cache/
