@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogoMark } from "@/components/Icons";
 
 export default function PublicNavbar() {
     const pathname = usePathname();
@@ -14,7 +15,9 @@ export default function PublicNavbar() {
     return (
         <header className="sticky top-0 z-50 border-b border-indigo-100 bg-white/85 backdrop-blur-lg">
             <div className="mx-auto flex w-[min(1100px,92vw)] items-center justify-between py-3">
-                <h2 className="text-lg font-bold tracking-wide text-indigo-600">🌐 LearnSphere</h2>
+                <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-wide text-indigo-600 no-underline">
+                    <LogoMark size={28} /> LearnSphere
+                </Link>
                 <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-indigo-800/70">
                     <Link href="/" className="transition hover:text-indigo-600">Home</Link>
                     <Link href="/courses" className="transition hover:text-indigo-600">Courses</Link>

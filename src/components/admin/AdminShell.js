@@ -4,13 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield } from "@/components/Icons";
 
 const navItems = [
-    { href: "/admin", label: "Dashboard", emoji: "\ud83d\udcca" },
-    { href: "/admin/courses", label: "Courses", emoji: "\ud83d\udcda" },
-    { href: "/admin/contacts", label: "Contacts", emoji: "\ud83d\udce9" },
-    { href: "/admin/admins", label: "Admins", emoji: "\ud83d\udc65" },
-    { href: "/admin/settings", label: "Settings", emoji: "\u2699\ufe0f" },
+    { href: "/admin", label: "Dashboard", Icon: IconDashboard },
+    { href: "/admin/courses", label: "Courses", Icon: IconBook },
+    { href: "/admin/contacts", label: "Contacts", Icon: IconMail },
+    { href: "/admin/admins", label: "Admins", Icon: IconUsers },
+    { href: "/admin/settings", label: "Settings", Icon: IconSettings },
 ];
 
 export default function AdminShell({ admin, children }) {
@@ -52,10 +53,10 @@ export default function AdminShell({ admin, children }) {
 
             <aside className={sidebarOpen ? "admin-sidebar open" : "admin-sidebar"}>
                 <div className="admin-sidebar-top">
-                    <p className="admin-kicker">{"\ud83d\udd10"} Control Panel</p>
-                    <h2>LearnSphere</h2>
+                    <p className="admin-kicker"><IconShield size={12} /> Control Panel</p>
+                    <h2 style={{display:"flex",alignItems:"center",gap:"0.4rem"}}><LogoMark size={22} /> LearnSphere</h2>
                     <p className="muted-text">Manage courses, contacts & team.</p>
-                    <div className="admin-user-chip">{"\ud83d\udc64"} {admin.username}</div>
+                    <div className="admin-user-chip"><IconUser size={13} /> {admin.username}</div>
                 </div>
                 <nav className="admin-nav">
                     {navItems.map((item) => {
@@ -67,15 +68,15 @@ export default function AdminShell({ admin, children }) {
                                 className={active ? "admin-link active" : "admin-link"}
                                 onClick={closeSidebar}
                             >
-                                <span className="admin-link-emoji">{item.emoji}</span>
+                                <item.Icon size={16} />
                                 {item.label}
                                 {active && <span className="admin-link-dot" />}
                             </Link>
                         );
                     })}
                 </nav>
-                <button type="button" className="btn-danger" onClick={logout}>
-                    {"\ud83d\udeaa"} Logout
+                <button type="button" className="btn-danger" style={{display:"flex",alignItems:"center",gap:"0.4rem"}} onClick={logout}>
+                    <IconLogout size={15} /> Logout
                 </button>
             </aside>
 

@@ -3,12 +3,13 @@
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import VisitTracker from "@/components/VisitTracker";
+import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconCheck, IconStar, IconChart, IconFree, IconRocket, IconLock, IconPhone, IconTool, IconTrophy, IconMsg, IconTarget, IconClock, IconVideo, IconEdit, IconSparkle, IconBox } from "@/components/Icons";
 
 const categories = [
-    { emoji: "💻", title: "Computer Course", subtitle: "Basic to Advanced learning" },
-    { emoji: "📄", title: "PDF Notes", subtitle: "Downloadable study material" },
-    { emoji: "🧠", title: "Computer Quiz", subtitle: "Computer MCQ practice sets" },
-    { emoji: "⚡", title: "Computer Tricks", subtitle: "Tips, tricks and shortcuts" },
+    { icon: <IconComputer size={36} />, title: "Computer Course", subtitle: "Basic to Advanced learning" },
+    { icon: <IconPdf size={36} />, title: "PDF Notes", subtitle: "Downloadable study material" },
+    { icon: <IconQuiz size={36} />, title: "Computer Quiz", subtitle: "Computer MCQ practice sets" },
+    { icon: <IconBolt size={36} />, title: "Computer Tricks", subtitle: "Tips, tricks and shortcuts" },
 ];
 const reviewItems = [
     { name: "Abhijit Patgirri", initial: "A", rating: 5, text: "One of the best platforms to learn for free. Practical computer skills with strong quality." },
@@ -16,12 +17,12 @@ const reviewItems = [
     { name: "Madhusudan Pal", initial: "M", rating: 5, text: "A true opportunity for students who cannot afford paid classes to build skills and confidence." },
 ];
 const whyUs = [
-    { emoji: "🆓", text: "100% Free: No hidden costs ever" },
-    { emoji: "📑", text: "PDF Notes: Download for quick revision" },
-    { emoji: "🚀", text: "No Login: Start learning instantly" },
-    { emoji: "🔒", text: "Secure: Privacy-first experience" },
-    { emoji: "📞", text: "Call Support: Mon-Sat 10AM-12PM" },
-    { emoji: "🛠", text: "Project-based Practice for real skills" },
+    { icon: <IconFree size={22} />, text: "100% Free: No hidden costs ever" },
+    { icon: <IconPdf size={22} color="#6366f1" />, text: "PDF Notes: Download for quick revision" },
+    { icon: <IconRocket size={22} />, text: "No Login: Start learning instantly" },
+    { icon: <IconLock size={22} />, text: "Secure: Privacy-first experience" },
+    { icon: <IconPhone size={22} />, text: "Call Support: Mon-Sat 10AM-12PM" },
+    { icon: <IconTool size={22} />, text: "Project-based Practice for real skills" },
 ];
 const faqs = [
     { q: "LearnSphere kya hai?", a: "Ek online platform jo students ko 100% free computer courses deta hai." },
@@ -29,10 +30,10 @@ const faqs = [
     { q: "Course ki language?", a: "Simple Hindi + English style, taki beginners bhi easily follow kar saken." },
 ];
 const stats = [
-    { emoji: "🎓", value: "40,25,000+", label: "Students" },
-    { emoji: "✅", value: "Verified", label: "Platform" },
-    { emoji: "⭐", value: "4.7 / 5", label: "Rating" },
-    { emoji: "📈", value: "150k+", label: "Monthly" },
+    { icon: <IconGrad size={28} />, value: "40,25,000+", label: "Students" },
+    { icon: <IconCheck size={28} />, value: "Verified", label: "Platform" },
+    { icon: <IconStar size={28} />, value: "4.7 / 5", label: "Rating" },
+    { icon: <IconChart size={28} />, value: "150k+", label: "Monthly" },
 ];
 
 function splitLines(t) { return String(t||"").split("\n").map(l=>l.trim()).filter(Boolean); }
@@ -180,10 +181,6 @@ function Reveal({children,className="",delay=0,direction="up"}){
     return <div ref={ref} className={className} style={{opacity:0,transform:init,transition:"opacity 0.65s ease, transform 0.65s ease",willChange:"transform,opacity",transformStyle:"preserve-3d"}}>{children}</div>;
 }
 
-function Float3D({emoji,className=""}){
-    return <span className={`inline-block ${className}`} style={{animation:"float3d 3s ease-in-out infinite",transformStyle:"preserve-3d"}}>{emoji}</span>;
-}
-
 /* ── Main ── */
 export default function LandingPageClient({courses}){
     return (
@@ -195,8 +192,8 @@ export default function LandingPageClient({courses}){
                 <HeroGlobe />
                 <div className="relative mx-auto max-w-[1100px] px-[4vw] py-16 md:py-28">
                     <div className="max-w-2xl space-y-5" style={{transformStyle:"preserve-3d"}}>
-                        <span className="hero-animate inline-block rounded-full border border-indigo-300/50 bg-white/70 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-700">
-                            <Float3D emoji="🌟" className="mr-1" /> 100% Free Learning Platform
+                        <span className="hero-animate inline-flex items-center gap-1.5 rounded-full border border-indigo-300/50 bg-white/70 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-700">
+                            <IconSparkle size={14} /> 100% Free Learning Platform
                         </span>
                         <h1 className="hero-animate-d1 text-3xl font-black leading-tight md:text-5xl text-indigo-950">
                             Learn 100% Free <span className="bg-gradient-to-r from-indigo-600 via-violet-500 to-purple-500 bg-clip-text text-transparent">Computer Courses</span>
@@ -206,14 +203,17 @@ export default function LandingPageClient({courses}){
                         </p>
                         <div className="hero-animate-d2 flex flex-wrap gap-3 pt-1">
                             <a href="#course-grid" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-300/40 transition-all duration-200 hover:-translate-y-1 hover:shadow-indigo-400/50 hover:scale-105 active:scale-100">
-                                <Float3D emoji="🚀" className="text-base" /> Start Learning
+                                <IconRocket size={16} color="#fff" /> Start Learning
                             </a>
                             <a href="#categories" className="inline-flex items-center gap-2 rounded-full border border-indigo-300/60 bg-white/50 backdrop-blur-sm px-7 py-3 text-sm font-semibold text-indigo-700 transition-all duration-200 hover:bg-white/80 hover:scale-105 active:scale-100">
-                                📚 Explore Categories
+                                <IconBook size={16} color="#4f46e5" /> Explore Categories
                             </a>
                         </div>
-                        <p className="hero-animate-d3 text-sm text-indigo-500/70">
-                            💻 Computer Course &nbsp;|&nbsp; 📄 PDF Notes &nbsp;|&nbsp; 🧠 Quiz &nbsp;|&nbsp; ⚡ Tricks
+                        <p className="hero-animate-d3 flex items-center gap-3 flex-wrap text-sm text-indigo-500/70">
+                            <span className="inline-flex items-center gap-1"><IconComputer size={14} color="#6366f1" /> Computer Course</span>
+                            <span className="inline-flex items-center gap-1"><IconPdf size={14} color="#8b5cf6" /> PDF Notes</span>
+                            <span className="inline-flex items-center gap-1"><IconQuiz size={14} color="#a855f7" /> Quiz</span>
+                            <span className="inline-flex items-center gap-1"><IconBolt size={14} /> Tricks</span>
                         </p>
                     </div>
                 </div>
@@ -222,14 +222,14 @@ export default function LandingPageClient({courses}){
             {/* CATEGORIES */}
             <section id="categories" className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">📚 Categories</p>
+                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconBook size={14} color="#6366f1" /> Categories</p>
                     <h2 className="mt-1 text-2xl font-extrabold md:text-3xl">What do you want to learn?</h2>
                 </Reveal>
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {categories.map((c,i)=>(
                         <Reveal key={c.title} delay={i*80}>
                             <Tilt3D className="cursor-pointer rounded-xl border border-indigo-100 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-100/60">
-                                <Float3D emoji={c.emoji} className="text-4xl" />
+                                {c.icon}
                                 <h3 className="mt-3 text-base font-bold text-indigo-900">{c.title}</h3>
                                 <p className="mt-1 text-sm text-indigo-500">{c.subtitle}</p>
                             </Tilt3D>
@@ -242,7 +242,7 @@ export default function LandingPageClient({courses}){
             <section id="course-grid" className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">🎓 Free Computer Courses</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconGrad size={14} /> Free Computer Courses</p>
                         <h2 className="mt-1 text-2xl font-extrabold md:text-3xl">Basic to Advanced, job-ready skills</h2>
                     </Reveal>
                     <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -250,14 +250,14 @@ export default function LandingPageClient({courses}){
                             <Reveal key={course.id} delay={i*60}>
                                 <Tilt3D intensity={7} className="rounded-xl border border-indigo-100 bg-white p-5 shadow-sm hover:border-violet-300 hover:shadow-xl hover:shadow-violet-100/50">
                                     <div className="mb-3 flex flex-wrap gap-2 text-xs">
-                                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-semibold text-emerald-700">🎯 {course.level}</span>
-                                        <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 font-semibold text-indigo-700">⏰ {course.duration}</span>
-                                        <span className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 font-semibold text-violet-700">📹 {course.classType}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-semibold text-emerald-700"><IconTarget size={12} /> {course.level}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 font-semibold text-indigo-700"><IconClock size={12} /> {course.duration}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 font-semibold text-violet-700"><IconVideo size={12} /> {course.classType}</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-indigo-900">{course.title}</h3>
                                     <p className="mt-2 text-sm leading-relaxed text-indigo-500">{course.shortDescription}</p>
                                     <div className="mt-3">
-                                        <p className="text-xs font-bold text-emerald-600">📝 Course Highlights</p>
+                                        <p className="flex items-center gap-1 text-xs font-bold text-emerald-600"><IconEdit size={12} color="#059669" /> Course Highlights</p>
                                         <ul className="mt-1 space-y-0.5 text-sm text-indigo-500">
                                             {splitLines(course.syllabusTopics).slice(0,4).map((item)=>(
                                                 <li key={`${course.id}-${item}`}><span className="text-violet-400">•</span> {item}</li>
@@ -267,7 +267,7 @@ export default function LandingPageClient({courses}){
                                     <div className="mt-4 flex flex-wrap items-center gap-3">
                                         <span className="text-lg font-extrabold text-emerald-600">INR {course.offerPrice.toFixed(0)}</span>
                                         <span className="text-sm text-indigo-300 line-through">INR {course.originalPrice.toFixed(0)}</span>
-                                        <span className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-0.5 text-xs font-bold text-white">🎉 FREE</span>
+                                        <span className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-0.5 text-xs font-bold text-white">FREE</span>
                                     </div>
                                     <Link href={`/courses/${course.slug}`} className="mt-4 inline-flex rounded-full border border-indigo-200 px-5 py-2 text-sm font-semibold text-indigo-600 transition hover:border-indigo-400 hover:bg-indigo-50 hover:scale-105 active:scale-100">
                                         View Details →
@@ -277,7 +277,7 @@ export default function LandingPageClient({courses}){
                         ))}
                         {courses.length===0 && (
                             <div className="col-span-full rounded-xl border border-dashed border-indigo-200 bg-white p-8 text-center text-indigo-400">
-                                📦 No active courses yet. Add from admin panel.
+                                <IconBox size={20} /> No active courses yet. Add from admin panel.
                             </div>
                         )}
                     </div>
@@ -289,12 +289,12 @@ export default function LandingPageClient({courses}){
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
                     <div className="rounded-2xl border border-indigo-200/60 p-6 md:p-8" style={{background:"linear-gradient(135deg,#eef2ff,#e0e7ff,#ddd6fe)",transformStyle:"preserve-3d"}}>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">🏆 Trusted by Students</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-600"><IconTrophy size={14} /> Trusted by Students</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl text-indigo-950">Real learners, real outcomes</h3>
                         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                             {stats.map((s)=>(
                                 <Tilt3D key={s.label} intensity={12} className="rounded-xl border border-white/60 bg-white/80 backdrop-blur-sm p-4 text-center shadow-sm">
-                                    <Float3D emoji={s.emoji} className="text-3xl" />
+                                    {s.icon}
                                     <p className="mt-1 text-xl font-extrabold text-indigo-600">{s.value}</p>
                                     <p className="text-xs text-indigo-400">{s.label}</p>
                                 </Tilt3D>
@@ -308,9 +308,9 @@ export default function LandingPageClient({courses}){
             <section className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">💬 Student Reviews</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconMsg size={14} /> Student Reviews</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl">Real feedback from learners</h3>
-                        <p className="mt-1 text-sm text-indigo-400">⭐ 4.7 / 5 (21,255 reviews)</p>
+                        <p className="mt-1 flex items-center gap-1 text-sm text-indigo-400"><IconStar size={14} /> 4.7 / 5 (21,255 reviews)</p>
                     </Reveal>
                     <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                         {reviewItems.map((r,i)=>(
@@ -323,7 +323,7 @@ export default function LandingPageClient({courses}){
                                             <p className="text-xs text-indigo-400">Computer Course Student</p>
                                         </div>
                                     </div>
-                                    <p className="mt-2 text-sm text-amber-500">{"⭐".repeat(r.rating)}</p>
+                                    <div className="mt-2 flex gap-0.5">{Array.from({length:r.rating}).map((_,j)=><IconStar key={j} size={14} />)}</div>
                                     <p className="mt-1 text-sm leading-relaxed text-indigo-500">{r.text}</p>
                                 </Tilt3D>
                             </Reveal>
@@ -336,14 +336,14 @@ export default function LandingPageClient({courses}){
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <Reveal>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">✨ Why Choose Us</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconSparkle size={14} /> Why Choose Us</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl">Simple, secure, student-friendly</h3>
                     </Reveal>
                     <div className="grid gap-3">
                         {whyUs.map((item,i)=>(
                             <Reveal key={item.text} delay={i*60} direction="left">
                                 <Tilt3D intensity={6} className="flex cursor-pointer items-center gap-3 rounded-lg border border-indigo-100 bg-white p-3.5 text-sm shadow-sm hover:border-violet-300 hover:shadow-md">
-                                    <span className="text-2xl">{item.emoji}</span>
+                                    {item.icon}
                                     <span className="text-indigo-700">{item.text}</span>
                                 </Tilt3D>
                             </Reveal>
@@ -355,7 +355,7 @@ export default function LandingPageClient({courses}){
             {/* FAQ */}
             <section className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
-                    <Reveal><p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">❓ FAQ</p></Reveal>
+                    <Reveal><p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconQuiz size={14} /> FAQ</p></Reveal>
                     <div className="mt-4 grid gap-3">
                         {faqs.map((f,i)=>(
                             <Reveal key={f.q} delay={i*80}>
@@ -373,7 +373,7 @@ export default function LandingPageClient({courses}){
             <footer className="border-t border-indigo-100 py-10" style={{background:"#eef2ff"}}>
                 <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] md:grid-cols-3">
                     <div>
-                        <h4 className="text-lg font-bold text-indigo-600">🌐 LearnSphere</h4>
+                        <h4 className="flex items-center gap-2 text-lg font-bold text-indigo-600"><LogoMark size={24} /> LearnSphere</h4>
                         <p className="mt-1 text-sm text-indigo-400">FOLLOW US</p>
                     </div>
                     <div>
