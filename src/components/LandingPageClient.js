@@ -55,48 +55,69 @@ function HeroGlobe() {
         if (!ctx) return;
 
         let w = 0, h = 0, raf = 0, t = 0, paused = false;
-        let mouseX = 0.5, mouseY = 0.5; // normalized 0-1
         let targetRotX = 0, targetRotY = 0, rotX = 0, rotY = 0;
-        const N = 600;
+        let mxNorm = 0.5, myNorm = 0.5; // for color shift
+        const N = 700;
         const dots = Array.from({ length: N }, (_, i) => {
             const phi = Math.acos(1 - 2 * (i + 0.5) / N);
             const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-            return { phi, theta, r: 150 + Math.random() * 50, spd: 0.0003 + Math.random() * 0.0002 };
+            return { phi, theta, r: 160 + Math.random() * 50, spd: 0.0003 + Math.random() * 0.0002 };
         });
 
         const resize = () => { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; };
         resize();
         window.addEventListener("resize", resize);
 
+        // Listen on WINDOW so it works even when cursor is outside the canvas
         const onMouse = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = (e.clientX - rect.left) / rect.width;
-            mouseY = (e.clientY - rect.top) / rect.height;
-            targetRotY = (mouseX - 0.5) * 3.0;  // ultra sensitive horizontal
-            targetRotX = (mouseY - 0.5) * 2.0;   // ultra sensitive vertical
+            mxNorm = e.clientX / window.innerWidth;
+            myNorm = e.clientY / window.innerHeight;
+            targetRotY = (mxNorm - 0.5) * 5.0;  // ultra sensitive horizontal
+            targetRotX = (myNorm - 0.5) * 3.5;   // ultra sensitive vertical
         };
-        canvas.addEventListener("mousemove", onMouse);
+        window.addEventListener("mousemove", onMouse);
 
         const onVis = () => { paused = document.hidden; };
         document.addEventListener("visibilitychange", onVis);
 
+        // Color palettes that shift with mouse X position
+        const palettes = [
+            // left side: purple/pink/cyan
+            [[168, 85, 247], [236, 72, 153], [34, 211, 238]],
+            // center: orange/blue/green (default)
+            [[249, 115, 22], [59, 130, 246], [16, 185, 129]],
+            // right side: rose/amber/teal
+            [[244, 63, 94], [245, 158, 11], [20, 184, 166]],
+        ];
+
+        function lerpColor(a, b, t) {
+            return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+        }
+
         const render = () => {
             if (!paused) {
                 t++;
-                // smooth lerp toward mouse target
-                rotX += (targetRotX - rotX) * 0.08;
-                rotY += (targetRotY - rotY) * 0.08;
+                // smooth lerp toward mouse - fast response
+                rotX += (targetRotX - rotX) * 0.12;
+                rotY += (targetRotY - rotY) * 0.12;
 
                 const sinRX = Math.sin(rotX), cosRX = Math.cos(rotX);
                 const sinRY = Math.sin(rotY), cosRY = Math.cos(rotY);
-                const autoSin = Math.sin(t * 0.003), autoCos = Math.cos(t * 0.003);
+                const autoSin = Math.sin(t * 0.004), autoCos = Math.cos(t * 0.004);
+
+                // pick color palette based on mouse X
+                const pIdx = mxNorm < 0.33 ? 0 : mxNorm > 0.66 ? 2 : 1;
+                const pBlend = mxNorm < 0.33 ? mxNorm / 0.33 : mxNorm > 0.66 ? (mxNorm - 0.66) / 0.34 : (mxNorm - 0.33) / 0.33;
+                const nextP = Math.min(pIdx + 1, 2);
+                const c0 = lerpColor(palettes[pIdx][0], palettes[nextP][0], pBlend);
+                const c1 = lerpColor(palettes[pIdx][1], palettes[nextP][1], pBlend);
+                const c2 = lerpColor(palettes[pIdx][2], palettes[nextP][2], pBlend);
 
                 ctx.clearRect(0, 0, w, h);
                 const cx = w * 0.5, cy = h * 0.5;
 
                 for (let i = 0; i < N; i++) {
                     const d = dots[i];
-                    // base sphere position
                     const sp = Math.sin(d.phi), cp = Math.cos(d.phi);
                     const th = d.theta + t * d.spd;
                     const st = Math.sin(th), ct = Math.cos(th);
@@ -104,28 +125,29 @@ function HeroGlobe() {
                     let py = d.r * sp * st;
                     let pz = d.r * cp;
 
-                    // auto rotation (slow)
+                    // auto rotation
                     let tx = px * autoCos - pz * autoSin;
                     let tz = px * autoSin + pz * autoCos;
                     px = tx; pz = tz;
 
-                    // mouse Y-axis rotation (horizontal mouse = spin left/right)
+                    // mouse Y-axis rotation
                     tx = px * cosRY - pz * sinRY;
                     tz = px * sinRY + pz * cosRY;
                     px = tx; pz = tz;
 
-                    // mouse X-axis rotation (vertical mouse = tilt up/down)
+                    // mouse X-axis rotation
                     let ty = py * cosRX - pz * sinRX;
                     tz = py * sinRX + pz * cosRX;
                     py = ty; pz = tz;
 
                     const sc = (pz + d.r) / (2 * d.r);
-                    const a = 0.08 + sc * 0.6;
-                    const sz = 0.5 + sc * 2.8;
+                    const a = 0.06 + sc * 0.7;
+                    const sz = 0.4 + sc * 3.0;
+                    const col = i % 3 === 0 ? c0 : i % 3 === 1 ? c1 : c2;
 
                     ctx.beginPath();
                     ctx.arc(cx + px, cy + py * 0.45, sz, 0, 6.28);
-                    ctx.fillStyle = i % 3 === 0 ? `rgba(249,115,22,${a})` : i % 3 === 1 ? `rgba(59,130,246,${a})` : `rgba(16,185,129,${a})`;
+                    ctx.fillStyle = `rgba(${col[0]|0},${col[1]|0},${col[2]|0},${a})`;
                     ctx.fill();
                 }
             }
@@ -133,10 +155,10 @@ function HeroGlobe() {
         };
         render();
 
-        return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); canvas.removeEventListener("mousemove", onMouse); document.removeEventListener("visibilitychange", onVis); };
+        return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); window.removeEventListener("mousemove", onMouse); document.removeEventListener("visibilitychange", onVis); };
     }, []);
 
-    return <canvas ref={canvasRef} className="absolute right-0 top-0 h-full w-1/2 opacity-80 max-md:w-full max-md:opacity-30" style={{ cursor: "grab" }} />;
+    return <canvas ref={canvasRef} className="absolute right-0 top-0 h-full w-1/2 opacity-90 max-md:w-full max-md:opacity-35" />;
 }
 
 /* ─── 3D Tilt Card (CSS transform, GPU only) ─── */
