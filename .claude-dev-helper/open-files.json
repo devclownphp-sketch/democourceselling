@@ -1,17 +1,5 @@
 [
   {
-    "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\globals.css",
-    "timestamp": 1774876832088,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
-    "timestamp": 1774876844475,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
     "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
     "timestamp": 1774876871998,
     "focus": false,
@@ -56,6 +44,18 @@
   {
     "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\.gitignore",
     "timestamp": 1774883809859,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
+    "timestamp": 1774884279008,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
+    "timestamp": 1774884307364,
     "focus": false,
     "openLocation": 0
   }
