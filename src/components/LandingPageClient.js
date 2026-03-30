@@ -55,16 +55,27 @@ function HeroGlobe() {
         if (!ctx) return;
 
         let w = 0, h = 0, raf = 0, t = 0, paused = false;
-        const N = 500;
+        let mouseX = 0.5, mouseY = 0.5; // normalized 0-1
+        let targetRotX = 0, targetRotY = 0, rotX = 0, rotY = 0;
+        const N = 600;
         const dots = Array.from({ length: N }, (_, i) => {
             const phi = Math.acos(1 - 2 * (i + 0.5) / N);
             const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-            return { phi, theta, r: 140 + Math.random() * 40, spd: 0.0005 + Math.random() * 0.0003 };
+            return { phi, theta, r: 150 + Math.random() * 50, spd: 0.0003 + Math.random() * 0.0002 };
         });
 
         const resize = () => { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; };
         resize();
         window.addEventListener("resize", resize);
+
+        const onMouse = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) / rect.width;
+            mouseY = (e.clientY - rect.top) / rect.height;
+            targetRotY = (mouseX - 0.5) * 3.0;  // ultra sensitive horizontal
+            targetRotX = (mouseY - 0.5) * 2.0;   // ultra sensitive vertical
+        };
+        canvas.addEventListener("mousemove", onMouse);
 
         const onVis = () => { paused = document.hidden; };
         document.addEventListener("visibilitychange", onVis);
@@ -72,19 +83,48 @@ function HeroGlobe() {
         const render = () => {
             if (!paused) {
                 t++;
+                // smooth lerp toward mouse target
+                rotX += (targetRotX - rotX) * 0.08;
+                rotY += (targetRotY - rotY) * 0.08;
+
+                const sinRX = Math.sin(rotX), cosRX = Math.cos(rotX);
+                const sinRY = Math.sin(rotY), cosRY = Math.cos(rotY);
+                const autoSin = Math.sin(t * 0.003), autoCos = Math.cos(t * 0.003);
+
                 ctx.clearRect(0, 0, w, h);
                 const cx = w * 0.5, cy = h * 0.5;
+
                 for (let i = 0; i < N; i++) {
                     const d = dots[i];
+                    // base sphere position
+                    const sp = Math.sin(d.phi), cp = Math.cos(d.phi);
                     const th = d.theta + t * d.spd;
-                    const x = cx + d.r * Math.sin(d.phi) * Math.cos(th);
-                    const y = cy + d.r * Math.sin(d.phi) * Math.sin(th) * 0.45;
-                    const z = d.r * Math.cos(d.phi);
-                    const sc = (z + d.r) / (2 * d.r);
-                    const a = 0.1 + sc * 0.5;
-                    const sz = 0.6 + sc * 2.2;
+                    const st = Math.sin(th), ct = Math.cos(th);
+                    let px = d.r * sp * ct;
+                    let py = d.r * sp * st;
+                    let pz = d.r * cp;
+
+                    // auto rotation (slow)
+                    let tx = px * autoCos - pz * autoSin;
+                    let tz = px * autoSin + pz * autoCos;
+                    px = tx; pz = tz;
+
+                    // mouse Y-axis rotation (horizontal mouse = spin left/right)
+                    tx = px * cosRY - pz * sinRY;
+                    tz = px * sinRY + pz * cosRY;
+                    px = tx; pz = tz;
+
+                    // mouse X-axis rotation (vertical mouse = tilt up/down)
+                    let ty = py * cosRX - pz * sinRX;
+                    tz = py * sinRX + pz * cosRX;
+                    py = ty; pz = tz;
+
+                    const sc = (pz + d.r) / (2 * d.r);
+                    const a = 0.08 + sc * 0.6;
+                    const sz = 0.5 + sc * 2.8;
+
                     ctx.beginPath();
-                    ctx.arc(x, y, sz, 0, 6.28);
+                    ctx.arc(cx + px, cy + py * 0.45, sz, 0, 6.28);
                     ctx.fillStyle = i % 3 === 0 ? `rgba(249,115,22,${a})` : i % 3 === 1 ? `rgba(59,130,246,${a})` : `rgba(16,185,129,${a})`;
                     ctx.fill();
                 }
@@ -93,10 +133,10 @@ function HeroGlobe() {
         };
         render();
 
-        return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); document.removeEventListener("visibilitychange", onVis); };
+        return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); canvas.removeEventListener("mousemove", onMouse); document.removeEventListener("visibilitychange", onVis); };
     }, []);
 
-    return <canvas ref={canvasRef} className="absolute right-0 top-0 h-full w-1/2 opacity-70 pointer-events-none max-md:w-full max-md:opacity-25" />;
+    return <canvas ref={canvasRef} className="absolute right-0 top-0 h-full w-1/2 opacity-80 max-md:w-full max-md:opacity-30" style={{ cursor: "grab" }} />;
 }
 
 /* ─── 3D Tilt Card (CSS transform, GPU only) ─── */
