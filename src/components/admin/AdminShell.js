@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield } from "@/components/Icons";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: IconDashboard },
@@ -75,9 +76,12 @@ export default function AdminShell({ admin, children }) {
                         );
                     })}
                 </nav>
-                <button type="button" className="btn-danger" style={{display:"flex",alignItems:"center",gap:"0.4rem"}} onClick={logout}>
-                    <IconLogout size={15} /> Logout
-                </button>
+                <div style={{display:"flex",gap:"0.5rem",alignItems:"center",flexWrap:"wrap"}}>
+                    <ThemeToggle />
+                    <button type="button" className="btn-danger" style={{display:"flex",alignItems:"center",gap:"0.4rem",flex:1}} onClick={logout}>
+                        <IconLogout size={15} /> Logout
+                    </button>
+                </div>
             </aside>
 
             <main className="admin-main">

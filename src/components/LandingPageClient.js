@@ -52,46 +52,61 @@ function HeroGlobe() {
 
         let w=0, h=0, raf=0, t=0, paused=false;
         let targetRX=0, targetRY=0, rotX=0, rotY=0, isNear=false;
-        const N=600;
+        let cachedRect=null, rectTimer=0;
+        const N=400;
+        // Pre-compute sin/cos for each dot (avoid recalc per frame)
         const dots = Array.from({length:N},(_,i)=>{
             const phi=Math.acos(1-2*(i+0.5)/N);
             const theta=Math.PI*(1+Math.sqrt(5))*i;
-            return {phi,theta,r:155+Math.random()*55,spd:0.0003+Math.random()*0.0002};
+            return {sp:Math.sin(phi),cp:Math.cos(phi),theta,r:155+Math.random()*55,spd:0.0003+Math.random()*0.0002};
         });
 
-        const resize=()=>{w=canvas.width=canvas.offsetWidth;h=canvas.height=canvas.offsetHeight;};
+        const resize=()=>{w=canvas.width=canvas.offsetWidth;h=canvas.height=canvas.offsetHeight;cachedRect=null;};
         resize();
         window.addEventListener("resize",resize);
 
-        // Only respond when cursor is inside or near the hero section
-        const onMouse=(e)=>{
-            const rect=section.getBoundingClientRect();
-            const pad=80; // 80px proximity zone outside the section
-            const inX=e.clientX>=rect.left-pad && e.clientX<=rect.right+pad;
-            const inY=e.clientY>=rect.top-pad && e.clientY<=rect.bottom+pad;
-            isNear=inX&&inY;
-            if(isNear){
-                const mx=(e.clientX-rect.left)/rect.width;
-                const my=(e.clientY-rect.top)/rect.height;
-                targetRY=(mx-0.5)*4.5;
-                targetRX=(my-0.5)*3.0;
-            }
-        };
-        window.addEventListener("mousemove",onMouse);
+        const getRect=()=>{if(!cachedRect){cachedRect=section.getBoundingClientRect();}return cachedRect;};
 
-        const onLeave=()=>{isNear=false; targetRX=0; targetRY=0;};
+        // Throttled mouse handler
+        let mouseRaf=0;
+        const onMouse=(e)=>{
+            if(mouseRaf) return;
+            mouseRaf=requestAnimationFrame(()=>{
+                mouseRaf=0;
+                const rect=getRect();
+                const pad=80;
+                isNear=e.clientX>=rect.left-pad&&e.clientX<=rect.right+pad&&e.clientY>=rect.top-pad&&e.clientY<=rect.bottom+pad;
+                if(isNear){
+                    targetRY=((e.clientX-rect.left)/rect.width-0.5)*4.5;
+                    targetRX=((e.clientY-rect.top)/rect.height-0.5)*3.0;
+                }
+            });
+        };
+        window.addEventListener("mousemove",onMouse,{passive:true});
+
+        const onScroll=()=>{cachedRect=null;};
+        window.addEventListener("scroll",onScroll,{passive:true});
+
+        const onLeave=()=>{isNear=false;targetRX=0;targetRY=0;};
         section.addEventListener("mouseleave",onLeave);
 
         const onVis=()=>{paused=document.hidden;};
         document.addEventListener("visibilitychange",onVis);
 
-        // Theme colors: indigo / violet / cyan
-        const c0=[99,102,241], c1=[139,92,246], c2=[34,211,238];
+        // Pre-bake color strings for 3 groups at 10 alpha steps
+        const colors=[[99,102,241],[139,92,246],[34,211,238]];
+        const colorCache=colors.map(c=>{
+            const arr=[];
+            for(let a=0;a<=10;a++){arr.push(`rgba(${c[0]},${c[1]},${c[2]},${(a/10).toFixed(2)})`);}
+            return arr;
+        });
 
         const render=()=>{
             if(!paused){
                 t++;
-                // Lerp faster when near, slower drift back when far
+                // Invalidate rect cache periodically
+                if(++rectTimer>60){rectTimer=0;cachedRect=null;}
+
                 const spd=isNear?0.12:0.04;
                 rotX+=(targetRX-rotX)*spd;
                 rotY+=(targetRY-rotY)*spd;
@@ -106,41 +121,28 @@ function HeroGlobe() {
 
                 for(let i=0;i<N;i++){
                     const d=dots[i];
-                    const sp=Math.sin(d.phi),cp=Math.cos(d.phi);
                     const th=d.theta+t*d.spd;
-                    let px=d.r*sp*Math.cos(th), py=d.r*sp*Math.sin(th), pz=d.r*cp;
-                    // auto spin
+                    const st=Math.sin(th),ct=Math.cos(th);
+                    let px=d.r*d.sp*ct, py=d.r*d.sp*st, pz=d.r*d.cp;
                     let tx=px*aC-pz*aS, tz=px*aS+pz*aC; px=tx;pz=tz;
-                    // mouse Y
                     tx=px*cRY-pz*sRY; tz=px*sRY+pz*cRY; px=tx;pz=tz;
-                    // mouse X
                     let ty=py*cRX-pz*sRX; tz=py*sRX+pz*cRX; py=ty;pz=tz;
 
                     const sc=(pz+d.r)/(2*d.r);
-                    const a=0.07+sc*0.7;
-                    const sz=0.4+sc*3.2;
-                    const col=i%3===0?c0:i%3===1?c1:c2;
-
-                    // glow effect for front particles
-                    if(sc>0.6){
-                        ctx.shadowBlur=sz*3;
-                        ctx.shadowColor=`rgba(${col[0]},${col[1]},${col[2]},0.3)`;
-                    } else {
-                        ctx.shadowBlur=0;
-                    }
+                    const aIdx=Math.min(10,(sc*10+0.7)|0);
+                    const sz=0.5+sc*3.0;
 
                     ctx.beginPath();
                     ctx.arc(cx+px,cy+py*0.45,sz,0,6.28);
-                    ctx.fillStyle=`rgba(${col[0]},${col[1]},${col[2]},${a})`;
+                    ctx.fillStyle=colorCache[i%3][aIdx];
                     ctx.fill();
                 }
-                ctx.shadowBlur=0;
             }
             raf=requestAnimationFrame(render);
         };
         render();
 
-        return()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);window.removeEventListener("mousemove",onMouse);section.removeEventListener("mouseleave",onLeave);document.removeEventListener("visibilitychange",onVis);};
+        return()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);window.removeEventListener("mousemove",onMouse);window.removeEventListener("scroll",onScroll);section.removeEventListener("mouseleave",onLeave);document.removeEventListener("visibilitychange",onVis);};
     },[]);
 
     return (
@@ -178,17 +180,69 @@ function Reveal({children,className="",delay=0,direction="up"}){
         return()=>obs.disconnect();
     },[delay]);
     const init=direction==="left"?"translate3d(-40px,0,0) rotateY(5deg)":direction==="right"?"translate3d(40px,0,0) rotateY(-5deg)":"translate3d(0,35px,-20px) rotateX(5deg)";
-    return <div ref={ref} className={className} style={{opacity:0,transform:init,transition:"opacity 0.65s ease, transform 0.65s ease",willChange:"transform,opacity",transformStyle:"preserve-3d"}}>{children}</div>;
+    return <div ref={ref} className={className} style={{opacity:0,transform:init,transition:"opacity 0.65s ease, transform 0.65s ease",transformStyle:"preserve-3d"}}>{children}</div>;
+}
+
+/* ── 3D Parallax Section - tilts based on scroll position ── */
+function Parallax3D({children,className=""}){
+    const ref=useRef(null);
+    useEffect(()=>{
+        const el=ref.current; if(!el) return;
+        let ticking=false;
+        const onScroll=()=>{
+            if(ticking) return;
+            ticking=true;
+            requestAnimationFrame(()=>{
+                const rect=el.getBoundingClientRect();
+                const center=rect.top+rect.height/2;
+                const vh=window.innerHeight;
+                const ratio=(center-vh/2)/vh; // -0.5 to 0.5
+                el.style.transform=`perspective(1000px) rotateX(${ratio*3}deg) translateY(${ratio*-8}px)`;
+                ticking=false;
+            });
+        };
+        window.addEventListener("scroll",onScroll,{passive:true});
+        onScroll();
+        return()=>window.removeEventListener("scroll",onScroll);
+    },[]);
+    return <div ref={ref} className={className} style={{transition:"transform 0.1s linear",transformStyle:"preserve-3d"}}>{children}</div>;
+}
+
+/* ── 3D Scale on scroll - grows as it enters viewport ── */
+function ScaleReveal({children,className=""}){
+    const ref=useRef(null);
+    useEffect(()=>{
+        const el=ref.current; if(!el) return;
+        let ticking=false;
+        const onScroll=()=>{
+            if(ticking) return;
+            ticking=true;
+            requestAnimationFrame(()=>{
+                const rect=el.getBoundingClientRect();
+                const vh=window.innerHeight;
+                const progress=Math.max(0,Math.min(1,(vh-rect.top)/(vh*0.6)));
+                const sc=0.92+progress*0.08;
+                const op=Math.max(0,Math.min(1,progress*1.5));
+                el.style.transform=`scale3d(${sc},${sc},1)`;
+                el.style.opacity=op;
+                ticking=false;
+            });
+        };
+        window.addEventListener("scroll",onScroll,{passive:true});
+        onScroll();
+        return()=>window.removeEventListener("scroll",onScroll);
+    },[]);
+    return <div ref={ref} className={className} style={{transformOrigin:"center center",transition:"transform 0.05s linear, opacity 0.05s linear"}}>{children}</div>;
 }
 
 /* ── Main ── */
 export default function LandingPageClient({courses}){
     return (
-        <div className="text-indigo-950" style={{perspective:"1200px",background:"linear-gradient(180deg,#faf9ff 0%,#eef2ff 50%,#faf9ff 100%)"}}>
+        <div style={{perspective:"1200px",background:"var(--bg)",color:"var(--ink)",transition:"background 0.3s,color 0.3s"}}>
             <VisitTracker />
 
             {/* HERO */}
-            <section className="relative overflow-hidden border-b border-indigo-100" style={{background:"linear-gradient(135deg,#eef2ff 0%,#e0e7ff 40%,#ddd6fe 80%,#c4b5fd 100%)"}}>
+            <section className="relative overflow-hidden" style={{background:"linear-gradient(135deg,var(--hero-from),var(--hero-via),var(--hero-to))",borderBottom:"1px solid var(--line)",transition:"background 0.3s"}}>
                 <HeroGlobe />
                 <div className="relative mx-auto max-w-[1100px] px-[4vw] py-16 md:py-28">
                     <div className="max-w-2xl space-y-5" style={{transformStyle:"preserve-3d"}}>
@@ -220,6 +274,7 @@ export default function LandingPageClient({courses}){
             </section>
 
             {/* CATEGORIES */}
+            <Parallax3D>
             <section id="categories" className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
                     <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconBook size={14} color="#6366f1" /> Categories</p>
@@ -228,7 +283,7 @@ export default function LandingPageClient({courses}){
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {categories.map((c,i)=>(
                         <Reveal key={c.title} delay={i*80}>
-                            <Tilt3D className="cursor-pointer rounded-xl border border-indigo-100 bg-white p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-100/60">
+                            <Tilt3D className="cursor-pointer rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-100/60">
                                 {c.icon}
                                 <h3 className="mt-3 text-base font-bold text-indigo-900">{c.title}</h3>
                                 <p className="mt-1 text-sm text-indigo-500">{c.subtitle}</p>
@@ -237,18 +292,20 @@ export default function LandingPageClient({courses}){
                     ))}
                 </div>
             </section>
+            </Parallax3D>
 
             {/* COURSES */}
-            <section id="course-grid" className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
+            <ScaleReveal>
+            <section id="course-grid" className="py-10 md:py-14" style={{background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal>
-                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconGrad size={14} /> Free Computer Courses</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconGrad size={14} /> Free Computer Courses</p>
                         <h2 className="mt-1 text-2xl font-extrabold md:text-3xl">Basic to Advanced, job-ready skills</h2>
                     </Reveal>
                     <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                         {courses.map((course,i)=>(
                             <Reveal key={course.id} delay={i*60}>
-                                <Tilt3D intensity={7} className="rounded-xl border border-indigo-100 bg-white p-5 shadow-sm hover:border-violet-300 hover:shadow-xl hover:shadow-violet-100/50">
+                                <Tilt3D intensity={7} className="rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-violet-300 hover:shadow-xl hover:shadow-violet-100/50">
                                     <div className="mb-3 flex flex-wrap gap-2 text-xs">
                                         <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-semibold text-emerald-700"><IconTarget size={12} /> {course.level}</span>
                                         <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 font-semibold text-indigo-700"><IconClock size={12} /> {course.duration}</span>
@@ -276,7 +333,7 @@ export default function LandingPageClient({courses}){
                             </Reveal>
                         ))}
                         {courses.length===0 && (
-                            <div className="col-span-full rounded-xl border border-dashed border-indigo-200 bg-white p-8 text-center text-indigo-400">
+                            <div className="col-span-full rounded-xl border border-dashed p-8 text-center" style={{borderColor:"var(--line)",background:"var(--paper)",color:"var(--text-muted)"}}>
                                 <IconBox size={20} /> No active courses yet. Add from admin panel.
                             </div>
                         )}
@@ -284,11 +341,12 @@ export default function LandingPageClient({courses}){
                     <Reveal><Link href="/courses" className="mt-6 inline-block text-sm font-semibold text-indigo-600 hover:underline">View all courses →</Link></Reveal>
                 </div>
             </section>
+            </ScaleReveal>
 
             {/* STATS */}
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
-                    <div className="rounded-2xl border border-indigo-200/60 p-6 md:p-8" style={{background:"linear-gradient(135deg,#eef2ff,#e0e7ff,#ddd6fe)",transformStyle:"preserve-3d"}}>
+                    <div className="rounded-2xl p-6 md:p-8" style={{border:"1px solid var(--line)",background:"var(--brand-soft)",transformStyle:"preserve-3d",transition:"background 0.3s"}}>
                         <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-600"><IconTrophy size={14} /> Trusted by Students</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl text-indigo-950">Real learners, real outcomes</h3>
                         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -305,7 +363,8 @@ export default function LandingPageClient({courses}){
             </section>
 
             {/* REVIEWS */}
-            <section className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
+            <Parallax3D>
+            <section className="py-10 md:py-14" style={{background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal>
                         <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconMsg size={14} /> Student Reviews</p>
@@ -315,7 +374,7 @@ export default function LandingPageClient({courses}){
                     <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                         {reviewItems.map((r,i)=>(
                             <Reveal key={r.name} delay={i*80}>
-                                <Tilt3D intensity={8} className="rounded-xl border border-indigo-100 bg-white p-5 shadow-sm hover:border-violet-300 hover:shadow-lg">
+                                <Tilt3D intensity={8} className="rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-violet-300 hover:shadow-lg">
                                     <div className="flex items-center gap-3">
                                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-sm font-bold text-indigo-600">{r.initial}</div>
                                         <div>
@@ -331,8 +390,10 @@ export default function LandingPageClient({courses}){
                     </div>
                 </div>
             </section>
+            </Parallax3D>
 
             {/* WHY US */}
+            <ScaleReveal>
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <Reveal>
@@ -342,7 +403,7 @@ export default function LandingPageClient({courses}){
                     <div className="grid gap-3">
                         {whyUs.map((item,i)=>(
                             <Reveal key={item.text} delay={i*60} direction="left">
-                                <Tilt3D intensity={6} className="flex cursor-pointer items-center gap-3 rounded-lg border border-indigo-100 bg-white p-3.5 text-sm shadow-sm hover:border-violet-300 hover:shadow-md">
+                                <Tilt3D intensity={6} className="flex cursor-pointer items-center gap-3 rounded-lg border bg-[var(--paper)] p-3.5 text-sm shadow-sm hover:border-violet-300 hover:shadow-md">
                                     {item.icon}
                                     <span className="text-indigo-700">{item.text}</span>
                                 </Tilt3D>
@@ -351,15 +412,16 @@ export default function LandingPageClient({courses}){
                     </div>
                 </div>
             </section>
+            </ScaleReveal>
 
             {/* FAQ */}
-            <section className="py-10 md:py-14" style={{background:"linear-gradient(180deg,#f5f3ff,#eef2ff)"}}>
+            <section className="py-10 md:py-14" style={{background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal><p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconQuiz size={14} /> FAQ</p></Reveal>
                     <div className="mt-4 grid gap-3">
                         {faqs.map((f,i)=>(
                             <Reveal key={f.q} delay={i*80}>
-                                <Tilt3D intensity={4} className="rounded-lg border border-indigo-100 bg-white p-4 shadow-sm cursor-pointer hover:border-violet-300">
+                                <Tilt3D intensity={4} className="rounded-lg border bg-[var(--paper)] p-4 shadow-sm cursor-pointer hover:border-violet-300">
                                     <h4 className="font-bold text-indigo-900">{f.q}</h4>
                                     <p className="mt-1 text-sm text-indigo-500">{f.a}</p>
                                 </Tilt3D>
@@ -370,7 +432,7 @@ export default function LandingPageClient({courses}){
             </section>
 
             {/* FOOTER */}
-            <footer className="border-t border-indigo-100 py-10" style={{background:"#eef2ff"}}>
+            <footer className="py-10" style={{borderTop:"1px solid var(--line)",background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] md:grid-cols-3">
                     <div>
                         <h4 className="flex items-center gap-2 text-lg font-bold text-indigo-600"><LogoMark size={24} /> LearnSphere</h4>
