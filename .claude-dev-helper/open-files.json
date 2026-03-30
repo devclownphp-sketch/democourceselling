@@ -1,24 +1,6 @@
 [
   {
     "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\courses\\[slug]\\page.js",
-    "timestamp": 1774876684633,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\admin\\CourseManager.js",
-    "timestamp": 1774876700477,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\components\\LandingPageClient.js",
-    "timestamp": 1774876717640,
-    "focus": false,
-    "openLocation": 1
-  },
-  {
-    "filePath": "C:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\courses\\[slug]\\page.js",
     "timestamp": 1774876745239,
     "focus": false,
     "openLocation": 1
@@ -58,5 +40,23 @@
     "timestamp": 1774876871998,
     "focus": false,
     "openLocation": 1
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\api\\admin\\test\\route.js",
+    "timestamp": 1774881831175,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\src\\app\\api\\admin\\test\\route.js",
+    "timestamp": 1774881870547,
+    "focus": false,
+    "openLocation": 0
+  },
+  {
+    "filePath": "c:\\Users\\HP\\Downloads\\new\\course_selling\\.gitignore",
+    "timestamp": 1774882061042,
+    "focus": false,
+    "openLocation": 0
   }
 ]

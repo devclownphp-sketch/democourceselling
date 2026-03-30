@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PasswordChangeForm() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -23,13 +24,11 @@ export default function PasswordChangeForm() {
             });
 
             const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.error || "Password change failed.");
-            }
+            if (!response.ok) throw new Error(data.error || "Password change failed.");
 
             setCurrentPassword("");
             setNewPassword("");
-            setMessage("Password changed successfully.");
+            setMessage("\u2705 Password changed successfully.");
         } catch (submitError) {
             setError(submitError.message || "Password change failed.");
         } finally {
@@ -38,33 +37,29 @@ export default function PasswordChangeForm() {
     };
 
     return (
-        <form className="panel form-grid" onSubmit={onSubmit}>
-            <h3>Change Password</h3>
+        <motion.form
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="panel form-grid"
+            onSubmit={onSubmit}
+        >
+            <h3>{"\ud83d\udd12"} Change Password</h3>
             <label>
-                Current Password
-                <input
-                    required
-                    minLength={6}
-                    type="password"
-                    value={currentPassword}
-                    onChange={(event) => setCurrentPassword(event.target.value)}
-                />
+                {"\ud83d\udd11"} Current Password
+                <input required minLength={6} type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Enter current password" />
             </label>
             <label>
-                New Password
-                <input
-                    required
-                    minLength={6}
-                    type="password"
-                    value={newPassword}
-                    onChange={(event) => setNewPassword(event.target.value)}
-                />
+                {"\ud83d\udd10"} New Password
+                <input required minLength={6} type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min 6 characters" />
             </label>
-            <button className="btn-primary" type="submit" disabled={loading}>
-                {loading ? "Updating..." : "Update Password"}
-            </button>
-            {message ? <p className="success-text">{message}</p> : null}
-            {error ? <p className="error-text">{error}</p> : null}
-        </form>
+            <motion.button className="btn-primary" type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                {loading ? "\u23f3 Updating..." : "\ud83d\udee1\ufe0f Update Password"}
+            </motion.button>
+            <AnimatePresence>
+                {message && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="success-text">{message}</motion.p>}
+                {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="error-text">{"\u26a0\ufe0f"} {error}</motion.p>}
+            </AnimatePresence>
+        </motion.form>
     );
 }

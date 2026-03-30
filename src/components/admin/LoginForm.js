@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -37,25 +38,55 @@ export default function LoginForm() {
     };
 
     return (
-        <form className="panel form-grid" onSubmit={onSubmit}>
-            <h1>Admin Login</h1>
+        <motion.form
+            initial={{ opacity: 0, y: 30, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="panel form-grid"
+            onSubmit={onSubmit}
+        >
+            <div className="login-header">
+                <span className="login-emoji">{"\ud83d\udd10"}</span>
+                <h1>Admin Login</h1>
+                <p className="muted-text">Sign in to manage LearnSphere</p>
+            </div>
             <label>
-                Username
-                <input value={username} onChange={(event) => setUsername(event.target.value)} required />
+                {"\ud83d\udc64"} Username
+                <input
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                    required
+                    placeholder="Enter username"
+                />
             </label>
             <label>
-                Password
+                {"\ud83d\udd11"} Password
                 <input
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     required
+                    placeholder="Enter password"
                 />
             </label>
-            <button className="btn-primary" type="submit" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
-            </button>
-            {error ? <p className="error-text">{error}</p> : null}
-        </form>
+            <motion.button
+                className="btn-primary"
+                type="submit"
+                disabled={loading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+            >
+                {loading ? "\u23f3 Logging in..." : "\ud83d\ude80 Login"}
+            </motion.button>
+            {error && (
+                <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="error-text"
+                >
+                    {"\u274c"} {error}
+                </motion.p>
+            )}
+        </motion.form>
     );
 }

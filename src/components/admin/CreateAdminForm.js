@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CreateAdminForm() {
     const router = useRouter();
@@ -25,13 +26,11 @@ export default function CreateAdminForm() {
             });
             const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || "Could not create admin.");
-            }
+            if (!response.ok) throw new Error(data.error || "Could not create admin.");
 
             setUsername("");
             setPassword("");
-            setMessage("Admin created successfully.");
+            setMessage("\u2705 Admin created successfully.");
             router.refresh();
         } catch (submitError) {
             setError(submitError.message || "Could not create admin.");
@@ -41,27 +40,29 @@ export default function CreateAdminForm() {
     };
 
     return (
-        <form className="panel form-grid" onSubmit={onSubmit}>
-            <h3>Create New Admin</h3>
+        <motion.form
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="panel form-grid"
+            onSubmit={onSubmit}
+        >
+            <h3>{"\ud83d\udc64"} Create New Admin</h3>
             <label>
-                Username
-                <input required value={username} onChange={(event) => setUsername(event.target.value)} />
+                {"\ud83d\udcdd"} Username
+                <input required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter username" />
             </label>
             <label>
-                Password
-                <input
-                    required
-                    minLength={6}
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                />
+                {"\ud83d\udd11"} Password
+                <input required minLength={6} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 6 characters" />
             </label>
-            <button className="btn-primary" type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Admin"}
-            </button>
-            {message ? <p className="success-text">{message}</p> : null}
-            {error ? <p className="error-text">{error}</p> : null}
-        </form>
+            <motion.button className="btn-primary" type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                {loading ? "\u23f3 Creating..." : "\u2795 Create Admin"}
+            </motion.button>
+            <AnimatePresence>
+                {message && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="success-text">{message}</motion.p>}
+                {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="error-text">{"\u26a0\ufe0f"} {error}</motion.p>}
+            </AnimatePresence>
+        </motion.form>
     );
 }

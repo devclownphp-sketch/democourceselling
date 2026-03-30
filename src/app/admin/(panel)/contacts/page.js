@@ -9,16 +9,16 @@ export default async function AdminContactsPage() {
 
     return (
         <section className="panel stack-md">
-            <h1>Contact Submissions</h1>
+            <h1>{"\ud83d\udce9"} Contact Submissions ({contacts.length})</h1>
             <div className="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Message</th>
-                            <th>Date</th>
+                            <th>{"\ud83d\udc64"} Name</th>
+                            <th>{"\ud83d\udce7"} Email</th>
+                            <th>{"\ud83d\udcf1"} Phone</th>
+                            <th>{"\ud83d\udcac"} Message</th>
+                            <th>{"\ud83d\udcc5"} Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,11 +31,9 @@ export default async function AdminContactsPage() {
                                 <td>{new Date(item.createdAt).toLocaleString()}</td>
                             </tr>
                         ))}
-                        {contacts.length === 0 ? (
-                            <tr>
-                                <td colSpan={5}>No contact entries yet.</td>
-                            </tr>
-                        ) : null}
+                        {contacts.length === 0 && (
+                            <tr><td colSpan={5} className="empty-row">{"\ud83d\udce6"} No contact entries yet.</td></tr>
+                        )}
                     </tbody>
                 </table>
             </div>

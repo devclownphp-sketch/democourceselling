@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
 import { parseCoursePayload } from "@/lib/course-schema";
 import { requireAdminApi } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -38,13 +37,13 @@ export async function PUT(request, { params }) {
 
         return NextResponse.json({ ok: true, course });
     } catch (error) {
-        if (error instanceof ZodError) {
-            const fieldErrors = error.flatten().fieldErrors;
-            const firstError = Object.values(fieldErrors).flat().find(Boolean);
+        if (error?.issues) {
+            const firstIssue = error.issues[0];
+            const fieldName = firstIssue?.path?.[0] || "";
+            const message = firstIssue?.message || "Validation failed.";
             return NextResponse.json(
                 {
-                    error: firstError || "Validation failed. Please check the form fields.",
-                    details: fieldErrors,
+                    error: `${fieldName}: ${message}`,
                 },
                 { status: 400 },
             );
