@@ -30,7 +30,7 @@ export default function CourseEnrollButton({ course }) {
     return (
         <button
             type="button"
-            className="inline-flex rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-400"
+            className="inline-flex min-h-[44px] rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-400"
             onClick={handleClick}
         >
             Enroll on WhatsApp

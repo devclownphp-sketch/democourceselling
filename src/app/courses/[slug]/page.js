@@ -50,7 +50,7 @@ export default async function CourseDetailsPage({ params }) {
                     <h1 className="text-3xl font-bold text-orange-200 md:text-4xl">{normalizedCourse.title}</h1>
                     <p className="mt-3 text-slate-300">{normalizedCourse.shortDescription}</p>
 
-                    <div className="mt-8 grid gap-5 md:grid-cols-2">
+                    <div className="mt-8 grid gap-5 grid-cols-1 md:grid-cols-2">
                         <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <h2 className="text-lg font-semibold text-emerald-200">What is this course?</h2>
                             <p className="mt-2 text-sm text-slate-300">{normalizedCourse.whatIs}</p>
@@ -58,7 +58,7 @@ export default async function CourseDetailsPage({ params }) {
 
                         <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <h2 className="text-lg font-semibold text-emerald-200">Who Can Join?</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300 break-words">
                                 {splitLines(normalizedCourse.whoCanJoin).map((item) => (
                                     <li key={`${normalizedCourse.id}-join-${item}`}>{item}</li>
                                 ))}
@@ -67,7 +67,7 @@ export default async function CourseDetailsPage({ params }) {
 
                         <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <h2 className="text-lg font-semibold text-emerald-200">Course Syllabus & Topics</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300 break-words">
                                 {splitLines(normalizedCourse.syllabusTopics).map((item) => (
                                     <li key={`${normalizedCourse.id}-syllabus-${item}`}>{item}</li>
                                 ))}
@@ -76,7 +76,7 @@ export default async function CourseDetailsPage({ params }) {
 
                         <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <h2 className="text-lg font-semibold text-emerald-200">How to Study the Course</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300 break-words">
                                 {splitLines(normalizedCourse.studyPlan).map((item) => (
                                     <li key={`${normalizedCourse.id}-study-${item}`}>{item}</li>
                                 ))}
@@ -85,7 +85,7 @@ export default async function CourseDetailsPage({ params }) {
 
                         <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
                             <h2 className="text-lg font-semibold text-emerald-200">Jobs After Course</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300 break-words">
                                 {splitLines(normalizedCourse.jobsAfter).map((item) => (
                                     <li key={`${normalizedCourse.id}-jobs-${item}`}>{item}</li>
                                 ))}

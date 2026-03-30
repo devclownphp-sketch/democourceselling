@@ -200,7 +200,7 @@ export default function LandingPageClient({ courses }) {
             </section>
 
             <section id="categories" className="mx-auto w-[min(1200px,94vw)] py-14 md:py-20">
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {categories.map((item, index) => (
                         <motion.article
                             key={item.title}
@@ -223,7 +223,7 @@ export default function LandingPageClient({ courses }) {
                     <h2 className="mt-2 text-3xl font-bold md:text-4xl">Basic to Advanced, job-ready skills</h2>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     {courses.map((course, index) => (
                         <motion.article
                             key={course.id}
@@ -244,7 +244,7 @@ export default function LandingPageClient({ courses }) {
 
                             <div className="mt-4 text-sm text-slate-300">
                                 <p className="font-semibold text-emerald-200">Course Highlights</p>
-                                <ul className="mt-1 list-disc space-y-1 pl-5">
+                                <ul className="mt-1 list-disc space-y-1 pl-5 break-words">
                                     {splitLines(course.syllabusTopics).slice(0, 4).map((item) => (
                                         <li key={`${course.id}-syllabus-${item}`}>{item}</li>
                                     ))}
@@ -285,7 +285,7 @@ export default function LandingPageClient({ courses }) {
                     <p className="text-sm uppercase tracking-[0.14em] text-orange-200">Trusted by Students</p>
                     <h3 className="mt-2 text-2xl font-bold">Real learners, real outcomes</h3>
 
-                    <div className="mt-8 grid gap-4 md:grid-cols-4">
+                    <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
                         <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                             <p className="text-2xl font-black text-emerald-300">40,25,000+</p>
                             <p className="mt-1 text-sm text-slate-300">Students joined our courses and resources</p>
@@ -315,7 +315,7 @@ export default function LandingPageClient({ courses }) {
                     <p className="mt-2 text-slate-300">4.7 / 5 (21,255 reviews)</p>
                 </div>
 
-                <div className="grid gap-5 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                     {reviewItems.map((review, index) => (
                         <motion.article
                             key={review.name}
@@ -342,7 +342,7 @@ export default function LandingPageClient({ courses }) {
             </motion.section>
 
             <motion.section {...revealUp} className="mx-auto w-[min(1200px,94vw)] py-14 md:py-20">
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div>
                         <p className="text-sm uppercase tracking-[0.14em] text-orange-200">Why Choose Us</p>
                         <h3 className="mt-2 text-2xl font-bold">Simple, secure, and student-friendly</h3>
@@ -386,7 +386,7 @@ export default function LandingPageClient({ courses }) {
             </motion.section>
 
             <footer className="border-t border-white/10 bg-slate-950/95 py-10">
-                <div className="mx-auto grid w-[min(1200px,94vw)] gap-7 md:grid-cols-3">
+                <div className="mx-auto grid grid-cols-1 w-[min(1200px,94vw)] gap-7 md:grid-cols-3">
                     <div>
                         <h4 className="text-lg font-semibold text-orange-200">LearnSphere</h4>
                         <p className="mt-2 text-sm text-slate-300">FOLLOW US :</p>
@@ -395,19 +395,19 @@ export default function LandingPageClient({ courses }) {
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-wide text-slate-200">Useful Links</p>
                         <ul className="mt-2 space-y-1 text-sm text-slate-300">
-                            <li>Courses</li>
-                            <li>Notes</li>
-                            <li>Quiz</li>
-                            <li>Blogs</li>
+                            <li className="opacity-80">Courses</li>
+                            <li className="opacity-80">Notes</li>
+                            <li className="opacity-80">Quiz</li>
+                            <li className="opacity-80">Blogs</li>
                         </ul>
                     </div>
 
                     <div>
                         <p className="text-sm font-semibold uppercase tracking-wide text-slate-200">Important Links</p>
                         <ul className="mt-2 space-y-1 text-sm text-slate-300">
-                            <li>Privacy Policy</li>
-                            <li>Contact Us</li>
-                            <li>About Us</li>
+                            <li className="opacity-80">Privacy Policy</li>
+                            <li className="opacity-80">Contact Us</li>
+                            <li className="opacity-80">About Us</li>
                         </ul>
                     </div>
                 </div>

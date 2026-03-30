@@ -27,7 +27,7 @@ export default async function AdminContactsPage() {
                                 <td>{item.name}</td>
                                 <td>{item.email}</td>
                                 <td>{item.phone}</td>
-                                <td>{item.message}</td>
+                                <td className="msg-cell" title={item.message}>{item.message}</td>
                                 <td>{new Date(item.createdAt).toLocaleString()}</td>
                             </tr>
                         ))}

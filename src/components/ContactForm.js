@@ -85,7 +85,7 @@ export default function ContactForm() {
                 Message
                 <textarea
                     required
-                    rows={6}
+                    rows={4}
                     name="message"
                     value={form.message}
                     onChange={onChange}
@@ -94,7 +94,7 @@ export default function ContactForm() {
             </label>
             <button
                 disabled={loading}
-                className="inline-flex w-fit rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex w-full sm:w-fit rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-70"
                 type="submit"
             >
                 {loading ? "Submitting..." : "Send Message"}

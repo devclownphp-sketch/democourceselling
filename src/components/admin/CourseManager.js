@@ -212,7 +212,7 @@ export default function CourseManager({ initialCourses }) {
             <section className="panel">
                 <h3>All Courses</h3>
                 <div className="table-wrap">
-                    <table>
+                    <table className="course-table">
                         <thead>
                             <tr>
                                 <th>Title</th>

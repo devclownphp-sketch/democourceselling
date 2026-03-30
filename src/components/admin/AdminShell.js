@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const navItems = [
     { href: "/admin", label: "Dashboard" },
@@ -14,6 +15,7 @@ const navItems = [
 export default function AdminShell({ admin, children }) {
     const pathname = usePathname();
     const router = useRouter();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const logout = async () => {
         await fetch("/api/admin/logout", { method: "POST" }).catch(() => null);
@@ -21,9 +23,23 @@ export default function AdminShell({ admin, children }) {
         router.refresh();
     };
 
+    const closeSidebar = () => setSidebarOpen(false);
+
     return (
         <div className="admin-layout">
-            <aside className="admin-sidebar">
+            <button
+                type="button"
+                className="sidebar-toggle"
+                onClick={() => setSidebarOpen((prev) => !prev)}
+                aria-label="Toggle sidebar"
+            >
+                {sidebarOpen ? "\u2715" : "\u2630"}
+            </button>
+            <div
+                className={sidebarOpen ? "sidebar-overlay open" : "sidebar-overlay"}
+                onClick={closeSidebar}
+            />
+            <aside className={sidebarOpen ? "admin-sidebar open" : "admin-sidebar"}>
                 <div className="admin-sidebar-top">
                     <p className="admin-kicker">Control Panel</p>
                     <h2>LearnSphere Admin</h2>
@@ -36,6 +52,7 @@ export default function AdminShell({ admin, children }) {
                             key={item.href}
                             href={item.href}
                             className={pathname === item.href ? "admin-link active" : "admin-link"}
+                            onClick={closeSidebar}
                         >
                             {item.label}
                         </Link>

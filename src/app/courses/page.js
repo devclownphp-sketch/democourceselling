@@ -27,7 +27,7 @@ export default async function CoursesPage() {
         <div className="min-h-screen bg-slate-950 text-slate-100">
             <VisitTracker />
             <section className="mx-auto w-[min(1200px,94vw)] py-12 md:py-16">
-                <div className="mb-8 flex items-end justify-between gap-4">
+                <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                         <p className="text-sm uppercase tracking-[0.14em] text-orange-200">All Courses</p>
                         <h1 className="mt-2 text-3xl font-bold md:text-4xl">Choose a course and view full details</h1>
@@ -37,7 +37,7 @@ export default async function CoursesPage() {
                     </Link>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                     {normalizedCourses.map((course) => (
                         <article
                             key={course.id}
@@ -54,7 +54,7 @@ export default async function CoursesPage() {
 
                             <div className="mt-4 text-sm text-slate-300">
                                 <p className="font-semibold text-emerald-200">Course Highlights</p>
-                                <ul className="mt-1 list-disc space-y-1 pl-5">
+                                <ul className="mt-1 list-disc space-y-1 pl-5 break-words">
                                     {splitLines(course.syllabusTopics).slice(0, 4).map((item) => (
                                         <li key={`${course.id}-course-list-${item}`}>{item}</li>
                                     ))}
