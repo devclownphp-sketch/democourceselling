@@ -1,0 +1,96 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum MetricType {
+    VISIT
+    ENROLL
+    CONTACT
+}
+
+model Admin {
+    id                String         @id @default(cuid())
+    username          String         @unique
+    passwordHash      String
+    createdByUsername String?
+    createdAt         DateTime       @default(now())
+    updatedAt         DateTime       @updatedAt
+    sessions          AdminSession[]
+    courses           Course[]
+}
+
+model AdminSession {
+    id        String   @id @default(cuid())
+    tokenHash String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    adminId   String
+    admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+    @@index([adminId])
+    @@index([expiresAt])
+}
+
+model Course {
+    id                String        @id @default(cuid())
+    title             String
+    slug              String        @unique
+    shortDescription  String
+    whatIs            String
+    whoCanJoin        String
+    syllabusTopics    String
+    studyPlan         String
+    jobsAfter         String
+    startLearningText String
+    originalPrice     Decimal       @db.Decimal(10, 2)
+    offerPrice        Decimal       @db.Decimal(10, 2)
+    duration          String
+    level             String
+    classType         String
+    liveQna           String
+    pdfNotes          String
+    callSupport       String
+    lifetimeAccess    Boolean       @default(true)
+    socialPrompt      String
+    whatsappNumber    String
+    enrollClicks      Int           @default(0)
+    isActive          Boolean       @default(true)
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+    adminId           String?
+    admin             Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+    metricEvents      MetricEvent[]
+
+    @@index([isActive])
+    @@index([createdAt])
+}
+
+model ContactSubmission {
+    id        String   @id @default(cuid())
+    name      String
+    email     String
+    phone     String
+    message   String
+    createdAt DateTime @default(now())
+
+    @@index([createdAt])
+}
+
+model MetricEvent {
+    id        String     @id @default(cuid())
+    type      MetricType
+    path      String?
+    ipAddress String?
+    userAgent String?
+    createdAt DateTime   @default(now())
+    courseId  String?
+    course    Course?    @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+    @@index([type, createdAt])
+    @@index([courseId])
+}

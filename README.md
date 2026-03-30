@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Course Selling Platform
 
-## Getting Started
+This project is a Next.js + PostgreSQL + Prisma application with:
 
-First, run the development server:
+- Public front page with database-driven courses
+- WhatsApp enroll button with enroll click tracking
+- Contact page with DB storage
+- Admin login (username + password)
+- Admin panel with left sidebar pages:
+  - Dashboard metrics
+  - Course management (create/update/delete)
+  - Contact submissions
+  - Admin management (create new admins)
+  - Password change
+
+## 1) Environment
+
+Create `.env` from `.env.example` and update values:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 2) Database Setup
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Use PostgreSQL and run:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run prisma:generate
+bun run prisma:migrate --name init
+bun run prisma:seed
+```
 
-## Learn More
+## 3) Run Application
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Public site: `http://localhost:3000`
+- Admin login: `http://localhost:3000/admin/login`
 
-## Deploy on Vercel
+## Default Admin (if seeded)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Username: value of `ADMIN_USERNAME` (default: `admin`)
+- Password: value of `ADMIN_PASSWORD` (default: `admin123`)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Change password immediately from Admin Settings.
