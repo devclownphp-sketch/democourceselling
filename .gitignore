@@ -49,7 +49,14 @@ bun.lockb
 .browser-pilot/
 .blender-toolkit/
 .claude/
+.claude-dev-helper/
+.plugin-config/
 claude-context/
+.complexity-log.md
+.project-structure.md
+.course_selling-project-structure.md
+.session-summary.md
+.todos-report.md/
 
 # OS files
 Thumbs.db
