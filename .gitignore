@@ -76,3 +76,4 @@ logs/
 # misc generated
 .turbo/
 .cache/
+AGENTS.md CLAUDE.md
