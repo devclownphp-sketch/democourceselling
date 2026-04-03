@@ -18,7 +18,7 @@ const reviewItems = [
 ];
 const whyUs = [
     { icon: <IconFree size={22} />, text: "100% Free: No hidden costs ever" },
-    { icon: <IconPdf size={22} color="#6366f1" />, text: "PDF Notes: Download for quick revision" },
+    { icon: <IconPdf size={22} color="var(--brand)" />, text: "PDF Notes: Download for quick revision" },
     { icon: <IconRocket size={22} />, text: "No Login: Start learning instantly" },
     { icon: <IconLock size={22} />, text: "Secure: Privacy-first experience" },
     { icon: <IconPhone size={22} />, text: "Call Support: Mon-Sat 10AM-12PM" },
@@ -38,7 +38,7 @@ const stats = [
 
 function splitLines(t) { return String(t||"").split("\n").map(l=>l.trim()).filter(Boolean); }
 
-/* ── 3D Particle Globe - hover only when cursor is NEAR the hero section ── */
+/* ── 3D Particle Globe ── */
 function HeroGlobe() {
     const canvasRef = useRef(null);
     const sectionRef = useRef(null);
@@ -54,7 +54,6 @@ function HeroGlobe() {
         let targetRX=0, targetRY=0, rotX=0, rotY=0, isNear=false;
         let cachedRect=null, rectTimer=0;
         const N=400;
-        // Pre-compute sin/cos for each dot (avoid recalc per frame)
         const dots = Array.from({length:N},(_,i)=>{
             const phi=Math.acos(1-2*(i+0.5)/N);
             const theta=Math.PI*(1+Math.sqrt(5))*i;
@@ -67,7 +66,6 @@ function HeroGlobe() {
 
         const getRect=()=>{if(!cachedRect){cachedRect=section.getBoundingClientRect();}return cachedRect;};
 
-        // Throttled mouse handler
         let mouseRaf=0;
         const onMouse=(e)=>{
             if(mouseRaf) return;
@@ -93,7 +91,6 @@ function HeroGlobe() {
         const onVis=()=>{paused=document.hidden;};
         document.addEventListener("visibilitychange",onVis);
 
-        // Pre-bake color strings for 3 groups at 10 alpha steps
         const colors=[[99,102,241],[139,92,246],[34,211,238]];
         const colorCache=colors.map(c=>{
             const arr=[];
@@ -104,7 +101,6 @@ function HeroGlobe() {
         const render=()=>{
             if(!paused){
                 t++;
-                // Invalidate rect cache periodically
                 if(++rectTimer>60){rectTimer=0;cachedRect=null;}
 
                 const spd=isNear?0.12:0.04;
@@ -183,7 +179,7 @@ function Reveal({children,className="",delay=0,direction="up"}){
     return <div ref={ref} className={className} style={{opacity:0,transform:init,transition:"opacity 0.65s ease, transform 0.65s ease",transformStyle:"preserve-3d"}}>{children}</div>;
 }
 
-/* ── 3D Parallax Section - tilts based on scroll position ── */
+/* ── 3D Parallax Section ── */
 function Parallax3D({children,className=""}){
     const ref=useRef(null);
     useEffect(()=>{
@@ -196,7 +192,7 @@ function Parallax3D({children,className=""}){
                 const rect=el.getBoundingClientRect();
                 const center=rect.top+rect.height/2;
                 const vh=window.innerHeight;
-                const ratio=(center-vh/2)/vh; // -0.5 to 0.5
+                const ratio=(center-vh/2)/vh;
                 el.style.transform=`perspective(1000px) rotateX(${ratio*3}deg) translateY(${ratio*-8}px)`;
                 ticking=false;
             });
@@ -208,7 +204,7 @@ function Parallax3D({children,className=""}){
     return <div ref={ref} className={className} style={{transition:"transform 0.1s linear",transformStyle:"preserve-3d"}}>{children}</div>;
 }
 
-/* ── 3D Scale on scroll - grows as it enters viewport ── */
+/* ── 3D Scale on scroll ── */
 function ScaleReveal({children,className=""}){
     const ref=useRef(null);
     useEffect(()=>{
@@ -246,27 +242,27 @@ export default function LandingPageClient({courses}){
                 <HeroGlobe />
                 <div className="relative mx-auto max-w-[1100px] px-[4vw] py-16 md:py-28">
                     <div className="max-w-2xl space-y-5" style={{transformStyle:"preserve-3d"}}>
-                        <span className="hero-animate inline-flex items-center gap-1.5 rounded-full border border-indigo-300/50 bg-white/70 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-700">
+                        <span className="hero-animate inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest" style={{border:"1px solid var(--line)",background:"var(--paper)",color:"var(--brand)",backdropFilter:"blur(8px)"}}>
                             <IconSparkle size={14} /> 100% Free Learning Platform
                         </span>
-                        <h1 className="hero-animate-d1 text-3xl font-black leading-tight md:text-5xl text-indigo-950">
-                            Learn 100% Free <span className="bg-gradient-to-r from-indigo-600 via-violet-500 to-purple-500 bg-clip-text text-transparent">Computer Courses</span>
+                        <h1 className="hero-animate-d1 text-3xl font-black leading-tight md:text-5xl" style={{color:"var(--ink)"}}>
+                            Learn 100% Free <span style={{background:"linear-gradient(to right, var(--brand), var(--accent))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Computer Courses</span>
                         </h1>
-                        <p className="hero-animate-d2 text-indigo-800/70 md:text-lg leading-relaxed">
+                        <p className="hero-animate-d2 md:text-lg leading-relaxed" style={{color:"var(--text-muted)"}}>
                             Free online computer courses for everyone. Learn digital skills from basics to advanced and grow your career with practical, job-ready education.
                         </p>
                         <div className="hero-animate-d2 flex flex-wrap gap-3 pt-1">
-                            <a href="#course-grid" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-300/40 transition-all duration-200 hover:-translate-y-1 hover:shadow-indigo-400/50 hover:scale-105 active:scale-100">
+                            <a href="#course-grid" className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:scale-100" style={{background:"linear-gradient(to right, var(--brand), var(--accent))"}}>
                                 <IconRocket size={16} color="#fff" /> Start Learning
                             </a>
-                            <a href="#categories" className="inline-flex items-center gap-2 rounded-full border border-indigo-300/60 bg-white/50 backdrop-blur-sm px-7 py-3 text-sm font-semibold text-indigo-700 transition-all duration-200 hover:bg-white/80 hover:scale-105 active:scale-100">
-                                <IconBook size={16} color="#4f46e5" /> Explore Categories
+                            <a href="#categories" className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-100" style={{border:"1px solid var(--line)",background:"var(--paper)",color:"var(--brand)",backdropFilter:"blur(8px)"}}>
+                                <IconBook size={16} /> Explore Categories
                             </a>
                         </div>
-                        <p className="hero-animate-d3 flex items-center gap-3 flex-wrap text-sm text-indigo-500/70">
-                            <span className="inline-flex items-center gap-1"><IconComputer size={14} color="#6366f1" /> Computer Course</span>
-                            <span className="inline-flex items-center gap-1"><IconPdf size={14} color="#8b5cf6" /> PDF Notes</span>
-                            <span className="inline-flex items-center gap-1"><IconQuiz size={14} color="#a855f7" /> Quiz</span>
+                        <p className="hero-animate-d3 flex items-center gap-3 flex-wrap text-sm" style={{color:"var(--text-muted)"}}>
+                            <span className="inline-flex items-center gap-1"><IconComputer size={14} /> Computer Course</span>
+                            <span className="inline-flex items-center gap-1"><IconPdf size={14} /> PDF Notes</span>
+                            <span className="inline-flex items-center gap-1"><IconQuiz size={14} /> Quiz</span>
                             <span className="inline-flex items-center gap-1"><IconBolt size={14} /> Tricks</span>
                         </p>
                     </div>
@@ -277,16 +273,16 @@ export default function LandingPageClient({courses}){
             <Parallax3D>
             <section id="categories" className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
-                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconBook size={14} color="#6366f1" /> Categories</p>
+                    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconBook size={14} /> Categories</p>
                     <h2 className="mt-1 text-2xl font-extrabold md:text-3xl">What do you want to learn?</h2>
                 </Reveal>
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {categories.map((c,i)=>(
                         <Reveal key={c.title} delay={i*80}>
-                            <Tilt3D className="cursor-pointer rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-100/60">
+                            <Tilt3D className="cursor-pointer rounded-xl p-5 shadow-sm transition-shadow hover:shadow-xl" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
                                 {c.icon}
-                                <h3 className="mt-3 text-base font-bold text-indigo-900">{c.title}</h3>
-                                <p className="mt-1 text-sm text-indigo-500">{c.subtitle}</p>
+                                <h3 className="mt-3 text-base font-bold" style={{color:"var(--ink)"}}>{c.title}</h3>
+                                <p className="mt-1 text-sm" style={{color:"var(--text-muted)"}}>{c.subtitle}</p>
                             </Tilt3D>
                         </Reveal>
                     ))}
@@ -305,29 +301,29 @@ export default function LandingPageClient({courses}){
                     <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                         {courses.map((course,i)=>(
                             <Reveal key={course.id} delay={i*60}>
-                                <Tilt3D intensity={7} className="rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-violet-300 hover:shadow-xl hover:shadow-violet-100/50">
+                                <Tilt3D intensity={7} className="rounded-xl p-5 shadow-sm transition-shadow hover:shadow-xl" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
                                     <div className="mb-3 flex flex-wrap gap-2 text-xs">
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-semibold text-emerald-700"><IconTarget size={12} /> {course.level}</span>
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 font-semibold text-indigo-700"><IconClock size={12} /> {course.duration}</span>
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 font-semibold text-violet-700"><IconVideo size={12} /> {course.classType}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold" style={{border:"1px solid var(--badge-green-border)",background:"var(--badge-green-bg)",color:"var(--badge-green-text)"}}><IconTarget size={12} /> {course.level}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold" style={{border:"1px solid var(--badge-blue-border)",background:"var(--badge-blue-bg)",color:"var(--badge-blue-text)"}}><IconClock size={12} /> {course.duration}</span>
+                                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold" style={{border:"1px solid var(--badge-violet-border)",background:"var(--badge-violet-bg)",color:"var(--badge-violet-text)"}}><IconVideo size={12} /> {course.classType}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-indigo-900">{course.title}</h3>
-                                    <p className="mt-2 text-sm leading-relaxed text-indigo-500">{course.shortDescription}</p>
+                                    <h3 className="text-lg font-bold" style={{color:"var(--ink)"}}>{course.title}</h3>
+                                    <p className="mt-2 text-sm leading-relaxed" style={{color:"var(--text-muted)"}}>{course.shortDescription}</p>
                                     <div className="mt-3">
-                                        <p className="flex items-center gap-1 text-xs font-bold text-emerald-600"><IconEdit size={12} color="#059669" /> Course Highlights</p>
-                                        <ul className="mt-1 space-y-0.5 text-sm text-indigo-500">
+                                        <p className="flex items-center gap-1 text-xs font-bold" style={{color:"var(--success)"}}><IconEdit size={12} /> Course Highlights</p>
+                                        <ul className="mt-1 space-y-0.5 text-sm" style={{color:"var(--text-muted)"}}>
                                             {splitLines(course.syllabusTopics).slice(0,4).map((item)=>(
-                                                <li key={`${course.id}-${item}`}><span className="text-violet-400">•</span> {item}</li>
+                                                <li key={`${course.id}-${item}`}><span style={{color:"var(--accent)"}}>&#8226;</span> {item}</li>
                                             ))}
                                         </ul>
                                     </div>
                                     <div className="mt-4 flex flex-wrap items-center gap-3">
-                                        <span className="text-lg font-extrabold text-emerald-600">INR {course.offerPrice.toFixed(0)}</span>
-                                        <span className="text-sm text-indigo-300 line-through">INR {course.originalPrice.toFixed(0)}</span>
-                                        <span className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-0.5 text-xs font-bold text-white">FREE</span>
+                                        <span className="text-lg font-extrabold" style={{color:"var(--success)"}}>INR {course.offerPrice.toFixed(0)}</span>
+                                        <span className="text-sm line-through" style={{color:"var(--text-muted)"}}>INR {course.originalPrice.toFixed(0)}</span>
+                                        <span className="rounded-full px-3 py-0.5 text-xs font-bold text-white" style={{background:"linear-gradient(to right, var(--brand), var(--accent))"}}>FREE</span>
                                     </div>
-                                    <Link href={`/courses/${course.slug}`} className="mt-4 inline-flex rounded-full border border-indigo-200 px-5 py-2 text-sm font-semibold text-indigo-600 transition hover:border-indigo-400 hover:bg-indigo-50 hover:scale-105 active:scale-100">
-                                        View Details →
+                                    <Link href={`/courses/${course.slug}`} className="mt-4 inline-flex rounded-full px-5 py-2 text-sm font-semibold transition hover:scale-105 active:scale-100" style={{border:"1px solid var(--line)",color:"var(--brand)"}}>
+                                        View Details &rarr;
                                     </Link>
                                 </Tilt3D>
                             </Reveal>
@@ -338,7 +334,7 @@ export default function LandingPageClient({courses}){
                             </div>
                         )}
                     </div>
-                    <Reveal><Link href="/courses" className="mt-6 inline-block text-sm font-semibold text-indigo-600 hover:underline">View all courses →</Link></Reveal>
+                    <Reveal><Link href="/courses" className="mt-6 inline-block text-sm font-semibold hover:underline" style={{color:"var(--brand)"}}>View all courses &rarr;</Link></Reveal>
                 </div>
             </section>
             </ScaleReveal>
@@ -347,14 +343,14 @@ export default function LandingPageClient({courses}){
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <Reveal>
                     <div className="rounded-2xl p-6 md:p-8" style={{border:"1px solid var(--line)",background:"var(--brand-soft)",transformStyle:"preserve-3d",transition:"background 0.3s"}}>
-                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-600"><IconTrophy size={14} /> Trusted by Students</p>
-                        <h3 className="mt-1 text-xl font-extrabold md:text-2xl text-indigo-950">Real learners, real outcomes</h3>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconTrophy size={14} /> Trusted by Students</p>
+                        <h3 className="mt-1 text-xl font-extrabold md:text-2xl" style={{color:"var(--ink)"}}>Real learners, real outcomes</h3>
                         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                             {stats.map((s)=>(
-                                <Tilt3D key={s.label} intensity={12} className="rounded-xl border border-white/60 bg-white/80 backdrop-blur-sm p-4 text-center shadow-sm">
+                                <Tilt3D key={s.label} intensity={12} className="rounded-xl p-4 text-center shadow-sm" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
                                     {s.icon}
-                                    <p className="mt-1 text-xl font-extrabold text-indigo-600">{s.value}</p>
-                                    <p className="text-xs text-indigo-400">{s.label}</p>
+                                    <p className="mt-1 text-xl font-extrabold" style={{color:"var(--brand)"}}>{s.value}</p>
+                                    <p className="text-xs" style={{color:"var(--text-muted)"}}>{s.label}</p>
                                 </Tilt3D>
                             ))}
                         </div>
@@ -367,23 +363,23 @@ export default function LandingPageClient({courses}){
             <section className="py-10 md:py-14" style={{background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
                     <Reveal>
-                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconMsg size={14} /> Student Reviews</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconMsg size={14} /> Student Reviews</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl">Real feedback from learners</h3>
-                        <p className="mt-1 flex items-center gap-1 text-sm text-indigo-400"><IconStar size={14} /> 4.7 / 5 (21,255 reviews)</p>
+                        <p className="mt-1 flex items-center gap-1 text-sm" style={{color:"var(--text-muted)"}}><IconStar size={14} /> 4.7 / 5 (21,255 reviews)</p>
                     </Reveal>
                     <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                         {reviewItems.map((r,i)=>(
                             <Reveal key={r.name} delay={i*80}>
-                                <Tilt3D intensity={8} className="rounded-xl border bg-[var(--paper)] p-5 shadow-sm hover:border-violet-300 hover:shadow-lg">
+                                <Tilt3D intensity={8} className="rounded-xl p-5 shadow-sm transition-shadow hover:shadow-lg" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-sm font-bold text-indigo-600">{r.initial}</div>
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold" style={{background:"var(--brand-soft)",color:"var(--brand)"}}>{r.initial}</div>
                                         <div>
-                                            <p className="text-sm font-bold text-indigo-900">{r.name}</p>
-                                            <p className="text-xs text-indigo-400">Computer Course Student</p>
+                                            <p className="text-sm font-bold" style={{color:"var(--ink)"}}>{r.name}</p>
+                                            <p className="text-xs" style={{color:"var(--text-muted)"}}>Computer Course Student</p>
                                         </div>
                                     </div>
                                     <div className="mt-2 flex gap-0.5">{Array.from({length:r.rating}).map((_,j)=><IconStar key={j} size={14} />)}</div>
-                                    <p className="mt-1 text-sm leading-relaxed text-indigo-500">{r.text}</p>
+                                    <p className="mt-1 text-sm leading-relaxed" style={{color:"var(--text-muted)"}}>{r.text}</p>
                                 </Tilt3D>
                             </Reveal>
                         ))}
@@ -397,15 +393,15 @@ export default function LandingPageClient({courses}){
             <section className="mx-auto max-w-[1100px] px-[4vw] py-14 md:py-20">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <Reveal>
-                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconSparkle size={14} /> Why Choose Us</p>
+                        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconSparkle size={14} /> Why Choose Us</p>
                         <h3 className="mt-1 text-xl font-extrabold md:text-2xl">Simple, secure, student-friendly</h3>
                     </Reveal>
                     <div className="grid gap-3">
                         {whyUs.map((item,i)=>(
                             <Reveal key={item.text} delay={i*60} direction="left">
-                                <Tilt3D intensity={6} className="flex cursor-pointer items-center gap-3 rounded-lg border bg-[var(--paper)] p-3.5 text-sm shadow-sm hover:border-violet-300 hover:shadow-md">
+                                <Tilt3D intensity={6} className="flex cursor-pointer items-center gap-3 rounded-lg p-3.5 text-sm shadow-sm transition-shadow hover:shadow-md" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
                                     {item.icon}
-                                    <span className="text-indigo-700">{item.text}</span>
+                                    <span style={{color:"var(--ink-secondary)"}}>{item.text}</span>
                                 </Tilt3D>
                             </Reveal>
                         ))}
@@ -417,13 +413,13 @@ export default function LandingPageClient({courses}){
             {/* FAQ */}
             <section className="py-10 md:py-14" style={{background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto max-w-[1100px] px-[4vw]">
-                    <Reveal><p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-500"><IconQuiz size={14} /> FAQ</p></Reveal>
+                    <Reveal><p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest" style={{color:"var(--brand)"}}><IconQuiz size={14} /> FAQ</p></Reveal>
                     <div className="mt-4 grid gap-3">
                         {faqs.map((f,i)=>(
                             <Reveal key={f.q} delay={i*80}>
-                                <Tilt3D intensity={4} className="rounded-lg border bg-[var(--paper)] p-4 shadow-sm cursor-pointer hover:border-violet-300">
-                                    <h4 className="font-bold text-indigo-900">{f.q}</h4>
-                                    <p className="mt-1 text-sm text-indigo-500">{f.a}</p>
+                                <Tilt3D intensity={4} className="rounded-lg p-4 shadow-sm cursor-pointer" style={{border:"1px solid var(--line)",background:"var(--paper)"}}>
+                                    <h4 className="font-bold" style={{color:"var(--ink)"}}>{f.q}</h4>
+                                    <p className="mt-1 text-sm" style={{color:"var(--text-muted)"}}>{f.a}</p>
                                 </Tilt3D>
                             </Reveal>
                         ))}
@@ -435,28 +431,28 @@ export default function LandingPageClient({courses}){
             <footer className="py-10" style={{borderTop:"1px solid var(--line)",background:"var(--bg-alt)",transition:"background 0.3s"}}>
                 <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] md:grid-cols-3">
                     <div>
-                        <h4 className="flex items-center gap-2 text-lg font-bold text-indigo-600"><LogoMark size={24} /> LearnSphere</h4>
-                        <p className="mt-1 text-sm text-indigo-400">FOLLOW US</p>
+                        <h4 className="flex items-center gap-2 text-lg font-bold" style={{color:"var(--brand)"}}><LogoMark size={24} /> LearnSphere</h4>
+                        <p className="mt-1 text-sm" style={{color:"var(--text-muted)"}}>FOLLOW US</p>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wide text-indigo-700">Useful Links</p>
-                        <ul className="mt-2 space-y-1 text-sm text-indigo-500">
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Courses</li>
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Notes</li>
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Quiz</li>
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Blogs</li>
+                        <p className="text-xs font-bold uppercase tracking-wide" style={{color:"var(--ink-secondary)"}}>Useful Links</p>
+                        <ul className="mt-2 space-y-1 text-sm" style={{color:"var(--text-muted)"}}>
+                            <li><Link href="/courses" className="hover:underline transition">Courses</Link></li>
+                            <li className="cursor-pointer transition">Notes</li>
+                            <li className="cursor-pointer transition">Quiz</li>
+                            <li className="cursor-pointer transition">Blogs</li>
                         </ul>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wide text-indigo-700">Important Links</p>
-                        <ul className="mt-2 space-y-1 text-sm text-indigo-500">
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Privacy Policy</li>
-                            <li className="cursor-pointer hover:text-indigo-700 transition">Contact Us</li>
-                            <li className="cursor-pointer hover:text-indigo-700 transition">About Us</li>
+                        <p className="text-xs font-bold uppercase tracking-wide" style={{color:"var(--ink-secondary)"}}>Important Links</p>
+                        <ul className="mt-2 space-y-1 text-sm" style={{color:"var(--text-muted)"}}>
+                            <li className="cursor-pointer transition">Privacy Policy</li>
+                            <li><Link href="/contact" className="hover:underline transition">Contact Us</Link></li>
+                            <li className="cursor-pointer transition">About Us</li>
                         </ul>
                     </div>
                 </div>
-                <p className="mt-8 text-center text-xs text-indigo-400">Copyright 2026 LearnSphere. All Rights Reserved.</p>
+                <p className="mt-8 text-center text-xs" style={{color:"var(--text-muted)"}}>Copyright 2026 LearnSphere. All Rights Reserved.</p>
             </footer>
         </div>
     );

@@ -28,10 +28,16 @@ export default function PublicNavbar() {
                         Admin Login
                     </Link>
                 </nav>
-                <button type="button" className="md:hidden flex flex-col justify-center gap-1.5 p-2" onClick={() => setMobileOpen((p) => !p)} aria-label="Toggle menu">
-                    <span className="block h-0.5 w-5 rounded bg-indigo-500" />
-                    <span className="block h-0.5 w-5 rounded bg-indigo-500" />
-                    <span className="block h-0.5 w-5 rounded bg-indigo-500" />
+                <button
+                    type="button"
+                    className="md:hidden flex flex-col justify-center gap-1.5 p-2 rounded-lg transition"
+                    style={{ border: "1px solid var(--line)", background: "var(--paper)" }}
+                    onClick={() => setMobileOpen((p) => !p)}
+                    aria-label="Toggle menu"
+                >
+                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
+                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
+                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
                 </button>
             </div>
             {mobileOpen && (

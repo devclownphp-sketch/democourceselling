@@ -45,22 +45,37 @@ export default function ContactForm() {
         }
     };
 
+    const inputStyle = {
+        border: "1px solid var(--line)",
+        background: "var(--bg-alt)",
+        color: "var(--ink)",
+        borderRadius: "0.6rem",
+        padding: "0.65rem 0.75rem",
+        fontSize: "0.92rem",
+        outline: "none",
+        transition: "border-color 0.15s",
+        width: "100%",
+        minHeight: "44px",
+    };
+
     return (
         <form
-            className="grid gap-4 rounded-2xl border border-white/10 bg-linear-to-b from-slate-900/85 to-slate-800/80 p-6 shadow-xl"
+            className="grid gap-4 rounded-2xl p-6 shadow-lg"
+            style={{ border: "1px solid var(--line)", background: "var(--paper)" }}
             onSubmit={onSubmit}
         >
-            <label className="grid gap-2 text-sm font-medium text-slate-200">
+            <label className="grid gap-2 text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                 Name
                 <input
                     required
                     name="name"
                     value={form.name}
                     onChange={onChange}
-                    className="rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 outline-none transition focus:border-orange-300/60 focus:ring-2 focus:ring-orange-400/20"
+                    placeholder="Your name"
+                    style={inputStyle}
                 />
             </label>
-            <label className="grid gap-2 text-sm font-medium text-slate-200">
+            <label className="grid gap-2 text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                 Email
                 <input
                     required
@@ -68,20 +83,22 @@ export default function ContactForm() {
                     name="email"
                     value={form.email}
                     onChange={onChange}
-                    className="rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 outline-none transition focus:border-orange-300/60 focus:ring-2 focus:ring-orange-400/20"
+                    placeholder="you@example.com"
+                    style={inputStyle}
                 />
             </label>
-            <label className="grid gap-2 text-sm font-medium text-slate-200">
+            <label className="grid gap-2 text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                 Phone
                 <input
                     required
                     name="phone"
                     value={form.phone}
                     onChange={onChange}
-                    className="rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 outline-none transition focus:border-orange-300/60 focus:ring-2 focus:ring-orange-400/20"
+                    placeholder="Your phone number"
+                    style={inputStyle}
                 />
             </label>
-            <label className="grid gap-2 text-sm font-medium text-slate-200">
+            <label className="grid gap-2 text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                 Message
                 <textarea
                     required
@@ -89,18 +106,20 @@ export default function ContactForm() {
                     name="message"
                     value={form.message}
                     onChange={onChange}
-                    className="rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 outline-none transition focus:border-orange-300/60 focus:ring-2 focus:ring-orange-400/20"
+                    placeholder="How can we help?"
+                    style={{ ...inputStyle, minHeight: "auto" }}
                 />
             </label>
             <button
                 disabled={loading}
-                className="inline-flex w-full sm:w-fit rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex w-full sm:w-fit rounded-full px-6 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                style={{ background: "linear-gradient(to right, var(--brand), var(--accent))", minHeight: "44px" }}
                 type="submit"
             >
                 {loading ? "Submitting..." : "Send Message"}
             </button>
             {result.message ? (
-                <p className={result.type === "error" ? "text-sm text-red-300" : "text-sm text-emerald-300"}>{result.message}</p>
+                <p className={result.type === "error" ? "error-text" : "success-text"}>{result.message}</p>
             ) : null}
         </form>
     );
