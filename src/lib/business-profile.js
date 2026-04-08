@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const defaultBusinessProfile = {
-    businessName: "LearnSphere",
+    businessName: "WEBCOM",
     supportEmail: "test@gmail.com",
     supportPhone: "+91 1234567890",
     addressLine: "123 Main Street, City, Country",

@@ -56,8 +56,8 @@ const whyUs = [
 ];
 const faqs = [
     {
-        q: "LearnSphere kya hai?",
-        a: "LearnSphere ek online platform hai jo students ko 100% Free Computer Courses provide karta hai. Iska maqsad (mission) har student ko free mein quality computer education dena hai, chahe woh kisi bhi background se ho.",
+        q: "WEBCOM kya hai?",
+        a: "WEBCOM ek online platform hai jo students ko 100% Free Computer Courses provide karta hai. Iska maqsad (mission) har student ko free mein quality computer education dena hai, chahe woh kisi bhi background se ho.",
     },
     {
         q: "Kya yahan sabhi courses sach mein free hain?",
@@ -594,7 +594,7 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
             <footer className="py-10" style={{ borderTop: "1px solid var(--line)", background: "var(--bg-alt)", transition: "background 0.3s" }}>
                 <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] md:grid-cols-3">
                     <div>
-                        <h4 className="flex items-center gap-2 text-lg font-bold" style={{ color: "var(--brand)" }}><LogoMark size={24} /> LearnSphere</h4>
+                        <h4 className="flex items-center gap-2 text-lg font-bold" style={{ color: "var(--brand)" }}><LogoMark size={24} /> WEBCOM</h4>
                         <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>FOLLOW US</p>
                     </div>
                     <div>
@@ -615,7 +615,7 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                         </ul>
                     </div>
                 </div>
-                <p className="mt-8 text-center text-xs" style={{ color: "var(--text-muted)" }}>Copyright 2026 LearnSphere. All Rights Reserved.</p>
+                <p className="mt-8 text-center text-xs" style={{ color: "var(--text-muted)" }}>Copyright 2026 WEBCOM. All Rights Reserved.</p>
             </footer>
         </div>
     );

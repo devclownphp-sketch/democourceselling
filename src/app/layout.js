@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "LearnSphere",
+  title: "WEBCOM",
   description: "Computer education website with admin-managed courses and contact flow",
 };
 

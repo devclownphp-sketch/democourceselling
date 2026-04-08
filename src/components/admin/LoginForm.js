@@ -48,7 +48,7 @@ export default function LoginForm() {
             <div className="login-header">
                 <span className="login-emoji">{"\ud83d\udd10"}</span>
                 <h1>Admin Login</h1>
-                <p className="muted-text">Sign in to manage LearnSphere</p>
+                <p className="muted-text">Sign in to manage WEBCOM</p>
             </div>
             <label>
                 {"\ud83d\udc64"} Username

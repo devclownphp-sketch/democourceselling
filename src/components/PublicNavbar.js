@@ -32,7 +32,7 @@ export default function PublicNavbar() {
                     <div className="rounded-lg p-1.5" style={{ background: "var(--brand-primary-light)" }}>
                         <LogoMark size={24} />
                     </div>
-                    <span className="hidden sm:inline" style={{ letterSpacing: "-0.01em" }}>LearnSphere</span>
+                    <span className="hidden sm:inline" style={{ letterSpacing: "-0.01em" }}>WEBCOM</span>
                 </Link>
 
                 {/* Desktop Navigation */}

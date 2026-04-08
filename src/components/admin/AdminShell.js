@@ -57,7 +57,7 @@ export default function AdminShell({ admin, children }) {
             <aside className={sidebarOpen ? "admin-sidebar open" : "admin-sidebar"}>
                 <div className="admin-sidebar-top">
                     <p className="admin-kicker"><IconShield size={12} /> Control Panel</p>
-                    <h2 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><LogoMark size={22} /> LearnSphere</h2>
+                    <h2 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><LogoMark size={22} /> WEBCOM</h2>
                     <p className="muted-text">Manage courses, contacts & team.</p>
                     <div className="admin-user-chip"><IconUser size={13} /> {admin.username}</div>
                 </div>
