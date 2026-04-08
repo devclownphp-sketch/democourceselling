@@ -22,6 +22,8 @@ model Admin {
     updatedAt         DateTime       @updatedAt
     sessions          AdminSession[]
     courses           Course[]
+    reviews           Review[]
+    quizzes           Quiz[]
 }
 
 model AdminSession {
@@ -40,6 +42,9 @@ model Course {
     id                String        @id @default(cuid())
     title             String
     slug              String        @unique
+    rating            Float         @default(4.5)
+    courseImage       String        @default("")
+    discountPercent   Float         @default(0)
     shortDescription  String
     whatIs            String
     whoCanJoin        String
@@ -63,10 +68,43 @@ model Course {
     createdAt         DateTime      @default(now())
     updatedAt         DateTime      @updatedAt
     adminId           String?
+    courseTypeId      String?
     admin             Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
+    courseType        CourseType?   @relation(fields: [courseTypeId], references: [id], onDelete: SetNull)
     metricEvents      MetricEvent[]
 
     @@index([isActive])
+    @@index([createdAt])
+}
+
+model CourseType {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    sortOrder Int      @default(0)
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    courses   Course[]
+
+    @@index([sortOrder])
+    @@index([isActive])
+}
+
+model Review {
+    id         String   @id @default(cuid())
+    name       String
+    role       String   @default("Student")
+    reviewText String
+    rating     Int      @default(5)
+    sortOrder  Int      @default(0)
+    isActive   Boolean  @default(true)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    adminId    String?
+    admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+    @@index([isActive])
+    @@index([sortOrder])
     @@index([createdAt])
 }
 
@@ -93,4 +131,59 @@ model MetricEvent {
 
     @@index([type, createdAt])
     @@index([courseId])
+}
+
+model Quiz {
+    id        String         @id @default(cuid())
+    title     String
+    heading   String
+    slug      String         @unique
+    category  String         @default("General")
+    minutes   Int            @default(10)
+    rating    Float          @default(4.5)
+    sortOrder Int            @default(0)
+    isActive  Boolean        @default(true)
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+    adminId   String?
+    admin     Admin?         @relation(fields: [adminId], references: [id], onDelete: SetNull)
+    questions QuizQuestion[]
+
+    @@index([isActive])
+    @@index([sortOrder])
+    @@index([createdAt])
+}
+
+model QuizQuestion {
+    id           String   @id @default(cuid())
+    quizId       String
+    quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    questionText String
+    options      String[]
+    correctIndex Int      @default(0)
+    sortOrder    Int      @default(0)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    @@index([quizId])
+    @@index([sortOrder])
+}
+
+model BusinessProfile {
+    id              String   @id @default(cuid())
+    key             String   @unique @default("primary")
+    businessName    String   @default("STP Computer Education")
+    supportEmail    String   @default("stpcomputereducation@gmail.com")
+    supportPhone    String   @default("+91 9460824001")
+    addressLine     String   @default("Mahipal Nagar, New Delhi - 110037")
+    contactHeadline String   @default("Get in touch with us")
+    contactSubtext  String   @default("For any queries about our courses, contact us using the details below.")
+    mapEmbedUrl     String   @default("")
+    twitterUrl      String   @default("")
+    facebookUrl     String   @default("")
+    instagramUrl    String   @default("")
+    linkedinUrl     String   @default("")
+    youtubeUrl      String   @default("")
+    updatedAt       DateTime @updatedAt
+    createdAt       DateTime @default(now())
 }

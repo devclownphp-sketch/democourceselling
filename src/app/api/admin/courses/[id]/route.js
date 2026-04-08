@@ -33,6 +33,7 @@ export async function PUT(request, { params }) {
                 ...parsed,
                 slug,
             },
+            include: { courseType: true },
         });
 
         return NextResponse.json({ ok: true, course });

@@ -21,7 +21,10 @@ export async function GET() {
     const { unauthorized } = await requireAdminApi();
     if (unauthorized) return unauthorized;
 
-    const courses = await prisma.course.findMany({ orderBy: { createdAt: "desc" } });
+    const courses = await prisma.course.findMany({
+        orderBy: { createdAt: "desc" },
+        include: { courseType: true },
+    });
     return NextResponse.json({ courses });
 }
 
@@ -40,6 +43,7 @@ export async function POST(request) {
                 slug,
                 adminId: admin.id,
             },
+            include: { courseType: true },
         });
 
         return NextResponse.json({ ok: true, course });

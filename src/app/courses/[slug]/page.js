@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import VisitTracker from "@/components/VisitTracker";
 import CourseEnrollButton from "@/components/CourseEnrollButton";
-import { IconTarget, IconClock, IconVideo } from "@/components/Icons";
+import { IconTarget, IconClock, IconVideo, IconStar, IconMsg } from "@/components/Icons";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +17,16 @@ function splitLines(text) {
 export default async function CourseDetailsPage({ params }) {
     const { slug } = await params;
 
-    const course = await prisma.course.findUnique({
-        where: { slug },
-    });
+    const [course, reviews] = await Promise.all([
+        prisma.course.findUnique({
+            where: { slug },
+            include: { courseType: true },
+        }),
+        prisma.review.findMany({
+            where: { isActive: true },
+            orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }],
+        }),
+    ]);
 
     if (!course || !course.isActive) {
         notFound();
@@ -27,95 +34,316 @@ export default async function CourseDetailsPage({ params }) {
 
     const normalizedCourse = {
         ...course,
+        rating: Number(course.rating || 4.5),
+        discountPercent: Number(course.discountPercent || 0),
         originalPrice: Number(course.originalPrice || 0),
         offerPrice: Number(course.offerPrice || 0),
     };
 
+    const reviewCards = reviews.map((review) => ({
+        name: review.name,
+        role: review.role || "Student",
+        rating: Number(review.rating || 5),
+        text: review.reviewText,
+    }));
+    const marqueeReviews = [...reviewCards, ...reviewCards];
+
     return (
-        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--ink)" }}>
+        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text-primary)" }}>
             <VisitTracker />
-            <section className="mx-auto w-[min(1000px,94vw)] py-10 md:py-14">
+            <section className="mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16" style={{ maxWidth: "1280px" }}>
+                {/* Back Link */}
                 <div className="mb-8">
-                    <Link href="/courses" className="text-sm font-semibold transition hover:underline" style={{ color: "var(--brand)" }}>
-                        &larr; Back to Courses
+                    <Link
+                        href="/courses"
+                        className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-blue-700"
+                        style={{ color: "var(--brand-primary)" }}
+                    >
+                        ← Back to Courses
                     </Link>
                 </div>
 
-                <article className="rounded-3xl p-7 shadow-lg md:p-10" style={{ border: "1px solid var(--line)", background: "var(--paper)" }}>
-                    <div className="mb-5 flex flex-wrap items-center gap-2 text-xs">
-                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold" style={{ border: "1px solid var(--badge-green-border)", background: "var(--badge-green-bg)", color: "var(--badge-green-text)" }}><IconTarget size={12} /> {normalizedCourse.level}</span>
-                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold" style={{ border: "1px solid var(--badge-blue-border)", background: "var(--badge-blue-bg)", color: "var(--badge-blue-text)" }}><IconClock size={12} /> {normalizedCourse.duration}</span>
-                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold" style={{ border: "1px solid var(--badge-violet-border)", background: "var(--badge-violet-bg)", color: "var(--badge-violet-text)" }}><IconVideo size={12} /> {normalizedCourse.classType}</span>
-                    </div>
+                {/* Main Content */}
+                <article
+                    className="rounded-2xl overflow-hidden"
+                    style={{
+                        border: "1px solid var(--border-light)",
+                        background: "var(--paper)",
+                        boxShadow: "var(--shadow-lg)",
+                    }}
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-0">
+                        {/* Sidebar */}
+                        <aside
+                            className="p-8 lg:border-r"
+                            style={{
+                                borderColor: "var(--border-light)",
+                                background: "var(--bg)",
+                            }}
+                        >
+                            {/* Course Image */}
+                            <div
+                                className="aspect-video w-full overflow-hidden rounded-lg mb-6"
+                                style={{
+                                    border: "1px solid var(--border-light)",
+                                    background: "linear-gradient(135deg, #f0f4f8, #d9e8f8)",
+                                }}
+                            >
+                                {normalizedCourse.courseImage ? (
+                                    <img
+                                        src={normalizedCourse.courseImage}
+                                        alt={`${normalizedCourse.title} banner`}
+                                        className="h-full w-full object-cover"
+                                        loading="lazy"
+                                    />
+                                ) : null}
+                            </div>
 
-                    <h1 className="text-3xl font-bold md:text-4xl" style={{ color: "var(--ink)" }}>{normalizedCourse.title}</h1>
-                    <p className="mt-3" style={{ color: "var(--text-muted)" }}>{normalizedCourse.shortDescription}</p>
+                            {/* Metadata */}
+                            <div className="space-y-4 pb-6" style={{ borderBottom: "1px solid var(--border-light)" }}>
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
+                                        Category
+                                    </p>
+                                    <p
+                                        className="mt-2 text-sm font-semibold px-3 py-1 inline-block rounded-md"
+                                        style={{
+                                            background: "var(--brand-primary-light)",
+                                            color: "var(--brand-primary)",
+                                        }}
+                                    >
+                                        {normalizedCourse.courseType?.name || "General"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
+                                        Rating
+                                    </p>
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className="flex gap-1">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <IconStar
+                                                    key={i}
+                                                    size={16}
+                                                    color={i < Math.round(normalizedCourse.rating) ? "var(--warning)" : "var(--border-default)"}
+                                                />
+                                            ))}
+                                        </div>
+                                        <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                                            {normalizedCourse.rating.toFixed(1)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-tertiary)" }}>
+                                        Course Details
+                                    </p>
+                                    <ul className="space-y-1.5 text-sm" style={{ color: "var(--text-secondary)" }}>
+                                        <li className="flex items-center gap-2"><IconClock size={14} /> {normalizedCourse.duration}</li>
+                                        <li className="flex items-center gap-2"><IconVideo size={14} /> {normalizedCourse.classType}</li>
+                                        <li className="flex items-center gap-2"><IconTarget size={14} /> {normalizedCourse.level}</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-                    <div className="mt-8 grid gap-5 grid-cols-1 md:grid-cols-2">
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>What is this course?</h2>
-                            <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>{normalizedCourse.whatIs}</p>
-                        </section>
+                            {/* Pricing */}
+                            <div className="py-6 space-y-4">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
+                                        Price
+                                    </p>
+                                    <div className="mt-2 flex items-baseline gap-2">
+                                        <span className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
+                                            ₹{normalizedCourse.offerPrice.toFixed(0)}
+                                        </span>
+                                        {normalizedCourse.originalPrice > normalizedCourse.offerPrice && (
+                                            <>
+                                                <span className="text-sm line-through" style={{ color: "var(--text-tertiary)" }}>
+                                                    ₹{normalizedCourse.originalPrice.toFixed(0)}
+                                                </span>
+                                                <span className="text-xs font-bold px-2 py-1 rounded" style={{ background: "var(--danger-light)", color: "var(--danger)" }}>
+                                                    Save {normalizedCourse.discountPercent.toFixed(0)}%
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <CourseEnrollButton course={normalizedCourse} />
+                            </div>
+                        </aside>
 
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>Who Can Join?</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm break-words" style={{ color: "var(--text-muted)" }}>
-                                {splitLines(normalizedCourse.whoCanJoin).map((item) => (
-                                    <li key={`${normalizedCourse.id}-join-${item}`}>{item}</li>
-                                ))}
-                            </ul>
-                        </section>
+                        {/* Main Content Area */}
+                        <div className="p-8 md:p-10 space-y-10">
+                            {/* Course Title & Description */}
+                            <div>
+                                <h1 className="text-4xl font-bold leading-tight" style={{ letterSpacing: "-0.02em", color: "var(--text-primary)" }}>
+                                    {normalizedCourse.title}
+                                </h1>
+                                <p className="mt-4 text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                                    {normalizedCourse.whatIs}
+                                </p>
+                            </div>
 
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>Course Syllabus & Topics</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm break-words" style={{ color: "var(--text-muted)" }}>
-                                {splitLines(normalizedCourse.syllabusTopics).map((item) => (
-                                    <li key={`${normalizedCourse.id}-syllabus-${item}`}>{item}</li>
-                                ))}
-                            </ul>
-                        </section>
+                            {/* What You will Learn */}
+                            <section>
+                                <h2 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+                                    What You&apos;ll Learn
+                                </h2>
+                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {splitLines(normalizedCourse.syllabusTopics).slice(0, 8).map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex items-start gap-3 p-3 rounded-lg"
+                                            style={{
+                                                background: "var(--bg)",
+                                                border: "1px solid var(--border-light)",
+                                            }}
+                                        >
+                                            <span style={{ color: "var(--brand-primary)", fontWeight: "bold" }}>✓</span>
+                                            <span style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
 
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>How to Study the Course</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm break-words" style={{ color: "var(--text-muted)" }}>
-                                {splitLines(normalizedCourse.studyPlan).map((item) => (
-                                    <li key={`${normalizedCourse.id}-study-${item}`}>{item}</li>
-                                ))}
-                            </ul>
-                        </section>
+                            {/* Course Info Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <article
+                                    className="p-6 rounded-lg"
+                                    style={{
+                                        border: "1px solid var(--border-light)",
+                                        background: "var(--bg)",
+                                    }}
+                                >
+                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Who Can Join</h3>
+                                    <ul className="mt-3 space-y-2">
+                                        {splitLines(normalizedCourse.whoCanJoin).map((item, idx) => (
+                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
+                                                <span className="text-brand-primary">•</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </article>
 
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>Jobs After Course</h2>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm break-words" style={{ color: "var(--text-muted)" }}>
-                                {splitLines(normalizedCourse.jobsAfter).map((item) => (
-                                    <li key={`${normalizedCourse.id}-jobs-${item}`}>{item}</li>
-                                ))}
-                            </ul>
-                        </section>
+                                <article
+                                    className="p-6 rounded-lg"
+                                    style={{
+                                        border: "1px solid var(--border-light)",
+                                        background: "var(--bg)",
+                                    }}
+                                >
+                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>How to Study</h3>
+                                    <ul className="mt-3 space-y-2">
+                                        {splitLines(normalizedCourse.studyPlan).map((item, idx) => (
+                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
+                                                <span className="text-brand-primary">•</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </article>
 
-                        <section className="rounded-2xl p-4" style={{ border: "1px solid var(--line)", background: "var(--brand-soft)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--brand)" }}>Start Your Learning</h2>
-                            <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>{normalizedCourse.startLearningText}</p>
-                            <ul className="mt-3 space-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
-                                <li>{normalizedCourse.liveQna}</li>
-                                <li>{normalizedCourse.pdfNotes}</li>
-                                <li>{normalizedCourse.callSupport}</li>
-                                <li>{normalizedCourse.lifetimeAccess ? "Lifetime Course Access" : "Limited Access"}</li>
-                                <li>{normalizedCourse.socialPrompt}</li>
-                            </ul>
-                        </section>
-                    </div>
+                                <article
+                                    className="p-6 rounded-lg"
+                                    style={{
+                                        border: "1px solid var(--border-light)",
+                                        background: "var(--bg)",
+                                    }}
+                                >
+                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>After Completion</h3>
+                                    <ul className="mt-3 space-y-2">
+                                        {splitLines(normalizedCourse.jobsAfter).map((item, idx) => (
+                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
+                                                <span className="text-brand-primary">•</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </article>
 
-                    <div className="mt-8 flex flex-wrap items-center gap-3">
-                        <span className="text-2xl font-bold" style={{ color: "var(--success)" }}>INR {normalizedCourse.offerPrice.toFixed(0)}</span>
-                        <span className="text-base line-through" style={{ color: "var(--text-muted)" }}>INR {normalizedCourse.originalPrice.toFixed(0)}</span>
-                        <span className="rounded-full px-3 py-1 text-xs font-semibold uppercase text-white" style={{ background: "linear-gradient(to right, var(--brand), var(--accent))" }}>100% OFF</span>
-                    </div>
-
-                    <div className="mt-8">
-                        <CourseEnrollButton course={normalizedCourse} />
+                                <article
+                                    className="p-6 rounded-lg"
+                                    style={{
+                                        border: "1px solid var(--border-light)",
+                                        background: "var(--bg)",
+                                    }}
+                                >
+                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Support Included</h3>
+                                    <ul className="mt-3 space-y-2 text-sm" style={{ color: "var(--text-secondary)" }}>
+                                        <li>• {normalizedCourse.liveQna}</li>
+                                        <li>• {normalizedCourse.pdfNotes}</li>
+                                        <li>• {normalizedCourse.callSupport}</li>
+                                        <li>• {normalizedCourse.lifetimeAccess ? "Lifetime Access" : "Limited Access"}</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
                     </div>
                 </article>
+
+                {/* Reviews Section */}
+                {marqueeReviews.length > 0 && (
+                    <section className="mt-16">
+                        <div className="mb-8">
+                            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--brand-primary)" }}>
+                                Student Feedback
+                            </p>
+                            <h2 className="mt-2 text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
+                                Loved by Learners
+                            </h2>
+                        </div>
+                        <div className="overflow-hidden rounded-lg" style={{ border: "1px solid var(--border-light)" }}>
+                            <div className="marquee-track flex gap-4 p-6" style={{ background: "var(--paper)" }}>
+                                {marqueeReviews.map((review, idx) => (
+                                    <article
+                                        key={idx}
+                                        className="flex-shrink-0 w-80 p-6 rounded-lg"
+                                        style={{
+                                            border: "1px solid var(--border-light)",
+                                            background: "var(--paper)",
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div
+                                                className="flex items-center justify-center w-12 h-12 rounded-full font-bold text-sm"
+                                                style={{
+                                                    background: "var(--brand-primary-light)",
+                                                    color: "var(--brand-primary)",
+                                                }}
+                                            >
+                                                {review.name?.[0]?.toUpperCase() || "U"}
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
+                                                    {review.name}
+                                                </p>
+                                                <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                                                    {review.role}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-1 mb-3">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <IconStar
+                                                    key={i}
+                                                    size={14}
+                                                    color={i < (review.rating || 5) ? "var(--warning)" : "var(--border-default)"}
+                                                />
+                                            ))}
+                                        </div>
+                                        <p
+                                            className="text-sm leading-relaxed line-clamp-4"
+                                            style={{ color: "var(--text-secondary)" }}
+                                        >
+                                            {review.text}
+                                        </p>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
             </section>
         </div>
     );

@@ -3,12 +3,14 @@
 This project is a Next.js + PostgreSQL + Prisma application with:
 
 - Public front page with database-driven courses
+- Public student reviews marquee with Google review CTA
 - WhatsApp enroll button with enroll click tracking
 - Contact page with DB storage
 - Admin login (username + password)
 - Admin panel with left sidebar pages:
   - Dashboard metrics
   - Course management (create/update/delete)
+  - Review management with word limit controls
   - Contact submissions
   - Admin management (create new admins)
   - Password change
@@ -16,6 +18,8 @@ This project is a Next.js + PostgreSQL + Prisma application with:
 ## 1) Environment
 
 Create `.env` from `.env.example` and update values:
+
+Set `NEXT_PUBLIC_GOOGLE_REVIEW_URL` to your business profile review link so the Add Review button opens Google directly.
 
 ```bash
 cp .env.example .env

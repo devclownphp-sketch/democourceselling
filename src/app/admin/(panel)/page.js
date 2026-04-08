@@ -7,16 +7,20 @@ const statCards = [
     { key: "enrolls", emoji: "\ud83c\udfaf", label: "Enroll Clicks", color: "emerald" },
     { key: "contacts", emoji: "\ud83d\udce8", label: "Contact Requests", color: "amber" },
     { key: "courses", emoji: "\ud83d\udcda", label: "Total Courses", color: "blue" },
+    { key: "quizzes", emoji: "\ud83e\udde0", label: "Active Quizzes", color: "sky" },
     { key: "admins", emoji: "\ud83d\udc65", label: "Total Admins", color: "purple" },
+    { key: "reviews", emoji: "\u2b50", label: "Active Reviews", color: "gold" },
 ];
 
 export default async function AdminDashboardPage() {
-    const [visits, enrolls, contacts, coursesCount, adminsCount, topCourses] = await Promise.all([
+    const [visits, enrolls, contacts, coursesCount, quizzesCount, adminsCount, reviewsCount, topCourses] = await Promise.all([
         prisma.metricEvent.count({ where: { type: "VISIT" } }),
         prisma.metricEvent.count({ where: { type: "ENROLL" } }),
         prisma.contactSubmission.count(),
         prisma.course.count(),
+        prisma.quiz.count({ where: { isActive: true } }),
         prisma.admin.count(),
+        prisma.review.count({ where: { isActive: true } }),
         prisma.course.findMany({
             take: 5,
             orderBy: { enrollClicks: "desc" },
@@ -24,7 +28,7 @@ export default async function AdminDashboardPage() {
         }),
     ]);
 
-    const values = { visits, enrolls, contacts, courses: coursesCount, admins: adminsCount };
+    const values = { visits, enrolls, contacts, courses: coursesCount, quizzes: quizzesCount, admins: adminsCount, reviews: reviewsCount };
 
     return (
         <div className="stack-lg">

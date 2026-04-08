@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoMark } from "@/components/Icons";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export default function PublicNavbar() {
     const pathname = usePathname();
@@ -14,40 +13,129 @@ export default function PublicNavbar() {
     if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return null;
 
     return (
-        <header className="sticky top-0 z-50 border-b" style={{ borderColor: "var(--line)", background: "var(--nav-bg)", backdropFilter: "blur(16px)" }}>
-            <div className="mx-auto flex w-[min(1100px,92vw)] items-center justify-between py-3">
-                <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-wide no-underline" style={{ color: "var(--brand)" }}>
-                    <LogoMark size={28} /> LearnSphere
+        <header
+            className="sticky top-0 z-50 transition-all duration-200"
+            style={{
+                borderBottom: `1px solid var(--border-light)`,
+                background: "var(--nav-bg)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+            }}
+        >
+            <div className="mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8" style={{ maxWidth: "1200px", height: "72px" }}>
+                {/* Logo */}
+                <Link
+                    href="/"
+                    className="flex items-center gap-3 font-bold text-lg tracking-tight transition-opacity hover:opacity-75"
+                    style={{ color: "var(--brand-primary)", WebkitTapHighlightColor: "transparent" }}
+                >
+                    <div className="rounded-lg p-1.5" style={{ background: "var(--brand-primary-light)" }}>
+                        <LogoMark size={24} />
+                    </div>
+                    <span className="hidden sm:inline" style={{ letterSpacing: "-0.01em" }}>LearnSphere</span>
                 </Link>
-                <nav className="hidden md:flex items-center gap-5 text-sm font-medium" style={{ color: "var(--text-muted)" }}>
-                    <Link href="/" className="transition hover:opacity-80">Home</Link>
-                    <Link href="/courses" className="transition hover:opacity-80">Courses</Link>
-                    <Link href="/contact" className="transition hover:opacity-80">Contact Us</Link>
-                    <ThemeToggle />
-                    <Link href="/admin/login" className="rounded-full px-4 py-1.5 font-semibold transition hover:opacity-90" style={{ border: "1px solid var(--line)", background: "var(--brand-soft)", color: "var(--brand)" }}>
-                        Admin Login
-                    </Link>
+
+                {/* Desktop Navigation */}
+                <nav className="hidden md:flex items-center gap-8">
+                    {[
+                        { href: "/", label: "Home" },
+                        { href: "/courses", label: "Courses" },
+                        { href: "/quiz", label: "Quiz" },
+                        { href: "/contact", label: "Contact" },
+                    ].map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="text-sm font-medium transition-all duration-200 relative"
+                            style={{
+                                color: pathname === item.href ? "var(--brand-primary)" : "var(--text-secondary)",
+                            }}
+                        >
+                            {item.label}
+                            {pathname === item.href && (
+                                <span
+                                    className="absolute bottom-0 left-0 h-0.5 w-full rounded-full"
+                                    style={{ background: "var(--brand-primary)" }}
+                                />
+                            )}
+                        </Link>
+                    ))}
                 </nav>
+
+                {/* Admin Button */}
+                <div className="hidden md:flex items-center gap-3">
+                    <Link
+                        href="/admin/login"
+                        className="px-5 py-2 rounded-lg font-medium text-sm transition-all duration-200 hover:shadow-md active:scale-95"
+                        style={{
+                            border: "1px solid var(--border-default)",
+                            background: "var(--brand-primary-light)",
+                            color: "var(--brand-primary)",
+                        }}
+                    >
+                        Admin
+                    </Link>
+                </div>
+
+                {/* Mobile Menu Toggle */}
                 <button
                     type="button"
-                    className="md:hidden flex flex-col justify-center gap-1.5 p-2 rounded-lg transition"
-                    style={{ border: "1px solid var(--line)", background: "var(--paper)" }}
+                    className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg transition-colors"
+                    style={{
+                        border: "1px solid var(--border-light)",
+                        background: "transparent",
+                        color: "var(--text-primary)",
+                    }}
                     onClick={() => setMobileOpen((p) => !p)}
                     aria-label="Toggle menu"
                 >
-                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
-                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
-                    <span className="block h-0.5 w-5 rounded" style={{ background: "var(--brand)" }} />
+                    <span className="block h-0.5 w-5 rounded-full transition-all" style={{ background: "var(--brand-primary)" }} />
+                    <span className="block h-0.5 w-5 rounded-full transition-all" style={{ background: "var(--brand-primary)" }} />
+                    <span className="block h-0.5 w-5 rounded-full transition-all" style={{ background: "var(--brand-primary)" }} />
                 </button>
             </div>
+
+            {/* Mobile Menu */}
             {mobileOpen && (
-                <nav className="md:hidden px-4 pb-4 pt-2 text-sm font-medium" style={{ borderTop: "1px solid var(--line)", color: "var(--text-muted)" }}>
-                    <div className="flex flex-col gap-3">
-                        <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
-                        <Link href="/courses" onClick={() => setMobileOpen(false)}>Courses</Link>
-                        <Link href="/contact" onClick={() => setMobileOpen(false)}>Contact Us</Link>
-                        <ThemeToggle />
-                        <Link href="/admin/login" onClick={() => setMobileOpen(false)} className="w-fit rounded-full px-4 py-1.5" style={{ border: "1px solid var(--line)", background: "var(--brand-soft)", color: "var(--brand)" }}>Admin Login</Link>
+                <nav
+                    className="md:hidden border-t animate-in fade-in slide-in-up duration-200"
+                    style={{
+                        borderColor: "var(--border-light)",
+                        background: "var(--paper)",
+                    }}
+                >
+                    <div className="px-4 py-4 space-y-3">
+                        {[
+                            { href: "/", label: "Home" },
+                            { href: "/courses", label: "Courses" },
+                            { href: "/quiz", label: "Quiz" },
+                            { href: "/contact", label: "Contact" },
+                        ].map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                                className="block px-3 py-2 rounded-lg font-medium text-sm transition-colors"
+                                style={{
+                                    color: pathname === item.href ? "var(--brand-primary)" : "var(--text-secondary)",
+                                    background: pathname === item.href ? "var(--brand-primary-light)" : "transparent",
+                                }}
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                        <Link
+                            href="/admin/login"
+                            onClick={() => setMobileOpen(false)}
+                            className="block w-full px-3 py-2 rounded-lg font-medium text-sm text-center transition-all"
+                            style={{
+                                border: "1px solid var(--border-default)",
+                                background: "var(--brand-primary-light)",
+                                color: "var(--brand-primary)",
+                            }}
+                        >
+                            Admin Login
+                        </Link>
                     </div>
                 </nav>
             )}

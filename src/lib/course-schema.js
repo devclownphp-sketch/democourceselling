@@ -2,6 +2,10 @@ import { z } from "zod";
 
 export const courseInputSchema = z.object({
     title: z.string().trim().min(3, "Title must be at least 3 characters"),
+    courseTypeId: z.string().trim().min(1, "Course type is required"),
+    rating: z.coerce.number().min(1, "Rating must be at least 1").max(5, "Rating must be 5 or less"),
+    discountPercent: z.coerce.number().min(0, "Off percentage cannot be negative").max(100, "Off percentage must be 100 or less"),
+    courseImage: z.string().trim().optional().default(""),
     shortDescription: z.string().trim().min(5, "Short description must be at least 5 characters"),
     whatIs: z.string().trim().min(2, "What Is section is required"),
     whoCanJoin: z.string().trim().min(2, "Who Can Join section is required"),
@@ -30,5 +34,11 @@ export function parseCoursePayload(payload) {
         isActive: payload?.isActive !== false && payload?.isActive !== "false",
     };
 
-    return courseInputSchema.parse(normalized);
+    const parsed = courseInputSchema.parse(normalized);
+    const computedOfferPrice = Number((parsed.originalPrice * (1 - parsed.discountPercent / 100)).toFixed(2));
+
+    return {
+        ...parsed,
+        offerPrice: computedOfferPrice,
+    };
 }

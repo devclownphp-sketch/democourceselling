@@ -9,6 +9,13 @@ export default async function HomePage() {
     ? await prisma.course.findMany({
       where: { isActive: true },
       orderBy: { createdAt: "desc" },
+      include: { courseType: true },
+    })
+    : [];
+  const reviews = dbConfigured
+    ? await prisma.review.findMany({
+      where: { isActive: true },
+      orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }],
     })
     : [];
 
@@ -16,6 +23,12 @@ export default async function HomePage() {
     ...course,
     originalPrice: Number(course.originalPrice || 0),
     offerPrice: Number(course.offerPrice || 0),
+  }));
+
+  const normalizedReviews = reviews.map((review) => ({
+    ...review,
+    rating: Number(review.rating || 5),
+    sortOrder: Number(review.sortOrder || 0),
   }));
 
   if (!dbConfigured) {
@@ -30,5 +43,11 @@ export default async function HomePage() {
     );
   }
 
-  return <LandingPageClient courses={normalizedCourses} />;
+  return (
+    <LandingPageClient
+      courses={normalizedCourses}
+      reviews={normalizedReviews}
+      googleReviewUrl={process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL || "https://www.google.com"}
+    />
+  );
 }

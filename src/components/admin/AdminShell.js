@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield } from "@/components/Icons";
-import ThemeToggle from "@/components/ThemeToggle";
+import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz } from "@/components/Icons";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: IconDashboard },
     { href: "/admin/courses", label: "Courses", Icon: IconBook },
+    { href: "/admin/quizzes", label: "Quizzes", Icon: IconQuiz },
+    { href: "/admin/course-types", label: "Course Types", Icon: IconBox },
+    { href: "/admin/reviews", label: "Reviews", Icon: IconStar },
     { href: "/admin/contacts", label: "Contacts", Icon: IconMail },
     { href: "/admin/admins", label: "Admins", Icon: IconUsers },
     { href: "/admin/settings", label: "Settings", Icon: IconSettings },
@@ -55,7 +57,7 @@ export default function AdminShell({ admin, children }) {
             <aside className={sidebarOpen ? "admin-sidebar open" : "admin-sidebar"}>
                 <div className="admin-sidebar-top">
                     <p className="admin-kicker"><IconShield size={12} /> Control Panel</p>
-                    <h2 style={{display:"flex",alignItems:"center",gap:"0.4rem"}}><LogoMark size={22} /> LearnSphere</h2>
+                    <h2 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><LogoMark size={22} /> LearnSphere</h2>
                     <p className="muted-text">Manage courses, contacts & team.</p>
                     <div className="admin-user-chip"><IconUser size={13} /> {admin.username}</div>
                 </div>
@@ -76,9 +78,8 @@ export default function AdminShell({ admin, children }) {
                         );
                     })}
                 </nav>
-                <div style={{display:"flex",gap:"0.5rem",alignItems:"center",flexWrap:"wrap"}}>
-                    <ThemeToggle />
-                    <button type="button" className="btn-danger" style={{display:"flex",alignItems:"center",gap:"0.4rem",flex:1}} onClick={logout}>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                    <button type="button" className="btn-danger" style={{ display: "flex", alignItems: "center", gap: "0.4rem", flex: 1 }} onClick={logout}>
                         <IconLogout size={15} /> Logout
                     </button>
                 </div>
