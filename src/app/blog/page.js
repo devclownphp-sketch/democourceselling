@@ -2,6 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
     title: "Blog - STP Computer Education",
     description: "Read our latest blog posts and articles.",
