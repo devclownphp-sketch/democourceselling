@@ -24,10 +24,33 @@ export default function BlogManager() {
         fetchBlogs();
     }, []);
 
+    const readResponseError = async (res, fallbackMessage) => {
+        const contentType = res.headers.get("content-type") || "";
+
+        if (contentType.includes("application/json")) {
+            try {
+                const data = await res.json();
+                return data?.error || fallbackMessage;
+            } catch {
+                return fallbackMessage;
+            }
+        }
+
+        try {
+            const text = await res.text();
+            return text?.trim() || fallbackMessage;
+        } catch {
+            return fallbackMessage;
+        }
+    };
+
     const fetchBlogs = async () => {
         try {
             const res = await fetch("/api/admin/blogs");
-            if (!res.ok) throw new Error("Failed to fetch blogs");
+            if (!res.ok) {
+                const message = await readResponseError(res, "Failed to fetch blogs");
+                throw new Error(message);
+            }
             const data = await res.json();
             setBlogs(data.blogs);
         } catch (err) {
@@ -66,8 +89,8 @@ export default function BlogManager() {
             });
 
             if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error || "Failed to save blog");
+                const message = await readResponseError(res, "Failed to save blog");
+                throw new Error(message);
             }
 
             setSuccess(editingId ? "Blog updated successfully!" : "Blog created successfully!");
@@ -95,7 +118,10 @@ export default function BlogManager() {
 
         try {
             const res = await fetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error("Failed to delete blog");
+            if (!res.ok) {
+                const message = await readResponseError(res, "Failed to delete blog");
+                throw new Error(message);
+            }
             setSuccess("Blog deleted successfully!");
             fetchBlogs();
         } catch (err) {
@@ -180,11 +206,11 @@ export default function BlogManager() {
                         <textarea
                             value={formData.excerpt}
                             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                            placeholder="Short description (30-300 characters)"
+                            placeholder="Short description (10-300 characters)"
                             rows="3"
                             required
                         />
-                        <small>{formData.excerpt.length}/300</small>
+                        <small>{formData.excerpt.length}/300 (minimum 10)</small>
                     </div>
 
                     <div className="form-group">
@@ -196,6 +222,7 @@ export default function BlogManager() {
                             rows="10"
                             required
                         />
+                        <small>{formData.content.length} characters (minimum 20)</small>
                     </div>
 
                     <div className="form-group">
