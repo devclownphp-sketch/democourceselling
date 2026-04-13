@@ -40,6 +40,7 @@ export default function PublicNavbar() {
                     {[
                         { href: "/", label: "Home" },
                         { href: "/courses", label: "Courses" },
+                        { href: "/blog", label: "Blog" },
                         { href: "/quiz", label: "Quiz" },
                         { href: "/contact", label: "Contact" },
                     ].map((item) => (
@@ -108,6 +109,7 @@ export default function PublicNavbar() {
                         {[
                             { href: "/", label: "Home" },
                             { href: "/courses", label: "Courses" },
+                            { href: "/blog", label: "Blog" },
                             { href: "/quiz", label: "Quiz" },
                             { href: "/contact", label: "Contact" },
                         ].map((item) => (

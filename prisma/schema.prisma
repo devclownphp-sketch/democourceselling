@@ -24,6 +24,7 @@ model Admin {
     courses           Course[]
     reviews           Review[]
     quizzes           Quiz[]
+    blogs             Blog[]
 }
 
 model AdminSession {
@@ -167,6 +168,23 @@ model QuizQuestion {
 
     @@index([quizId])
     @@index([sortOrder])
+}
+
+model Blog {
+    id            String   @id @default(cuid())
+    title         String
+    slug          String   @unique
+    excerpt       String
+    content       String
+    featuredImage String   @default("")
+    isPublished   Boolean  @default(false)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    adminId       String?
+    admin         Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+    @@index([isPublished])
+    @@index([createdAt])
 }
 
 model BusinessProfile {
