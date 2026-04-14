@@ -201,20 +201,6 @@ export default async function CourseDetailsPage({ params }) {
                                 <p className="mt-4 text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                                     {normalizedCourse.whatIs}
                                 </p>
-                                <div className="mt-5">
-                                    <Link
-                                        href={notesHref}
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors"
-                                        style={{
-                                            background: "var(--brand-primary-light)",
-                                            color: "var(--brand-primary)",
-                                            border: "1px solid var(--brand-primary)",
-                                        }}
-                                    >
-                                        <span aria-hidden="true">📄</span>
-                                        <span>Open PDF Notes</span>
-                                    </Link>
-                                </div>
                             </div>
 
                             {/* What You will Learn */}

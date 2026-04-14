@@ -7,7 +7,7 @@ import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconChec
 
 const categories = [
     { icon: <IconComputer size={28} color="#4F46E5" />, iconBg: "#EEF2FF", borderColor: "#4F46E5", title: "Computer Course", subtitle: "Basic to Advanced learning" },
-    { icon: <IconPdf size={28} color="#10B981" />, iconBg: "#ECFDF5", borderColor: "#10B981", title: "PDF Notes", subtitle: "Downloadable study material" },
+    { icon: <IconPdf size={28} color="#10B981" />, iconBg: "#ECFDF5", borderColor: "#10B981", title: "PDF Notes & Material", subtitle: "Downloadable study material" },
     { icon: <IconQuiz size={28} color="#F59E0B" />, iconBg: "#FFFBEB", borderColor: "#F59E0B", title: "Computer Quiz", subtitle: "Computer MCQ practice sets" },
     { icon: <IconBolt size={28} color="#F43F5E" />, iconBg: "#FFF1F2", borderColor: "#F43F5E", title: "Computer Tricks", subtitle: "Computer Tips, Tricks & shortcuts" },
 ];
