@@ -73,6 +73,7 @@ model Course {
     admin             Admin?        @relation(fields: [adminId], references: [id], onDelete: SetNull)
     courseType        CourseType?   @relation(fields: [courseTypeId], references: [id], onDelete: SetNull)
     metricEvents      MetricEvent[]
+    driveFolders      DriveFolder[]
 
     @@index([isActive])
     @@index([createdAt])
@@ -185,6 +186,16 @@ model Blog {
 
     @@index([isPublished])
     @@index([createdAt])
+}
+
+model DriveFolder {
+    id         Int      @id @default(autoincrement())
+    courseId   String
+    folderName String
+    folderId   String
+    createdAt  DateTime @default(now())
+
+    course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model BusinessProfile {
