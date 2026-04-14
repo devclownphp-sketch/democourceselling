@@ -20,7 +20,12 @@ export default async function CourseDetailsPage({ params }) {
     const [course, reviews] = await Promise.all([
         prisma.course.findUnique({
             where: { slug },
-            include: { courseType: true },
+            include: {
+                courseType: true,
+                driveFolders: {
+                    select: { id: true },
+                },
+            },
         }),
         prisma.review.findMany({
             where: { isActive: true },
@@ -39,6 +44,7 @@ export default async function CourseDetailsPage({ params }) {
         originalPrice: Number(course.originalPrice || 0),
         offerPrice: Number(course.offerPrice || 0),
     };
+    const notesHref = `/courses/${normalizedCourse.slug}/notes`;
 
     const reviewCards = reviews.map((review) => ({
         name: review.name,
@@ -169,6 +175,19 @@ export default async function CourseDetailsPage({ params }) {
                                     </div>
                                 </div>
                                 <CourseEnrollButton course={normalizedCourse} />
+                                <Link
+                                    href={notesHref}
+                                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all hover:-translate-y-px"
+                                    style={{
+                                        border: "1px solid var(--border-default)",
+                                        color: "var(--text-primary)",
+                                        background: "var(--paper)",
+                                        boxShadow: "var(--shadow-xs)",
+                                    }}
+                                >
+                                    <span aria-hidden="true">📄</span>
+                                    <span>View PDF Notes</span>
+                                </Link>
                             </div>
                         </aside>
 
@@ -182,6 +201,20 @@ export default async function CourseDetailsPage({ params }) {
                                 <p className="mt-4 text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                                     {normalizedCourse.whatIs}
                                 </p>
+                                <div className="mt-5">
+                                    <Link
+                                        href={notesHref}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors"
+                                        style={{
+                                            background: "var(--brand-primary-light)",
+                                            color: "var(--brand-primary)",
+                                            border: "1px solid var(--brand-primary)",
+                                        }}
+                                    >
+                                        <span aria-hidden="true">📄</span>
+                                        <span>Open PDF Notes</span>
+                                    </Link>
+                                </div>
                             </div>
 
                             {/* What You will Learn */}
@@ -298,7 +331,7 @@ export default async function CourseDetailsPage({ params }) {
                                 {marqueeReviews.map((review, idx) => (
                                     <article
                                         key={idx}
-                                        className="flex-shrink-0 w-80 p-6 rounded-lg"
+                                        className="shrink-0 w-80 p-6 rounded-lg"
                                         style={{
                                             border: "1px solid var(--border-light)",
                                             background: "var(--paper)",
