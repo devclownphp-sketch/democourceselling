@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog } from "@/components/Icons";
+import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf } from "@/components/Icons";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: IconDashboard },
@@ -12,6 +12,7 @@ const navItems = [
     { href: "/admin/quizzes", label: "Quizzes", Icon: IconQuiz },
     { href: "/admin/blogs", label: "Blogs", Icon: IconBlog },
     { href: "/admin/course-types", label: "Course Types", Icon: IconBox },
+    { href: "/admin/drive-folders", label: "Drive Folders", Icon: IconPdf },
     { href: "/admin/reviews", label: "Reviews", Icon: IconStar },
     { href: "/admin/contacts", label: "Contacts", Icon: IconMail },
     { href: "/admin/admins", label: "Admins", Icon: IconUsers },
