@@ -1,31 +1,36 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import PublicNavbar from "@/components/PublicNavbar";
+import ScrollToTop from "@/components/ScrollToTop";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: "WEBCOM",
-  description: "Computer education website with admin-managed courses and contact flow",
+  title: "WEBCOM — 100% Free Computer Courses",
+  description: "Learn computer skills for free. Courses, PDF Notes, Quizzes and more.",
+  openGraph: {
+    title: "WEBCOM — 100% Free Computer Courses",
+    description: "Learn computer skills for free. Courses, PDF Notes, Quizzes and more.",
+    siteName: "WEBCOM",
+    locale: "en_IN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <PublicNavbar />
         {children}
+        <ScrollToTop />
       </body>
     </html>
   );

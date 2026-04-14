@@ -3,13 +3,13 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import VisitTracker from "@/components/VisitTracker";
-import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconCheck, IconStar, IconChart, IconFree, IconRocket, IconLock, IconPhone, IconTool, IconTrophy, IconMsg, IconClock, IconSparkle, IconBox, IconBook } from "@/components/Icons";
+import { LogoMark, IconComputer, IconPdf, IconQuiz, IconBolt, IconGrad, IconCheck, IconStar, IconChart, IconFree, IconRocket, IconLock, IconPhone, IconTool, IconTrophy, IconMsg, IconClock, IconSparkle, IconBox, IconBook, IconYoutube, IconInstagram, IconTelegram } from "@/components/Icons";
 
 const categories = [
-    { icon: <IconComputer size={36} />, title: "Computer Course", subtitle: "Basic to Advanced learning" },
-    { icon: <IconPdf size={36} />, title: "PDF Notes", subtitle: "Downloadable study material" },
-    { icon: <IconQuiz size={36} />, title: "Computer Quiz", subtitle: "Computer MCQ practice sets" },
-    { icon: <IconBolt size={36} />, title: "Computer Tricks", subtitle: "Computer Tips, Tricks & shortcuts" },
+    { icon: <IconComputer size={28} color="#4F46E5" />, iconBg: "#EEF2FF", borderColor: "#4F46E5", title: "Computer Course", subtitle: "Basic to Advanced learning" },
+    { icon: <IconPdf size={28} color="#10B981" />, iconBg: "#ECFDF5", borderColor: "#10B981", title: "PDF Notes", subtitle: "Downloadable study material" },
+    { icon: <IconQuiz size={28} color="#F59E0B" />, iconBg: "#FFFBEB", borderColor: "#F59E0B", title: "Computer Quiz", subtitle: "Computer MCQ practice sets" },
+    { icon: <IconBolt size={28} color="#F43F5E" />, iconBg: "#FFF1F2", borderColor: "#F43F5E", title: "Computer Tricks", subtitle: "Computer Tips, Tricks & shortcuts" },
 ];
 const defaultReviews = [
     { name: "Abhijit Patgirri", initial: "A", rating: 5, text: "One of the best platforms to learn for free. Practical computer skills with strong quality." },
@@ -44,8 +44,8 @@ const whyUs = [
     {
         icon: <IconPhone size={22} color="#10b981" />,
         iconBg: "rgba(16,185,129,.12)",
-        title: "Call Support",
-        text: "Mon-Sat, 10:00 AM-12:00 PM for phone assistance.",
+        title: "Expert Support",
+        text: "Reach us Mon–Sat via phone or message.",
     },
     {
         icon: <IconTool size={22} color="#0ea5e9" />,
@@ -66,6 +66,14 @@ const faqs = [
     {
         q: "Course ki language (bhasha) kya hai?",
         a: "Courses simple Hindi aur easy English mix mein explain kiye gaye hain, taaki beginners bhi concepts ko easily follow kar saken.",
+    },
+    {
+        q: "PDF Notes kaise download karein?",
+        a: "Kisi bhi course ke notes section mein jaakar aap PDF ko directly download kar sakte hain — koi login required nahi hai.",
+    },
+    {
+        q: "Quiz mein kitne questions hote hain?",
+        a: "Har quiz mein multiple choice questions hote hain jo aapki computer knowledge ko test karte hain. Aap jitni baar chahein attempt kar sakte hain.",
     },
 ];
 /* ── 3D Particle Globe ── */
@@ -287,25 +295,28 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                             <IconSparkle size={14} /> 100% Free Learning Platform
                         </span>
                         <h1 className="hero-animate-d1 text-3xl font-black leading-tight md:text-5xl" style={{ color: "var(--ink)" }}>
-                            Learn 100% Free <span style={{ background: "linear-gradient(to right, var(--brand), var(--accent))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Computer Courses</span>
+                            Master Computer Skills —{" "}
+                            <span style={{ background: "linear-gradient(to right, var(--brand), var(--accent))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                                100% Free, Forever
+                            </span>
                         </h1>
                         <p className="hero-animate-d2 md:text-lg leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                            Free online computer courses for everyone. Learn digital skills from basics to advanced and grow your career with practical, job-ready education.
+                            Practical, job-ready computer education for every student in India.
                         </p>
                         <div className="hero-animate-d2 flex flex-wrap gap-3 pt-1">
-                            <a href="#course-grid" className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:scale-100" style={{ background: "linear-gradient(to right, var(--brand), var(--accent))" }}>
-                                <IconRocket size={16} color="#fff" /> Start Learning
+                            <a href="#course-grid" className="inline-flex items-center gap-2 rounded-xl px-8 py-3 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:scale-105 active:scale-100" style={{ background: "#4F46E5" }}>
+                                Start Learning →
                             </a>
-                            <a href="#categories" className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-100" style={{ border: "1px solid var(--line)", background: "var(--paper)", color: "var(--brand)", backdropFilter: "blur(8px)" }}>
-                                <IconBook size={16} /> Explore Categories
+                            <a href="#categories" className="inline-flex items-center gap-2 rounded-xl px-8 py-3 text-sm font-semibold transition-all duration-200 hover:scale-105 active:scale-100" style={{ border: "2px solid #4F46E5", background: "transparent", color: "#4F46E5" }}>
+                                Explore Categories
                             </a>
                         </div>
-                        <p className="hero-animate-d3 flex items-center gap-3 flex-wrap text-sm" style={{ color: "var(--text-muted)" }}>
-                            <span className="inline-flex items-center gap-1"><IconComputer size={14} /> Computer Course</span>
-                            <span className="inline-flex items-center gap-1"><IconPdf size={14} /> PDF Notes</span>
-                            <span className="inline-flex items-center gap-1"><IconQuiz size={14} /> Quiz</span>
-                            <span className="inline-flex items-center gap-1"><IconBolt size={14} /> Tricks</span>
-                        </p>
+                        <div className="hero-animate-d3 flex flex-wrap gap-3">
+                            <span className="hero-pill">✅ 100% Free</span>
+                            <span className="hero-pill">📄 PDF Notes</span>
+                            <span className="hero-pill">🧠 Quiz Practice</span>
+                            <span className="hero-pill">🎓 Job-Ready</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -322,15 +333,26 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                                 </p>
                             </div>
                         </Reveal>
-                        <div className="mt-9 grid grid-cols-1 gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="mt-9 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {categories.map((c, i) => (
                                 <Reveal key={c.title} delay={i * 80}>
-                                    <Tilt3D className="cursor-pointer transition-transform" intensity={7}>
-                                        <div className="mx-auto flex h-[74px] w-[74px] items-center justify-center rounded-full shadow-sm" style={{ background: "#ffffff", border: "1px solid rgba(148,163,184,.22)", color: "#3b82f6" }}>
-                                            {c.icon}
+                                    <Tilt3D intensity={7}>
+                                        <div
+                                            className="cursor-pointer rounded-2xl bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                                            style={{
+                                                border: "1px solid #E5E7EB",
+                                                borderLeft: `4px solid ${c.borderColor}`,
+                                            }}
+                                        >
+                                            <div
+                                                className="inline-flex items-center justify-center rounded-xl p-3 mb-4"
+                                                style={{ background: c.iconBg }}
+                                            >
+                                                {c.icon}
+                                            </div>
+                                            <h3 className="text-[1.1rem] font-semibold leading-tight" style={{ color: "#1f2937" }}>{c.title}</h3>
+                                            <p className="mt-1 text-sm" style={{ color: "#6b7280" }}>{c.subtitle}</p>
                                         </div>
-                                        <h3 className="mt-4 text-[1.28rem] font-semibold leading-tight" style={{ color: "#1f2937" }}>{c.title}</h3>
-                                        <p className="mt-1 text-[15px]" style={{ color: "#6b7280" }}>{c.subtitle}</p>
                                     </Tilt3D>
                                 </Reveal>
                             ))}
@@ -387,8 +409,21 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                                 </Reveal>
                             ))}
                             {courses.length === 0 && (
-                                <div className="col-span-full rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--line)", background: "var(--paper)", color: "var(--text-muted)" }}>
-                                    <IconBox size={20} /> No active courses yet. Add from admin panel.
+                                <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                                    <div className="flex h-20 w-20 items-center justify-center rounded-full mb-5" style={{ background: "#EEF2FF" }}>
+                                        <IconBook size={36} color="#4F46E5" />
+                                    </div>
+                                    <h3 className="text-xl font-bold" style={{ color: "#111827" }}>Courses Coming Soon</h3>
+                                    <p className="mt-2 text-sm max-w-xs" style={{ color: "#6b7280" }}>
+                                        We are preparing amazing content for you. Check back soon!
+                                    </p>
+                                    <Link
+                                        href="/courses"
+                                        className="mt-5 inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                        style={{ background: "#4F46E5" }}
+                                    >
+                                        Browse Notes
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -474,7 +509,7 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                                     className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition hover:scale-[1.02] active:scale-100"
                                     style={{ border: "1px solid var(--line)", background: "var(--paper)", color: "var(--brand)" }}
                                 >
-                                    <IconStar size={14} /> Add Review
+                                    <IconStar size={14} /> Review us on Google ↗
                                 </a>
                             </Reveal>
                         </div>
@@ -487,7 +522,7 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
                                         style={{ border: "1px solid rgba(15,23,42,0.06)" }}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold" style={{ background: "var(--brand-soft)", color: "var(--brand)" }}>
+                                            <div className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
                                                 {review.name?.[0]?.toUpperCase() || "S"}
                                             </div>
                                             <div>
@@ -591,31 +626,44 @@ export default function LandingPageClient({ courses, reviews = [], googleReviewU
             </section>
 
             {/* FOOTER */}
-            <footer className="py-10" style={{ borderTop: "1px solid var(--line)", background: "var(--bg-alt)", transition: "background 0.3s" }}>
-                <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] md:grid-cols-3">
+            <footer style={{ background: "#111827", color: "#9CA3AF" }}>
+                <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-7 px-[4vw] pt-10 pb-6 md:grid-cols-3">
                     <div>
-                        <h4 className="flex items-center gap-2 text-lg font-bold" style={{ color: "var(--brand)" }}><LogoMark size={24} /> WEBCOM</h4>
-                        <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>FOLLOW US</p>
+                        <h4 className="flex items-center gap-2 text-lg font-bold" style={{ color: "#ffffff" }}><LogoMark size={24} /> WEBCOM</h4>
+                        <p className="mt-1 text-sm" style={{ color: "#9CA3AF" }}>Free computer education for every Indian student.</p>
+                        <div className="mt-4 flex items-center gap-3">
+                            <a href="#" aria-label="YouTube" className="inline-flex items-center justify-center w-9 h-9 rounded-full transition-all hover:text-white" style={{ border: "1px solid #374151", color: "#9CA3AF" }}>
+                                <IconYoutube size={16} />
+                            </a>
+                            <a href="#" aria-label="Instagram" className="inline-flex items-center justify-center w-9 h-9 rounded-full transition-all hover:text-white" style={{ border: "1px solid #374151", color: "#9CA3AF" }}>
+                                <IconInstagram size={16} />
+                            </a>
+                            <a href="#" aria-label="Telegram" className="inline-flex items-center justify-center w-9 h-9 rounded-full transition-all hover:text-white" style={{ border: "1px solid #374151", color: "#9CA3AF" }}>
+                                <IconTelegram size={16} />
+                            </a>
+                        </div>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--ink-secondary)" }}>Useful Links</p>
-                        <ul className="mt-2 space-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
-                            <li><Link href="/courses" className="hover:underline transition">Courses</Link></li>
-                            <li className="cursor-pointer transition">Notes</li>
-                            <li><Link href="/quiz" className="hover:underline transition">Quiz</Link></li>
-                            <li className="cursor-pointer transition">Blogs</li>
+                        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "#E5E7EB" }}>Useful Links</p>
+                        <ul className="mt-2 space-y-1 text-sm">
+                            <li><Link href="/courses" className="transition hover:text-white">Courses</Link></li>
+                            <li><Link href="/courses" className="transition hover:text-white">Notes</Link></li>
+                            <li><Link href="/quiz" className="transition hover:text-white">Quiz</Link></li>
+                            <li><Link href="/blog" className="transition hover:text-white">Blog</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--ink-secondary)" }}>Important Links</p>
-                        <ul className="mt-2 space-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
-                            <li className="cursor-pointer transition">Privacy Policy</li>
-                            <li><Link href="/contact" className="hover:underline transition">Contact Us</Link></li>
-                            <li className="cursor-pointer transition">About Us</li>
+                        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "#E5E7EB" }}>Important Links</p>
+                        <ul className="mt-2 space-y-1 text-sm">
+                            <li><Link href="/privacy" className="transition hover:text-white">Privacy Policy</Link></li>
+                            <li><Link href="/contact" className="transition hover:text-white">Contact Us</Link></li>
+                            <li><Link href="/about" className="transition hover:text-white">About Us</Link></li>
                         </ul>
                     </div>
                 </div>
-                <p className="mt-8 text-center text-xs" style={{ color: "var(--text-muted)" }}>Copyright 2026 WEBCOM. All Rights Reserved.</p>
+                <div className="mx-auto max-w-[1100px] px-[4vw] pb-6" style={{ borderTop: "1px solid #374151" }}>
+                    <p className="mt-6 text-center text-xs" style={{ color: "#6B7280" }}>© 2026 WEBCOM. All Rights Reserved. Made with ❤️ in India</p>
+                </div>
             </footer>
         </div>
     );
