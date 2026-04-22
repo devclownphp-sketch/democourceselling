@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { IconPlus, IconEdit, IconTrash, IconX, IconCheck } from "@/components/Icons";
+import { IconPlus, IconEdit, IconTrash, IconX, IconCheck, IconUpload, IconImage } from "@/components/Icons";
 
 export default function BlogManager() {
     const [blogs, setBlogs] = useState([]);
@@ -11,6 +11,8 @@ export default function BlogManager() {
     const [editingId, setEditingId] = useState(null);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -71,6 +73,44 @@ export default function BlogManager() {
         setEditingId(null);
         setShowForm(false);
         setError("");
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            setError("Please select an image file");
+            return;
+        }
+
+        setUploading(true);
+        setError("");
+
+        try {
+            const formDataUpload = new FormData();
+            formDataUpload.append("file", file);
+
+            const res = await fetch("/api/admin/upload", {
+                method: "POST",
+                body: formDataUpload,
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to upload image");
+            }
+
+            const data = await res.json();
+            setFormData((prev) => ({ ...prev, featuredImage: data.url }));
+            setSuccess("Image uploaded successfully!");
+        } catch (err) {
+            setError(err.message || "Failed to upload image");
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -106,7 +146,7 @@ export default function BlogManager() {
             title: blog.title,
             excerpt: blog.excerpt,
             content: blog.content,
-            featuredImage: blog.featuredImage,
+            featuredImage: blog.featuredImage || "",
             isPublished: blog.isPublished,
         });
         setEditingId(blog.id);
@@ -153,31 +193,13 @@ export default function BlogManager() {
             </div>
 
             {error && (
-                <div
-                    className="alert"
-                    style={{
-                        backgroundColor: "#fee2e2",
-                        color: "#991b1b",
-                        padding: "1rem",
-                        borderRadius: "0.5rem",
-                        marginBottom: "1rem",
-                    }}
-                >
+                <div className="alert alert-error">
                     {error}
                 </div>
             )}
 
             {success && (
-                <div
-                    className="alert"
-                    style={{
-                        backgroundColor: "#dcfce7",
-                        color: "#166534",
-                        padding: "1rem",
-                        borderRadius: "0.5rem",
-                        marginBottom: "1rem",
-                    }}
-                >
+                <div className="alert alert-success">
                     {success}
                 </div>
             )}
@@ -226,17 +248,60 @@ export default function BlogManager() {
                     </div>
 
                     <div className="form-group">
-                        <label>Featured Image URL</label>
-                        <input
-                            type="text"
-                            value={formData.featuredImage}
-                            onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
-                            placeholder="https://example.com/image.jpg"
-                        />
+                        <label>Featured Image</label>
+                        <div className="image-upload-wrapper">
+                            <div className="image-upload-options">
+                                <div className="image-upload-btn-group">
+                                    <button
+                                        type="button"
+                                        className="btn-upload"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploading}
+                                    >
+                                        <IconUpload size={16} />
+                                        {uploading ? "Uploading..." : "Upload Image"}
+                                    </button>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        style={{ display: "none" }}
+                                    />
+                                </div>
+                                <span className="upload-divider">OR</span>
+                                <input
+                                    type="text"
+                                    value={formData.featuredImage}
+                                    onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
+                                    placeholder="Paste image URL"
+                                    className="image-url-input"
+                                />
+                            </div>
+
+                            {formData.featuredImage && (
+                                <div className="image-preview">
+                                    <img
+                                        src={formData.featuredImage}
+                                        alt="Featured"
+                                        onError={(e) => {
+                                            e.target.style.display = "none";
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="image-remove-btn"
+                                        onClick={() => setFormData({ ...formData, featuredImage: "" })}
+                                    >
+                                        <IconX size={14} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="form-group">
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <label className="checkbox-label">
                             <input
                                 type="checkbox"
                                 checked={formData.isPublished}
@@ -246,17 +311,18 @@ export default function BlogManager() {
                         </label>
                     </div>
 
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button type="submit" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                            <IconCheck size={15} /> {editingId ? "Update" : "Create"}
+                    <div className="form-actions">
+                        <button type="submit" className="btn-primary">
+                            <IconCheck size={15} />
+                            {editingId ? "Update" : "Create"}
                         </button>
                         <button
                             type="button"
                             className="btn-secondary"
                             onClick={resetForm}
-                            style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}
                         >
-                            <IconX size={15} /> Cancel
+                            <IconX size={15} />
+                            Cancel
                         </button>
                     </div>
                 </motion.form>
@@ -274,14 +340,8 @@ export default function BlogManager() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 className="admin-card"
-                                style={{
-                                    padding: "1rem",
-                                    backgroundColor: "#f9fafb",
-                                    borderRadius: "0.5rem",
-                                    border: "1px solid #e5e7eb",
-                                }}
                             >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "1rem" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "1rem", flexWrap: "wrap" }}>
                                     <div style={{ flex: 1 }}>
                                         <h4 style={{ marginBottom: "0.25rem" }}>{blog.title}</h4>
                                         <p className="muted-text" style={{ fontSize: "0.875rem", marginBottom: "0.5rem" }}>
@@ -311,24 +371,12 @@ export default function BlogManager() {
                                         <button
                                             onClick={() => handleEdit(blog)}
                                             className="btn-secondary"
-                                            style={{
-                                                padding: "0.5rem",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
                                         >
                                             <IconEdit size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(blog.id)}
                                             className="btn-danger"
-                                            style={{
-                                                padding: "0.5rem",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
                                         >
                                             <IconTrash size={16} />
                                         </button>
@@ -339,6 +387,269 @@ export default function BlogManager() {
                     </div>
                 )}
             </div>
+
+            <style jsx>{`
+                .admin-form {
+                    background: #fff;
+                    border: 4px solid #000;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 8px 8px 0 #000;
+                }
+
+                .form-group {
+                    margin-bottom: 1.5rem;
+                }
+
+                .form-group label {
+                    display: block;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    color: #000;
+                    margin-bottom: 0.5rem;
+                }
+
+                .form-group input[type="text"],
+                .form-group textarea {
+                    width: 100%;
+                    padding: 0.875rem 1rem;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    background: #f5f5f5;
+                    transition: all 0.2s ease;
+                }
+
+                .form-group input[type="text"]:focus,
+                .form-group textarea:focus {
+                    outline: none;
+                    background: #fff;
+                    box-shadow: 6px 6px 0 #000;
+                }
+
+                .form-group small {
+                    display: block;
+                    font-size: 0.75rem;
+                    color: #666;
+                    margin-top: 0.25rem;
+                }
+
+                .image-upload-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+
+                .image-upload-options {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    flex-wrap: wrap;
+                }
+
+                .image-upload-btn-group {
+                    display: flex;
+                    gap: 0.5rem;
+                }
+
+                .btn-upload {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem 1.25rem;
+                    background: #ffd400;
+                    color: #000;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    box-shadow: 4px 4px 0 #000;
+                }
+
+                .btn-upload:hover:not(:disabled) {
+                    transform: translate(-2px, -2px);
+                    box-shadow: 6px 6px 0 #000;
+                }
+
+                .btn-upload:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+
+                .upload-divider {
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: #666;
+                }
+
+                .image-url-input {
+                    flex: 1;
+                    min-width: 200px;
+                    padding: 0.75rem 1rem;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    font-size: 0.9rem;
+                    background: #f5f5f5;
+                }
+
+                .image-preview {
+                    position: relative;
+                    width: 200px;
+                    height: 120px;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    overflow: hidden;
+                }
+
+                .image-preview img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .image-remove-btn {
+                    position: absolute;
+                    top: 4px;
+                    right: 4px;
+                    width: 24px;
+                    height: 24px;
+                    background: #ef4444;
+                    color: #fff;
+                    border: 2px solid #000;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    font-size: 0.75rem;
+                }
+
+                .checkbox-label {
+                    display: flex !important;
+                    align-items: center;
+                    gap: 0.75rem;
+                    cursor: pointer;
+                    font-size: 0.9rem !important;
+                    font-weight: 600 !important;
+                    text-transform: none !important;
+                    letter-spacing: normal !important;
+                    padding: 0.75rem 1rem;
+                    background: #f0f9ff;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                }
+
+                .checkbox-label input[type="checkbox"] {
+                    width: 20px;
+                    height: 20px;
+                    cursor: pointer;
+                }
+
+                .form-actions {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-top: 1.5rem;
+                }
+
+                .btn-primary {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.875rem 1.5rem;
+                    background: #000;
+                    color: #fff;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    box-shadow: 4px 4px 0 #ffd400;
+                }
+
+                .btn-primary:hover {
+                    transform: translate(-2px, -2px);
+                    box-shadow: 6px 6px 0 #ffd400;
+                }
+
+                .btn-secondary {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.875rem 1.5rem;
+                    background: #fff;
+                    color: #000;
+                    border: 3px solid #000;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .btn-secondary:hover {
+                    background: #f5f5f5;
+                }
+
+                .alert {
+                    padding: 1rem;
+                    border-radius: 12px;
+                    margin-bottom: 1rem;
+                    font-weight: 600;
+                }
+
+                .alert-error {
+                    background: #fef2f2;
+                    color: #dc2626;
+                    border: 3px solid #dc2626;
+                }
+
+                .alert-success {
+                    background: #ecfdf5;
+                    color: #059669;
+                    border: 3px solid #059669;
+                }
+
+                .admin-card {
+                    padding: 1.25rem;
+                    background: #fff;
+                    border: 4px solid #000;
+                    border-radius: 16px;
+                    box-shadow: 4px 4px 0 #000;
+                    transition: all 0.2s ease;
+                }
+
+                .admin-card:hover {
+                    transform: translate(-2px, -2px);
+                    box-shadow: 6px 6px 0 #000;
+                }
+
+                @media (max-width: 600px) {
+                    .form-actions {
+                        flex-direction: column;
+                    }
+
+                    .btn-primary,
+                    .btn-secondary {
+                        width: 100%;
+                        justify-content: center;
+                    }
+
+                    .image-upload-options {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+
+                    .upload-divider {
+                        text-align: center;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import LandingPageClient from "@/components/LandingPageClient";
+import BrutalLandingPage from "@/components/brutalist/LandingPageClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const dbConfigured = Boolean(process.env.DATABASE_URL);
+
+  // Fetch courses
   const courses = dbConfigured
     ? await prisma.course.findMany({
       where: { isActive: true },
@@ -12,12 +14,19 @@ export default async function HomePage() {
       include: { courseType: true },
     })
     : [];
+
+  // Fetch reviews
   const reviews = dbConfigured
     ? await prisma.review.findMany({
       where: { isActive: true },
       orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }],
     })
     : [];
+
+  // Fetch site settings
+  const siteSettings = dbConfigured
+    ? await prisma.siteSettings.findUnique({ where: { id: "default" } })
+    : null;
 
   const normalizedCourses = courses.map((course) => ({
     ...course,
@@ -30,6 +39,20 @@ export default async function HomePage() {
     rating: Number(review.rating || 5),
     sortOrder: Number(review.sortOrder || 0),
   }));
+
+  // Convert site settings to plain object
+  const normalizedSettings = siteSettings ? {
+    heroTitle: siteSettings.heroTitle,
+    heroSubtitle: siteSettings.heroSubtitle,
+    heroCtaText: siteSettings.heroCtaText,
+    statsStudentsCount: siteSettings.statsStudentsCount,
+    statsRating: siteSettings.statsRating,
+    statsMonthly: siteSettings.statsMonthly,
+    themeMode: siteSettings.themeMode,
+    pdfViewer: siteSettings.pdfViewer,
+    footerCopyright: siteSettings.footerCopyright,
+    googleReviewUrl: siteSettings.googleReviewUrl,
+  } : {};
 
   if (!dbConfigured) {
     return (
@@ -44,10 +67,11 @@ export default async function HomePage() {
   }
 
   return (
-    <LandingPageClient
+    <BrutalLandingPage
       courses={normalizedCourses}
       reviews={normalizedReviews}
-      googleReviewUrl={process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL || "https://www.google.com"}
+      googleReviewUrl={process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL || siteSettings?.googleReviewUrl || "https://www.google.com"}
+      siteSettings={normalizedSettings}
     />
   );
 }

@@ -17,21 +17,26 @@ export default async function BlogPage() {
     });
 
     return (
-        <div className="public-page">
-            <div className="page-hero" style={{ backgroundColor: "#f3f4f6", padding: "3rem 2rem", textAlign: "center" }}>
-                <h1>Our Blog</h1>
-                <p style={{ color: "#6b7280", marginTop: "0.5rem" }}>
-                    Insights, tips, and stories from our team
-                </p>
+        <div className="blog-page">
+            {/* Header */}
+            <div className="blog-header">
+                <div className="blog-header-content">
+                    <p className="blog-subtitle">Latest Updates</p>
+                    <h1 className="blog-title">Our Blog</h1>
+                    <p className="blog-desc">Insights, tips, and stories from our team</p>
+                </div>
             </div>
 
-            <div className="container" style={{ padding: "2rem 1rem" }}>
+            {/* Content */}
+            <div className="blog-container">
                 {blogs.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "2rem" }}>
-                        <p style={{ color: "#6b7280" }}>No blog posts yet. Check back soon!</p>
+                    <div className="brutal-empty-state">
+                        <div className="brutal-empty-icon">📝</div>
+                        <h3>No Blog Posts Yet</h3>
+                        <p>Check back soon for new content!</p>
                     </div>
                 ) : (
-                    <div className="blog-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "2rem" }}>
+                    <div className="blog-grid">
                         {blogs.map((blog) => (
                             <BlogCard key={blog.id} blog={blog} />
                         ))}

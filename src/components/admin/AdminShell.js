@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf } from "@/components/Icons";
+import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf, IconQuestion } from "@/components/Icons";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: IconDashboard },
@@ -13,6 +14,7 @@ const navItems = [
     { href: "/admin/blogs", label: "Blogs", Icon: IconBlog },
     { href: "/admin/course-types", label: "Course Types", Icon: IconBox },
     { href: "/admin/drive-folders", label: "Drive Folders", Icon: IconPdf },
+    { href: "/admin/faqs", label: "FAQs", Icon: IconQuestion },
     { href: "/admin/reviews", label: "Reviews", Icon: IconStar },
     { href: "/admin/contacts", label: "Contacts", Icon: IconMail },
     { href: "/admin/admins", label: "Admins", Icon: IconUsers },
@@ -62,6 +64,9 @@ export default function AdminShell({ admin, children }) {
                     <h2 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><LogoMark size={22} /> WEBCOM</h2>
                     <p className="muted-text">Manage courses, contacts & team.</p>
                     <div className="admin-user-chip"><IconUser size={13} /> {admin.username}</div>
+                    <div style={{ marginTop: "0.75rem" }}>
+                        <ThemeToggle />
+                    </div>
                 </div>
                 <nav className="admin-nav">
                     {navItems.map((item) => {

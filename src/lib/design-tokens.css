@@ -1,0 +1,144 @@
+/**
+ * Global Color Tokens for course_selling
+ * This file contains all CSS color variables used throughout the application
+ * Each color key includes: value, description, and where it's used
+ *
+ * USAGE: Import this file in globals.css or use the class system
+ * ADMIN: Manage colors via Site Settings in admin panel
+ */
+
+:root {
+    /* ========================================
+     * BRUTALIST DESIGN TOKENS
+     * ======================================== */
+
+    /* Border Tokens */
+    --border-thick: 4px solid #000;
+    --border-thin: 2px solid #000;
+
+    /* Shadow Tokens */
+    --shadow-brutal: 8px 8px 0 #000;
+    --shadow-brutal-sm: 4px 4px 0 #000;
+    --shadow-brutal-lg: 12px 12px 0 #000;
+
+    /* Border Radius Tokens */
+    --radius-brutal: 24px;
+    --radius-brutal-sm: 16px;
+
+    /* ========================================
+     * PRIMARY BRUTALIST COLORS
+     * ======================================== */
+
+    --brutal-yellow: #ffd400;           /* Main accent - buttons, highlights, badges */
+    --brutal-black: #000;               /* Borders, text, strong elements */
+    --brutal-white: #fff;               /* Cards, backgrounds, text on dark */
+
+    /* ========================================
+     * TEXT COLORS (with contrast guarantee)
+     * ======================================== */
+
+    --text-primary: #0f172a;            /* Main text - dark for light backgrounds */
+    --text-secondary: #475569;          /* Secondary text, descriptions */
+    --text-tertiary: #64748b;           /* Tertiary text, placeholders, captions */
+    --text-on-dark: #ffffff;            /* Text on dark/black backgrounds */
+    --text-on-yellow: #000000;          /* Text on yellow accent backgrounds */
+
+    /* Placeholder text - MUST be darker than #999 */
+    --placeholder-color: #94a3b8;        /* Visible placeholder text */
+
+    /* ========================================
+     * BACKGROUND COLORS
+     * ======================================== */
+
+    --bg-primary: #f8f9fc;              /* Main page background */
+    --bg-secondary: #f0f2f8;            /* Secondary background, cards */
+    --bg-dark: #0a0a0a;                 /* Dark theme background */
+    --bg-card: #ffffff;                /* Card backgrounds */
+    --bg-elevated: #fafbfd;            /* Elevated surfaces */
+    --bg-input: #f5f5f5;               /* Input field backgrounds - MUST be lighter than text */
+    --bg-input-focus: #ffffff;          /* Input focus state background */
+
+    /* ========================================
+     * FORM INPUT COLORS
+     * ======================================== */
+
+    /* Input field - CRITICAL for visibility */
+    --input-bg: #f5f5f5;                /* Background for text inputs */
+    --input-bg-focus: #ffffff;          /* Background when input is focused */
+    --input-border: #000000;            /* Input border color */
+    --input-border-focus: #000000;      /* Input border on focus */
+    --input-text: #0f172a;             /* Text inside input fields */
+    --input-placeholder: #64748b;       /* Placeholder text - MUST be visible */
+
+    /* ========================================
+     * BRAND COLORS
+     * ======================================== */
+
+    --brand-primary: #2563eb;          /* Primary buttons, links */
+    --brand-primary-dark: #1d4ed8;      /* Primary hover state */
+    --brand-primary-light: #dbeafe;    /* Primary light backgrounds */
+
+    --brand-secondary: #0ea5e9;        /* Secondary accent */
+
+    /* ========================================
+     * SEMANTIC COLORS
+     * ======================================== */
+
+    --success: #10b981;                /* Success states, positive actions */
+    --success-light: #ecfdf5;          /* Success backgrounds */
+    --success-text: #059669;           /* Success text */
+
+    --warning: #f59e0b;                /* Warning states */
+    --warning-light: #fffbeb;          /* Warning backgrounds */
+
+    --danger: #ef4444;                 /* Error states, delete actions */
+    --danger-light: #fef2f2;           /* Error backgrounds */
+    --danger-text: #dc2626;            /* Error text */
+
+    --info: #3b82f6;                   /* Info states */
+    --info-light: #eff6ff;            /* Info backgrounds */
+
+    /* ========================================
+     * BORDER COLORS
+     * ======================================== */
+
+    --border-light: #e2e8f0;          /* Light borders */
+    --border-default: #cbd5e1;         /* Default borders */
+    --border-strong: #94a3b8;         /* Strong borders */
+    --border-dark: #000000;           /* Dark/brutalist borders */
+
+    /* ========================================
+     * RATING COLORS
+     * ======================================== */
+
+    --rating-star-active: #ffd400;     /* Active/filled star rating */
+    --rating-star-inactive: #555555;  /* Inactive/empty star rating */
+
+    /* ========================================
+     * ADMIN COLORS
+     * ======================================== */
+
+    --admin-sidebar-bg: #ffd400;        /* Admin sidebar background */
+    --admin-sidebar-text: #000000;      /* Admin sidebar text */
+    --admin-panel-bg: #ffffff;          /* Admin panel background */
+    --admin-accent: #2563eb;           /* Admin accent color */
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+
+    --placeholder-color: #94a3b8;
+
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a2e;
+    --bg-card: #1a1a2e;
+    --bg-elevated: #242438;
+
+    --input-bg: #242438;
+    --input-bg-focus: #2a2a40;
+    --input-text: #ffffff;
+    --input-placeholder: #94a3b8;
+}

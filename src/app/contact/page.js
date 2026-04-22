@@ -10,9 +10,16 @@ export default async function ContactPage() {
     const businessProfile = await getBusinessProfile();
 
     return (
-        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--ink)" }}>
+        <div className="contact-page">
             <VisitTracker />
-            <section className="mx-auto w-[min(1180px,94vw)] py-10 md:py-14">
+            <div className="contact-header">
+                <div className="contact-header-content">
+                    <p className="contact-subtitle">Get in Touch</p>
+                    <h1 className="contact-title">Contact Us</h1>
+                    <p className="contact-desc">Have questions? We'd love to hear from you.</p>
+                </div>
+            </div>
+            <section className="contact-container">
                 <ContactForm businessProfile={businessProfile} />
             </section>
         </div>

@@ -2,9 +2,42 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import CategoryLogo from "../CategoryLogo";
+
+const ICON_OPTIONS = [
+    { value: "book", label: "📚 Book" },
+    { value: "computer", label: "💻 Computer" },
+    { value: "code", label: "⌨️ Code" },
+    { value: "web", label: "🌐 Web" },
+    { value: "data", label: "📊 Data" },
+    { value: "design", label: "🎨 Design" },
+    { value: "database", label: "💾 Database" },
+    { value: "network", label: "🔗 Network" },
+    { value: "security", label: "🔒 Security" },
+    { value: "mobile", label: "📱 Mobile" },
+    { value: "cloud", label: "☁️ Cloud" },
+    { value: "chart", label: "📈 Chart" },
+];
+
+const COLOR_OPTIONS = [
+    { value: "#6366f1", label: "Indigo" },
+    { value: "#8b5cf6", label: "Purple" },
+    { value: "#ec4899", label: "Pink" },
+    { value: "#ef4444", label: "Red" },
+    { value: "#f97316", label: "Orange" },
+    { value: "#f59e0b", label: "Amber" },
+    { value: "#22c55e", label: "Green" },
+    { value: "#10b981", label: "Emerald" },
+    { value: "#14b8a6", label: "Teal" },
+    { value: "#0ea5e9", label: "Sky" },
+    { value: "#3b82f6", label: "Blue" },
+    { value: "#a855f7", label: "Violet" },
+];
 
 const defaultForm = {
     name: "",
+    icon: "book",
+    color: "#6366f1",
     isActive: true,
 };
 
@@ -34,6 +67,8 @@ export default function CourseTypeManager({ initialCourseTypes }) {
         setEditingId(courseType.id);
         setForm({
             name: courseType.name,
+            icon: courseType.icon || "book",
+            color: courseType.color || "#6366f1",
             isActive: Boolean(courseType.isActive),
         });
     };
@@ -130,10 +165,79 @@ export default function CourseTypeManager({ initialCourseTypes }) {
                     🧾 Course Type Name
                     <input name="name" value={form.name} onChange={onChange} placeholder="Accounting, Programming, Typing..." required />
                 </label>
+
+                <label>
+                    🎨 Icon Style
+                    <select name="icon" value={form.icon} onChange={onChange}>
+                        {ICON_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    🌈 Accent Color
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                            {COLOR_OPTIONS.map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setForm((prev) => ({ ...prev, color: opt.value }))}
+                                    style={{
+                                        width: "32px",
+                                        height: "32px",
+                                        borderRadius: "50%",
+                                        background: opt.value,
+                                        border: form.color === opt.value ? "3px solid #fff" : "2px solid transparent",
+                                        boxShadow: form.color === opt.value ? "0 0 0 2px #000" : "none",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s",
+                                    }}
+                                    title={opt.label}
+                                />
+                            ))}
+                        </div>
+                        <input
+                            type="color"
+                            name="color"
+                            value={form.color}
+                            onChange={onChange}
+                            style={{ width: "60px", height: "32px", border: "none", cursor: "pointer" }}
+                        />
+                    </div>
+                </label>
+
                 <label className="inline-check">
                     <input type="checkbox" name="isActive" checked={form.isActive} onChange={onChange} />
                     👁️ Show in course type list
                 </label>
+
+                {/* Preview */}
+                <div style={{ padding: "1rem", borderRadius: "12px", background: "var(--bg-alt)", border: "1px solid var(--border)" }}>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>Preview:</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                        <div
+                            style={{
+                                width: "60px",
+                                height: "60px",
+                                borderRadius: "12px",
+                                background: `${form.color}20`,
+                                border: `2px solid ${form.color}`,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <CategoryLogo category={form.name || "book"} size={50} />
+                        </div>
+                        <div>
+                            <p style={{ fontWeight: 600, color: "var(--ink)" }}>{form.name || "Category Name"}</p>
+                            <p style={{ fontSize: "0.8rem", color: form.color }}>{form.name ? `This will show for: ${form.name}` : "Enter a name to see the mapping"}</p>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="inline-actions">
                     <button className="btn-primary" type="submit" disabled={loading}>
@@ -152,13 +256,15 @@ export default function CourseTypeManager({ initialCourseTypes }) {
 
             <section className="panel">
                 <h3>🗂️ Course Types ({courseTypes.length})</h3>
-                <p className="muted-text">Drag and drop rows to set display order for the course type dropdown.</p>
+                <p className="muted-text">Drag and drop rows to set display order. Each type has its own animated logo based on the icon and color.</p>
                 <div className="table-wrap" style={{ marginTop: "0.8rem" }}>
                     <table>
                         <thead>
                             <tr>
                                 <th>Order</th>
+                                <th>Icon</th>
                                 <th>Name</th>
+                                <th>Color</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -176,7 +282,18 @@ export default function CourseTypeManager({ initialCourseTypes }) {
                                     <td>
                                         <span className="click-badge">#{index + 1}</span>
                                     </td>
-                                    <td>{item.name}</td>
+                                    <td>
+                                        <div style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <CategoryLogo category={item.name} size={35} />
+                                        </div>
+                                    </td>
+                                    <td style={{ fontWeight: 500 }}>{item.name}</td>
+                                    <td>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                            <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: item.color || "#6366f1" }} />
+                                            <span style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{item.color || "#6366f1"}</span>
+                                        </div>
+                                    </td>
                                     <td>
                                         <span className={item.isActive ? "status-active" : "status-hidden"}>
                                             {item.isActive ? "🟢 Active" : "🔴 Hidden"}
@@ -191,7 +308,7 @@ export default function CourseTypeManager({ initialCourseTypes }) {
                                 </tr>
                             ))}
                             {courseTypes.length === 0 && (
-                                <tr><td colSpan={4} className="empty-row">No course types yet. Add one above.</td></tr>
+                                <tr><td colSpan={6} className="empty-row">No course types yet. Add one above.</td></tr>
                             )}
                         </tbody>
                     </table>

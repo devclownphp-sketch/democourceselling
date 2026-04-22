@@ -74,6 +74,7 @@ model Course {
     courseType        CourseType?   @relation(fields: [courseTypeId], references: [id], onDelete: SetNull)
     metricEvents      MetricEvent[]
     driveFolders      DriveFolder[]
+    pdfs              CoursePDF[]
 
     @@index([isActive])
     @@index([createdAt])
@@ -82,6 +83,8 @@ model Course {
 model CourseType {
     id        String   @id @default(cuid())
     name      String   @unique
+    icon      String   @default("book") // Icon name: book, code, chart, design, database, network, security, mobile, cloud, data
+    color     String   @default("#6366f1") // Default accent color for this category
     sortOrder Int      @default(0)
     isActive  Boolean  @default(true)
     createdAt DateTime @default(now())
@@ -97,8 +100,10 @@ model Review {
     name       String
     role       String   @default("Student")
     reviewText String
+    quote      String   @default("") // Short quote for marquee (max 100 chars)
     rating     Int      @default(5)
     sortOrder  Int      @default(0)
+    isFeatured Boolean  @default(false) // Show in marquee
     isActive   Boolean  @default(true)
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
@@ -106,8 +111,46 @@ model Review {
     admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
 
     @@index([isActive])
+    @@index([isFeatured])
     @@index([sortOrder])
     @@index([createdAt])
+}
+
+model FAQ {
+    id        String   @id @default(cuid())
+    question  String
+    answer    String
+    sortOrder Int      @default(0)
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([isActive])
+    @@index([sortOrder])
+}
+
+model Feature {
+    id          String   @id @default(cuid())
+    icon        String   @default("check") // Icon name
+    title       String
+    description String
+    color       String   @default("#6366f1") // Accent color
+    sortOrder   Int      @default(0)
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([isActive])
+    @@index([sortOrder])
+}
+
+model MarqueeSettings {
+    id         String @id @default("default")
+    speed      Int    @default(30) // Seconds for one cycle (10-60)
+    direction  String @default("ltr") // "ltr" or "rtl"
+    isEnabled  Boolean @default(true)
+    updatedAt  DateTime @updatedAt
+    createdAt  DateTime @default(now())
 }
 
 model ContactSubmission {
@@ -198,6 +241,22 @@ model DriveFolder {
     course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
+model CoursePDF {
+    id         Int      @id @default(autoincrement())
+    courseId   String
+    name       String
+    url        String
+    size       Int      @default(0)
+    sortOrder  Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+    @@index([courseId])
+    @@index([sortOrder])
+}
+
 model BusinessProfile {
     id              String   @id @default(cuid())
     key             String   @unique @default("primary")
@@ -215,4 +274,33 @@ model BusinessProfile {
     youtubeUrl      String   @default("")
     updatedAt       DateTime @updatedAt
     createdAt       DateTime @default(now())
+}
+
+model SiteSettings {
+    id        String   @id @default("default")
+    // Colors
+    primaryColor       String @default("#2563eb")
+    secondaryColor     String @default("#0ea5e9")
+    accentColor        String @default("#8b5cf6")
+    backgroundColor    String @default("#f8f9fc")
+    textColor          String @default("#0f172a")
+    colorSettings      Json?
+    // Theme Mode
+    themeMode          String @default("light") // "light" or "dark"
+    // PDF Viewer
+    pdfViewer          String @default("google") // "google", "pdfjs", "embedpdf", "reactpdf"
+    // Hero Section
+    heroTitle          String @default("Master Computer Skills")
+    heroSubtitle       String @default("Practical, job-ready computer education for every student in India.")
+    heroCtaText        String @default("Start Learning")
+    // Stats
+    statsStudentsCount String @default("40K+")
+    statsRating        String @default("4.7")
+    statsMonthly       String @default("150K+")
+    // Footer
+    footerCopyright    String @default("© 2026 WEBCOM. All Rights Reserved. Made with ❤️ in India")
+    // Social Links
+    googleReviewUrl    String @default("")
+    updatedAt          DateTime @updatedAt
+    createdAt          DateTime @default(now())
 }

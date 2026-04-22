@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import PDFUploader from "./PDFUploader";
 
 const defaultCourse = {
     title: "",
@@ -32,22 +33,22 @@ const defaultCourse = {
 };
 
 const fieldGroups = [
-    ["title", "Course Title", "\ud83d\udcdd"],
-    ["shortDescription", "Short Description", "\ud83d\udcc4"],
-    ["whatIs", "What is this course?", "\u2753"],
-    ["whoCanJoin", "Who Can Join? (one per line)", "\ud83c\udf93"],
-    ["syllabusTopics", "Syllabus & Topics (one per line)", "\ud83d\udcd1"],
-    ["studyPlan", "How to Study (one per line)", "\ud83d\udcda"],
-    ["jobsAfter", "Jobs After Course (one per line)", "\ud83d\udcbc"],
-    ["startLearningText", "Start Learning text", "\ud83d\ude80"],
-    ["duration", "Duration", "\u23f0"],
-    ["level", "Level", "\ud83c\udfaf"],
-    ["classType", "Class Type", "\ud83d\udcf9"],
-    ["liveQna", "Live QnA", "\ud83d\udcac"],
-    ["pdfNotes", "PDF Notes", "\ud83d\udcc2"],
-    ["callSupport", "Call Support", "\ud83d\udcde"],
-    ["socialPrompt", "Social Prompt", "\ud83d\udce3"],
-    ["whatsappNumber", "WhatsApp (with country code)", "\ud83d\udcf1"],
+    ["title", "Course Title", "📝"],
+    ["shortDescription", "Short Description", "📄"],
+    ["whatIs", "What is this course?", "❓"],
+    ["whoCanJoin", "Who Can Join? (one per line)", "🎓"],
+    ["syllabusTopics", "Syllabus & Topics (one per line)", "📋"],
+    ["studyPlan", "How to Study (one per line)", "📚"],
+    ["jobsAfter", "Jobs After Course (one per line)", "💼"],
+    ["startLearningText", "Start Learning text", "🚀"],
+    ["duration", "Duration", "⏰"],
+    ["level", "Level", "🏆"],
+    ["classType", "Class Type", "🎬"],
+    ["liveQna", "Live QnA", "💬"],
+    ["pdfNotes", "PDF Notes", "📂"],
+    ["callSupport", "Call Support", "📞"],
+    ["socialPrompt", "Social Prompt", "📢"],
+    ["whatsappNumber", "WhatsApp (with country code)", "📱"],
 ];
 
 const textareas = new Set([
@@ -114,7 +115,7 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    const heading = useMemo(() => (editingId ? "\u270f\ufe0f Update Course" : "\u2795 Create Course"), [editingId]);
+    const heading = useMemo(() => (editingId ? "📝 Update Course" : "➕ Create Course"), [editingId]);
 
     const onChange = (event) => {
         const { name, value, type, checked } = event.target;
@@ -192,10 +193,10 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
 
             if (editingId) {
                 setCourses((prev) => prev.map((item) => (item.id === editingId ? data.course : item)));
-                setSuccess("\u2705 Course updated successfully!");
+                setSuccess("✅ Course updated successfully!");
             } else {
                 setCourses((prev) => [data.course, ...prev]);
-                setSuccess("\u2705 Course created successfully!");
+                setSuccess("✅ Course created successfully!");
             }
             resetForm();
         } catch (submitError) {
@@ -244,7 +245,7 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                     </label>
                 </div>
                 <label>
-                    {"\ud83d\uddbc\ufe0f"} Course Banner Image ({IMAGE_WIDTH}x{IMAGE_HEIGHT})
+                    🖼️ Course Banner Image ({IMAGE_WIDTH}x{IMAGE_HEIGHT})
                     <input type="file" accept="image/*" onChange={onPickImage} />
                     <input name="courseImage" value={form.courseImage} onChange={onChange} placeholder="Or paste image URL/data URL" />
                     {form.courseImage ? (
@@ -273,11 +274,11 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
 
                 <div className="price-row">
                     <label>
-                        {"\ud83d\udcb0"} Original Price
+                        💰 Original Price
                         <input type="number" min="0" step="0.01" name="originalPrice" value={form.originalPrice} onChange={onChange} required />
                     </label>
                     <label>
-                        {"\ud83c\udf89"} OFF (%)
+                        🎉 OFF (%)
                         <input type="number" min="0" max="100" step="0.1" name="discountPercent" value={form.discountPercent} onChange={onChange} required />
                     </label>
                 </div>
@@ -294,32 +295,38 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
 
                 <label className="inline-check">
                     <input type="checkbox" name="lifetimeAccess" checked={form.lifetimeAccess} onChange={onChange} />
-                    {"\u267e\ufe0f"} Lifetime access
+                    ♾️ Lifetime access
                 </label>
                 <label className="inline-check">
                     <input type="checkbox" name="isActive" checked={form.isActive} onChange={onChange} />
-                    {"\ud83d\udc41\ufe0f"} Show on front page
+                    👁️ Show on front page
                 </label>
+
+                <div className="pdf-upload-section">
+                    <h4>📂 PDF Notes for this Course</h4>
+                    <p className="muted-text">Upload PDF files that students can download from the course page.</p>
+                    <PDFUploader courseId={editingId} />
+                </div>
 
                 <div className="inline-actions">
                     <motion.button className="btn-primary" type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                        {loading ? "\u23f3 Saving..." : heading}
+                        {loading ? "⏳ Saving..." : heading}
                     </motion.button>
                     {editingId && (
                         <button className="btn-ghost" type="button" onClick={resetForm}>
-                            {"\u274c"} Cancel
+                            ❌ Cancel
                         </button>
                     )}
                 </div>
 
                 <AnimatePresence>
-                    {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="error-text">{"\u26a0\ufe0f"} {error}</motion.p>}
+                    {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="error-text">⚠️ {error}</motion.p>}
                     {success && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="success-text">{success}</motion.p>}
                 </AnimatePresence>
             </motion.form>
 
             <section className="panel">
-                <h3>{"\ud83d\udcda"} All Courses ({courses.length})</h3>
+                <h3>📚 All Courses ({courses.length})</h3>
                 <div className="table-wrap">
                     <table className="course-table">
                         <thead>
@@ -337,7 +344,7 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                         <tbody>
                             {courses.map((course) => (
                                 <tr key={course.id}>
-                                    <td>{"\ud83d\udcd6"} {course.title}</td>
+                                    <td>📖 {course.title}</td>
                                     <td>{course.courseType?.name || "-"}</td>
                                     <td>{Number(course.rating || 0).toFixed(1)}</td>
                                     <td>
@@ -347,24 +354,24 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                                     <td>{Number(course.discountPercent || 0).toFixed(1)}%</td>
                                     <td>
                                         <span className={course.isActive ? "status-active" : "status-hidden"}>
-                                            {course.isActive ? "\ud83d\udfe2 Active" : "\ud83d\udd34 Hidden"}
+                                            {course.isActive ? "🟢 Active" : "🔴 Hidden"}
                                         </span>
                                     </td>
                                     <td><span className="click-badge">{course.enrollClicks}</span></td>
                                     <td>
                                         <div className="table-actions">
                                             <button type="button" className="btn-ghost" onClick={() => startEdit(course)}>
-                                                {"\u270f\ufe0f"} Edit
+                                                ✏️ Edit
                                             </button>
                                             <button type="button" className="btn-danger" onClick={() => removeCourse(course.id)}>
-                                                {"\ud83d\uddd1\ufe0f"} Delete
+                                                🗑️ Delete
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                             {courses.length === 0 && (
-                                <tr><td colSpan={8} className="empty-row">{"\ud83d\udce6"} No courses yet. Create your first one above!</td></tr>
+                                <tr><td colSpan={8} className="empty-row">📦 No courses yet. Create your first one above!</td></tr>
                             )}
                         </tbody>
                     </table>

@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -30,10 +28,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files - IMPORTANT: Never commit these!
 .env
 .env.local
 .env.*.local
+.env.production
 
 # vercel
 .vercel
@@ -44,19 +43,16 @@ next-env.d.ts
 
 # lock files (bun)
 bun.lockb
+bun.lock
+
+# playwright
+.playwright-mcp/
 
 # Claude / AI plugins
-.browser-pilot/
-.blender-toolkit/
 .claude/
 .claude-dev-helper/
 .plugin-config/
 claude-context/
-.complexity-log.md
-.project-structure.md
-.course_selling-project-structure.md
-.session-summary.md
-.todos-report.md/
 
 # OS files
 Thumbs.db
@@ -76,5 +72,11 @@ logs/
 # misc generated
 .turbo/
 .cache/
-AGENTS.md
-CLAUDE.md
+
+# temp folders
+old version/
+course_selling/
+designs/
+*.docx
+*.pdf
+*.png

@@ -1,24 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconPdf } from "@/components/Icons";
+import { useEffect, useRef, useState } from "react";
+import { IconPdf, IconX, IconDownload, IconPrint, IconMaximize, IconArrowLeft, IconArrowRight } from "@/components/Icons";
+import PDFViewer from "./PDFViewer";
 
-export default function PDFList({ folderId, folderName }) {
-    const [files, setFiles] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
+    const [files, setFiles] = useState(pdfFiles);
+    const [loading, setLoading] = useState(pdfFiles.length === 0);
     const [error, setError] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [viewerType, setViewerType] = useState("modern");
+    const timerRef = useRef(null);
+
+    // Load PDF viewer preference
+    useEffect(() => {
+        async function loadSettings() {
+            try {
+                const res = await fetch("/api/settings/public");
+                if (res.ok) {
+                    const data = await res.json();
+                    const type = data.settings?.pdfViewer || "modern";
+                    setViewerType(type === "google" ? "modern" : type);
+                }
+            } catch (e) {
+                // Use default
+            }
+        }
+        loadSettings();
+    }, []);
+
+    const loadNotes = async () => {
+        if (pdfFiles.length > 0) {
+            setFiles(pdfFiles);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/notes/${folderId}`);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+            setFiles(data.files || []);
+            setError("");
+        } catch (err) {
+            setError(err.message || "Failed to load notes.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        setLoading(true);
-        setError("");
-        fetch(`/api/notes/${folderId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.error) throw new Error(data.error);
-                setFiles(data.files || []);
-            })
-            .catch((err) => setError(err.message || "Failed to load notes."))
-            .finally(() => setLoading(false));
+        if (folderId) {
+            timerRef.current = setTimeout(loadNotes, 100);
+            return () => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+            };
+        }
     }, [folderId]);
 
     function formatSize(bytes) {
@@ -43,11 +81,11 @@ export default function PDFList({ folderId, folderName }) {
                 }}
             >
                 <IconPdf size={20} />
-                {folderName}
+                {folderName || "PDF Notes"}
             </h3>
 
             {loading && (
-                <p style={{ color: "var(--text-tertiary)", fontSize: "var(--font-size-sm)" }}>Loading notes…</p>
+                <p style={{ color: "var(--text-tertiary)", fontSize: "var(--font-size-sm)" }}>Loading notes...</p>
             )}
 
             {!loading && error && (
@@ -68,73 +106,250 @@ export default function PDFList({ folderId, folderName }) {
                 <p style={{ color: "var(--text-tertiary)", fontSize: "var(--font-size-sm)" }}>No PDF notes available.</p>
             )}
 
-            {!loading && !error && files.length > 0 && (
+            {/* File List */}
+            {!loading && !error && files.length > 0 && !selectedFile && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-sm)" }}>
-                    {files.map((file) => (
+                    {files.map((file, index) => (
                         <div
-                            key={file.id}
+                            key={file.id || index}
+                            onClick={() => setSelectedFile(file)}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "space-between",
                                 background: "var(--paper)",
-                                border: "1px solid var(--border-light)",
-                                borderRadius: "var(--radius-md)",
-                                padding: "var(--spacing-sm) var(--spacing-md)",
+                                border: "3px solid #000",
+                                borderRadius: "16px",
+                                padding: "var(--spacing-md)",
                                 gap: "var(--spacing-md)",
                                 flexWrap: "wrap",
-                                boxShadow: "var(--shadow-xs)",
+                                boxShadow: "4px 4px 0 #000",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translate(-2px, -2px)";
+                                e.currentTarget.style.boxShadow = "6px 6px 0 #000";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translate(0, 0)";
+                                e.currentTarget.style.boxShadow = "4px 4px 0 #000";
                             }}
                         >
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, minWidth: 0 }}>
-                                <IconPdf size={18} />
-                                <span
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
+                                <div
                                     style={{
-                                        fontSize: "var(--font-size-sm)",
-                                        fontWeight: 500,
-                                        color: "var(--text-primary)",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
+                                        width: "44px",
+                                        height: "44px",
+                                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        border: "2px solid #000",
+                                        borderRadius: "10px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        boxShadow: "2px 2px 0 #000",
                                     }}
-                                    title={file.name}
                                 >
-                                    {file.name}
-                                </span>
-                                {file.size && file.size !== "0" && (
-                                    <span
+                                    <IconPdf size={20} color="#fff" />
+                                </div>
+                                <div style={{ minWidth: 0 }}>
+                                    <p
                                         style={{
-                                            fontSize: "var(--font-size-xs)",
-                                            color: "var(--text-tertiary)",
+                                            fontSize: "var(--font-size-sm)",
+                                            fontWeight: 700,
+                                            color: "var(--text-primary)",
+                                            margin: 0,
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
                                             whiteSpace: "nowrap",
                                         }}
+                                        title={file.name}
                                     >
-                                        ({formatSize(file.size)})
-                                    </span>
-                                )}
+                                        {file.name}
+                                    </p>
+                                    {file.size && file.size !== "0" && (
+                                        <p
+                                            style={{
+                                                fontSize: "var(--font-size-xs)",
+                                                color: "var(--text-tertiary)",
+                                                margin: "2px 0 0",
+                                            }}
+                                        >
+                                            {formatSize(file.size)}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                             <div style={{ display: "flex", gap: "var(--spacing-sm)", flexShrink: 0 }}>
-                                <a
-                                    href={file.viewUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn-secondary"
-                                    style={{ fontSize: "var(--font-size-xs)", padding: "0.3rem 0.75rem" }}
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedFile(file);
+                                    }}
+                                    style={{
+                                        padding: "0.5rem 1rem",
+                                        background: "#ffd400",
+                                        color: "#000",
+                                        border: "2px solid #000",
+                                        borderRadius: "10px",
+                                        fontWeight: 700,
+                                        fontSize: "0.8rem",
+                                        cursor: "pointer",
+                                        boxShadow: "2px 2px 0 #000",
+                                    }}
                                 >
                                     View
-                                </a>
+                                </button>
                                 <a
-                                    href={file.downloadUrl}
+                                    href={file.downloadUrl || file.url || file.viewUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-primary"
-                                    style={{ fontSize: "var(--font-size-xs)", padding: "0.3rem 0.75rem" }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                        padding: "0.5rem 1rem",
+                                        background: "#000",
+                                        color: "#fff",
+                                        border: "2px solid #000",
+                                        borderRadius: "10px",
+                                        fontWeight: 700,
+                                        fontSize: "0.8rem",
+                                        cursor: "pointer",
+                                        textDecoration: "none",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                    }}
                                 >
+                                    <IconDownload size={14} />
                                     Download
                                 </a>
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* PDF Viewer Modal */}
+            {selectedFile && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        zIndex: 9999,
+                        background: "rgba(0,0,0,0.85)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "1rem",
+                    }}
+                    onClick={() => setSelectedFile(null)}
+                >
+                    <div
+                        style={{
+                            background: "#fff",
+                            borderRadius: "20px",
+                            width: "100%",
+                            maxWidth: "1200px",
+                            height: "92vh",
+                            display: "flex",
+                            flexDirection: "column",
+                            overflow: "hidden",
+                            border: "5px solid #000",
+                            boxShadow: "12px 12px 0 #ffd400",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header */}
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                padding: "1rem 1.5rem",
+                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                borderBottom: "4px solid #000",
+                            }}
+                        >
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                <div
+                                    style={{
+                                        width: "40px",
+                                        height: "40px",
+                                        background: "#fff",
+                                        border: "3px solid #000",
+                                        borderRadius: "10px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        boxShadow: "2px 2px 0 #000",
+                                    }}
+                                >
+                                    <span style={{ fontSize: "10px", fontWeight: 800, color: "#667eea" }}>PDF</span>
+                                </div>
+                                <div>
+                                    <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "#fff" }}>
+                                        {selectedFile.name}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: "11px", color: "rgba(255,255,255,0.8)" }}>
+                                        {selectedFile.size ? formatSize(selectedFile.size) : "PDF Document"}
+                                    </p>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <a
+                                    href={selectedFile.downloadUrl || selectedFile.url || selectedFile.viewUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        padding: "8px 16px",
+                                        background: "rgba(255,255,255,0.15)",
+                                        border: "2px solid #000",
+                                        borderRadius: "10px",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        color: "#fff",
+                                        textDecoration: "none",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <IconDownload size={14} />
+                                    Download
+                                </a>
+                                <button
+                                    onClick={() => setSelectedFile(null)}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "40px",
+                                        height: "40px",
+                                        background: "#ef4444",
+                                        color: "#fff",
+                                        border: "2px solid #000",
+                                        borderRadius: "10px",
+                                        cursor: "pointer",
+                                        boxShadow: "2px 2px 0 #000",
+                                        fontSize: "18px",
+                                    }}
+                                >
+                                    <IconX size={18} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Viewer */}
+                        <div style={{ flex: 1, overflow: "hidden" }}>
+                            <PDFViewer
+                                fileUrl={selectedFile.viewUrl || selectedFile.url || selectedFile.downloadUrl}
+                                title={selectedFile.name}
+                                viewerType={viewerType === "google" ? "modern" : viewerType}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -1,11 +1,19 @@
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import PublicNavbar from "@/components/PublicNavbar";
+import PublicNavbar from "@/components/brutalist/PublicNavbar";
 import ScrollToTop from "@/components/ScrollToTop";
+import SettingsProvider from "@/components/SettingsProvider";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -25,12 +33,14 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} h-full antialiased`}
+      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <PublicNavbar />
-        {children}
-        <ScrollToTop />
+        <SettingsProvider>
+          <PublicNavbar />
+          {children}
+          <ScrollToTop />
+        </SettingsProvider>
       </body>
     </html>
   );
