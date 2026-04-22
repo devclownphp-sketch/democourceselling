@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const dbConfigured = Boolean(process.env.DATABASE_URL);
 
-  // Fetch courses
   const courses = dbConfigured
     ? await prisma.course.findMany({
       where: { isActive: true },
@@ -15,7 +14,6 @@ export default async function HomePage() {
     })
     : [];
 
-  // Fetch reviews
   const reviews = dbConfigured
     ? await prisma.review.findMany({
       where: { isActive: true },
@@ -23,7 +21,6 @@ export default async function HomePage() {
     })
     : [];
 
-  // Fetch site settings
   const siteSettings = dbConfigured
     ? await prisma.siteSettings.findUnique({ where: { id: "default" } })
     : null;
@@ -40,7 +37,6 @@ export default async function HomePage() {
     sortOrder: Number(review.sortOrder || 0),
   }));
 
-  // Convert site settings to plain object
   const normalizedSettings = siteSettings ? {
     heroTitle: siteSettings.heroTitle,
     heroSubtitle: siteSettings.heroSubtitle,

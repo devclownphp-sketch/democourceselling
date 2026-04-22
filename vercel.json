@@ -1,0 +1,10 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "bunx prisma generate && bun run build",
+  "devCommand": "bun run dev",
+  "installCommand": "bun install",
+  "regions": ["bom1"],
+  "env": {
+    "DATABASE_URL": "@DATABASE_URL"
+  }
+}

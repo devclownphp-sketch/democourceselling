@@ -10,10 +10,6 @@ import TrustedByStats from "./TrustedByStats";
 import Footer from "./Footer";
 import { IconGrad, IconBook, IconStar, IconArrowRight, IconBolt } from "@/components/Icons";
 
-// ═══════════════════════════════════════════════════════════
-// KINETIC TYPOGRAPHY HERO SECTION
-// ═══════════════════════════════════════════════════════════
-
 function useKineticStyles() {
     useEffect(() => {
         const styleId = "brutal-kinetic";
@@ -284,16 +280,12 @@ function BrutalHero({ siteSettings = {} }) {
     );
 }
 
-// ═══════════════════════════════════════════════════════════
-// CATEGORIES SECTION
-// ═══════════════════════════════════════════════════════════
-
 function CategoriesSection({ courseTypes = [] }) {
     const categories = [
         { icon: "💻", title: "Computer Course", subtitle: "Basic to Advanced", color: "#6366f1", href: "/courses" },
-        { icon: "📄", title: "PDF Notes", subtitle: "Download & Study", color: "#10b981", href: "/courses" },
+        { icon: "📄", title: "PDF Notes", subtitle: "Download & Study", color: "#10b981", href: "/study-materials" },
         { icon: "📝", title: "Quiz", subtitle: "Practice Tests", color: "#f59e0b", href: "/quiz" },
-        { icon: "⚡", title: "Computer Tricks", subtitle: "Tips & Shortcuts", color: "#ec4899", href: "/courses" },
+        { icon: "📚", title: "Study Materials", subtitle: "Full Resources", color: "#8b5cf6", href: "/study-materials" },
     ];
 
     return (
@@ -315,7 +307,7 @@ function CategoriesSection({ courseTypes = [] }) {
                         Explore Categories
                     </h2>
                     <p style={{ opacity: 0.7, margin: 0 }}>
-                        Computer Course • PDF Notes • Quiz • Computer Tricks
+                        Computer Course • PDF Notes • Study Materials • Quiz
                     </p>
                 </div>
 
@@ -410,10 +402,6 @@ function CategoriesSection({ courseTypes = [] }) {
         </section>
     );
 }
-
-// ═══════════════════════════════════════════════════════════
-// COURSES SECTION
-// ═══════════════════════════════════════════════════════════
 
 function CoursesSection({ courses = [] }) {
     return (
@@ -525,10 +513,6 @@ function CoursesSection({ courses = [] }) {
         </section>
     );
 }
-
-// ═══════════════════════════════════════════════════════════
-// REAL LEARNERS SECTION
-// ═══════════════════════════════════════════════════════════
 
 function RealLearnersSection({ reviews = [] }) {
     const displayReviews = reviews.filter(r => r.isActive).slice(0, 3);
@@ -670,10 +654,6 @@ function RealLearnersSection({ reviews = [] }) {
     );
 }
 
-// ═══════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ═══════════════════════════════════════════════════════════
-
 export default function BrutalLandingPage({ courses = [], reviews = [], siteSettings = {} }) {
     const mergedSettings = { ...siteSettings };
 
@@ -687,9 +667,6 @@ export default function BrutalLandingPage({ courses = [], reviews = [], siteSett
 
             {/* Courses */}
             <CoursesSection courses={courses} />
-
-            {/* Real Learners - Short Section */}
-            <RealLearnersSection reviews={reviews} />
 
             {/* Trusted By Stats */}
             <TrustedByStats siteSettings={mergedSettings} />

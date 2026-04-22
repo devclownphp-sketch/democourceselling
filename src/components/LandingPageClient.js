@@ -20,7 +20,6 @@ function toNum(val) {
 // KINETIC TYPOGRAPHY HERO SECTION (Design 08)
 // ═══════════════════════════════════════════════════════════
 
-// Keyframe CSS injection
 function useKineticStyles() {
     useEffect(() => {
         const styleId = "kinetic-keyframes";
@@ -85,7 +84,6 @@ function useKineticStyles() {
     }, []);
 }
 
-// Animated DESIGN Letter - each has unique jump animation and position
 function DesignLetter({ letter, index }) {
     const [hovered, setHovered] = useState(false);
 
@@ -124,7 +122,6 @@ function DesignLetter({ letter, index }) {
     );
 }
 
-// Old Animated Letter - for other uses
 function AnimatedLetter({ letter, delay = 0, color = "#fff" }) {
     const [hovered, setHovered] = useState(false);
 
@@ -150,7 +147,6 @@ function AnimatedLetter({ letter, delay = 0, color = "#fff" }) {
     );
 }
 
-// Kinetic Title Word with mouse interaction
 function KineticWord({ text, color = "#fff" }) {
     const ref = useRef(null);
 
@@ -187,7 +183,6 @@ function KineticWord({ text, color = "#fff" }) {
     );
 }
 
-// Wave Text Animation
 function WaveText({ text, style = {} }) {
     return (
         <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "2px", ...style }}>
@@ -210,7 +205,6 @@ function WaveText({ text, style = {} }) {
     );
 }
 
-// Scrolling Marquee
 function KineticMarquee() {
     const items = ["Kinetic Typography", "Motion Design", "Creative Layout", "Dynamic Text", "Animation Studio"];
 
@@ -241,7 +235,6 @@ function KineticMarquee() {
     );
 }
 
-// Feature Card
 function FeatureCard({ number, title, description }) {
     const [hovered, setHovered] = useState(false);
 
@@ -295,7 +288,6 @@ function FeatureCard({ number, title, description }) {
     );
 }
 
-// Gradient Stats
 function GradientStat({ value, label }) {
     return (
         <div style={{ textAlign: "center" }}>
@@ -325,7 +317,6 @@ function GradientStat({ value, label }) {
     );
 }
 
-// Gradient CTA Button
 function GradientButton({ children, href = "#" }) {
     const [hovered, setHovered] = useState(false);
 
@@ -361,7 +352,6 @@ function GradientButton({ children, href = "#" }) {
 function KineticHero({ siteSettings = {} }) {
     useKineticStyles();
 
-    // Get values from site settings or use defaults
     const heroTitle = siteSettings.heroTitle || "Master Computer Skills";
     const heroSubtitle = siteSettings.heroSubtitle || "100% Free, Forever";
     const heroCtaText = siteSettings.heroCtaText || "Start Learning";
@@ -372,7 +362,6 @@ function KineticHero({ siteSettings = {} }) {
     const designLetters = ["D", "E", "S", "I", "G", "N"];
     const designColors = ["#ff6b6b", "#ffe66d", "#4ecdc4", "#fff", "#ffe66d", "#4ecdc4"];
 
-    // Split hero title into words for kinetic display
     const titleWords = heroTitle.split(" ");
     const subtitleWords = heroSubtitle.split(" ");
 
@@ -477,10 +466,6 @@ function KineticHero({ siteSettings = {} }) {
         </section>
     );
 }
-
-// ═══════════════════════════════════════════════════════════
-// EXISTING COMPONENTS (Categories, Courses, Reviews, etc.)
-// ═══════════════════════════════════════════════════════════
 
 const categories = [
     { icon: <IconComputer size={28} color="#4F46E5" />, iconBg: "#EEF2FF", borderColor: "#4F46E5", title: "Computer Course", subtitle: "Basic to Advanced learning" },
@@ -591,7 +576,6 @@ function ScaleReveal({ children, className = "" }) {
     return <div ref={ref} className={className} style={{ transformOrigin: "center center", transition: "transform 0.05s linear, opacity 0.05s linear" }}>{children}</div>;
 }
 
-/* ── Main ── */
 export default function LandingPageClient({ courses, reviews = [], googleReviewUrl = "https://www.google.com", siteSettings = {} }) {
     const { settings } = useSettings();
     const mergedSettings = { ...siteSettings, ...settings };

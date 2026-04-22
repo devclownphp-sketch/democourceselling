@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf, IconQuestion } from "@/components/Icons";
+import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf, IconQuestion, IconCertificate } from "@/components/Icons";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
@@ -13,15 +13,18 @@ const navItems = [
     { href: "/admin/quizzes", label: "Quizzes", Icon: IconQuiz },
     { href: "/admin/blogs", label: "Blogs", Icon: IconBlog },
     { href: "/admin/course-types", label: "Course Types", Icon: IconBox },
+    { href: "/admin/study-materials", label: "Study Materials", Icon: IconPdf },
     { href: "/admin/drive-folders", label: "Drive Folders", Icon: IconPdf },
     { href: "/admin/faqs", label: "FAQs", Icon: IconQuestion },
     { href: "/admin/reviews", label: "Reviews", Icon: IconStar },
     { href: "/admin/contacts", label: "Contacts", Icon: IconMail },
+    { href: "/admin/certificates", label: "Certificates", Icon: IconCertificate },
+    { href: "/admin/subadmins", label: "SubAdmins", Icon: IconUsers },
     { href: "/admin/admins", label: "Admins", Icon: IconUsers },
     { href: "/admin/settings", label: "Settings", Icon: IconSettings },
 ];
 
-export default function AdminShell({ admin, children }) {
+export default function AdminShell({ user, userType, children }) {
     const pathname = usePathname();
     const router = useRouter();
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -34,6 +37,9 @@ export default function AdminShell({ admin, children }) {
 
     const closeSidebar = () => setSidebarOpen(false);
 
+    const displayName = `@${user.username}`;
+    const badge = userType === "subadmin" ? "SubAdmin" : "Admin";
+
     return (
         <div className="admin-layout">
             <button
@@ -42,7 +48,7 @@ export default function AdminShell({ admin, children }) {
                 onClick={() => setSidebarOpen((prev) => !prev)}
                 aria-label="Toggle sidebar"
             >
-                {sidebarOpen ? "\u2715" : "\u2630"}
+                {sidebarOpen ? "✕" : "☰"}
             </button>
 
             <AnimatePresence>
@@ -63,7 +69,10 @@ export default function AdminShell({ admin, children }) {
                     <p className="admin-kicker"><IconShield size={12} /> Control Panel</p>
                     <h2 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><LogoMark size={22} /> WEBCOM</h2>
                     <p className="muted-text">Manage courses, contacts & team.</p>
-                    <div className="admin-user-chip"><IconUser size={13} /> {admin.username}</div>
+                    <div className="admin-user-chip"><IconUser size={13} /> {displayName}</div>
+                    <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.25rem" }}>
+                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.5rem", borderRadius: "999px", background: userType === "subadmin" ? "#6366f1" : "#22c55e", color: "#fff", fontWeight: 700 }}>{badge}</span>
+                    </div>
                     <div style={{ marginTop: "0.75rem" }}>
                         <ThemeToggle />
                     </div>

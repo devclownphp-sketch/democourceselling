@@ -1287,6 +1287,18 @@ BRUTALIST DESIGN SYSTEM
 High contrast, thick borders, bold shadows
 ═══════════════════════════════════════════════════════════ */
 
+/* Brutalist Page */
+.brutal-page {
+    min-height: 100vh;
+    background: var(--brutal-white);
+}
+
+/* Brutalist Hero */
+.brutal-hero {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
 /* Brutalist Card */
 .brutal-card {
     background: var(--brutal-white);
@@ -1308,6 +1320,73 @@ High contrast, thick borders, bold shadows
     border: var(--brutal-border-thick);
     border-radius: var(--brutal-radius);
     box-shadow: var(--brutal-shadow);
+}
+
+/* Brutalist Card Hover */
+.brutal-card-hover {
+    background: var(--brutal-white);
+    border: var(--brutal-border-thick);
+    border-radius: var(--brutal-radius);
+    box-shadow: var(--brutal-shadow);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.brutal-card-hover:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--brutal-shadow-lg);
+}
+
+/* Brutalist Button Primary */
+.brutal-btn-primary {
+    background: var(--brutal-black);
+    color: var(--brutal-white);
+    border: var(--brutal-border-thick);
+    border-radius: var(--brutal-radius-sm);
+    box-shadow: var(--brutal-shadow-sm);
+}
+
+.brutal-btn-primary:hover {
+    background: var(--brutal-black);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--brutal-shadow);
+}
+
+/* Brutalist Button Secondary */
+.brutal-btn-secondary {
+    background: var(--brutal-white);
+    color: var(--brutal-black);
+    border: var(--brutal-border-thick);
+    border-radius: var(--brutal-radius-sm);
+    box-shadow: var(--brutal-shadow-sm);
+}
+
+.brutal-btn-secondary:hover {
+    background: var(--brutal-yellow);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--brutal-shadow);
+}
+
+/* Brutalist Empty State */
+.brutal-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--brutal-white);
+    border: var(--brutal-border-thick);
+    border-radius: var(--brutal-radius);
+    box-shadow: var(--brutal-shadow);
+}
+
+.brutal-empty h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    color: var(--brutal-black);
+}
+
+.brutal-empty p {
+    color: var(--brutal-gray);
+    margin: 0 0 1.5rem;
 }
 
 /* Brutalist Button */
@@ -4150,6 +4229,61 @@ High contrast, thick borders, bold shadows
     color: #b0b0b0;
 }
 
+/* Brutalist Empty */
+[data-theme="dark"] .brutal-empty {
+    background: #1a1a2e;
+    border-color: #ffd400;
+}
+
+[data-theme="dark"] .brutal-empty h3 {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .brutal-empty p {
+    color: #b0b0b0;
+}
+
+/* Brutalist Card */
+[data-theme="dark"] .brutal-card {
+    background: #1a1a2e;
+    border-color: #ffd400;
+}
+
+[data-theme="dark"] .brutal-card-hover {
+    background: #1a1a2e;
+    border-color: #ffd400;
+}
+
+[data-theme="dark"] .brutal-page {
+    background: #0a0a0f;
+}
+
+[data-theme="dark"] .brutal-hero {
+    background: #1a1a2e;
+    border-bottom-color: #ffd400;
+}
+
+[data-theme="dark"] .brutal-hero h1,
+[data-theme="dark"] .brutal-hero p {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .brutal-btn-primary {
+    background: #ffd400;
+    color: #000000;
+}
+
+[data-theme="dark"] .brutal-btn-secondary {
+    background: #1a1a2e;
+    color: #ffffff;
+    border-color: #ffd400;
+}
+
+[data-theme="dark"] .brutal-btn-secondary:hover {
+    background: #ffd400;
+    color: #000000;
+}
+
 /* Course Details Page */
 [data-theme="dark"] .course-details-page {
     background: #0a0a0a;
@@ -4208,4 +4342,159 @@ High contrast, thick borders, bold shadows
 [data-theme="dark"] .scroll-top-btn {
     background: #ffd400;
     color: #000000;
+}
+
+/* ============================================
+   BRUTALIST AUTO-SCROLL MARQUEE
+   ============================================ */
+
+.marquee-section {
+    padding: 2rem 0;
+    background: #000;
+    border-top: 4px solid #ffd400;
+    border-bottom: 4px solid #ffd400;
+    overflow: hidden;
+}
+
+.marquee-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    overflow: hidden;
+}
+
+.marquee-track {
+    display: flex;
+    gap: 1.5rem;
+    animation: marquee-scroll-left var(--marquee-duration, 60s) linear infinite;
+    width: max-content;
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee-scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.marquee-card {
+    flex-shrink: 0;
+    width: 380px;
+}
+
+.marquee-card-inner {
+    background: #1a1a2e;
+    border: 3px solid #ffd400;
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    box-shadow: 0 0 30px rgba(255, 212, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.marquee-card-inner:hover {
+    box-shadow: 0 0 50px rgba(255, 212, 0, 0.3);
+    transform: scale(1.02);
+}
+
+.marquee-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #ffd400;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    flex-shrink: 0;
+    border: 3px solid #fff;
+}
+
+.marquee-avatar-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid #fff;
+}
+
+.marquee-avatar-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.marquee-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.marquee-stars {
+    display: flex;
+    gap: 3px;
+    font-size: 1rem;
+}
+
+.marquee-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.marquee-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.marquee-author strong {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.marquee-author span {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* Dark mode */
+[data-theme="dark"] .marquee-section {
+    background: #0a0a0f;
+}
+
+[data-theme="dark"] .marquee-card-inner {
+    background: #1a1a2e;
+}
+
+[data-theme="dark"] .marquee-text {
+    color: #b0b0b0;
+}
+
+@media (max-width: 768px) {
+    .marquee-card {
+        width: 300px;
+    }
+
+    .marquee-card-inner {
+        padding: 1rem;
+    }
 }

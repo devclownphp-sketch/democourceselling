@@ -1,10 +1,6 @@
 "use client";
 
-// Fancy animated SVG icons for categories when no image is uploaded
-// Each icon has its own unique animation
-
 const categoryIcons = {
-    // Computer Basics Icon
     computer: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -25,7 +21,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Code Programming Icon
     code: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -46,7 +41,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Web Development Icon
     web: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -67,7 +61,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Data Science Icon
     data: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -90,7 +83,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Design Icon
     design: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -113,7 +105,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Database Icon
     database: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -136,7 +127,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Network Icon
     network: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -161,7 +151,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Security Icon
     security: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -180,7 +169,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Mobile Icon
     mobile: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -202,7 +190,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Cloud Icon
     cloud: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -221,7 +208,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Default Book Icon
     book: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -243,7 +229,6 @@ const categoryIcons = {
         </svg>
     ),
 
-    // Chart/Business Icon
     chart: (
         <svg viewBox="0 0 100 100" className="cat-icon">
             <defs>
@@ -268,11 +253,9 @@ const categoryIcons = {
     ),
 };
 
-// Fallback icons for random selection
 const fallbackIcons = ["computer", "code", "web", "data", "design", "database", "network", "security", "mobile", "cloud", "chart"];
 
 export default function CategoryLogo({ category = "General", size = 120, className = "" }) {
-    // Map category names to icon keys
     const categoryMap = {
         "computer": "computer",
         "computers": "computer",
@@ -341,7 +324,6 @@ export default function CategoryLogo({ category = "General", size = 120, classNa
         "seo": "web",
     };
 
-    // Get icon key based on category
     const getIconKey = (cat) => {
         const lowerCat = cat.toLowerCase();
         for (const [key, value] of Object.entries(categoryMap)) {
@@ -349,7 +331,6 @@ export default function CategoryLogo({ category = "General", size = 120, classNa
                 return value;
             }
         }
-        // Random fallback for variety
         const randomIndex = Math.floor(Math.random() * fallbackIcons.length);
         return fallbackIcons[randomIndex];
     };
@@ -374,7 +355,6 @@ export default function CategoryLogo({ category = "General", size = 120, classNa
     );
 }
 
-// CSS for animations - inject into head
 export function CategoryLogoStyles() {
     if (typeof document === "undefined") return null;
 

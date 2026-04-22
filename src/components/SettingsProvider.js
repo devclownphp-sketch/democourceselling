@@ -25,7 +25,6 @@ export default function SettingsProvider({ children }) {
         localStorage.setItem("theme", newTheme);
         document.documentElement.setAttribute("data-theme", newTheme);
 
-        // Sync to database if logged in
         try {
             await fetch("/api/admin/site-settings", {
                 method: "PUT",
@@ -33,7 +32,6 @@ export default function SettingsProvider({ children }) {
                 body: JSON.stringify({ themeMode: newTheme }),
             });
         } catch (e) {
-            // Silently fail - localStorage is enough
         }
     };
 
@@ -46,20 +44,17 @@ export default function SettingsProvider({ children }) {
                     const s = data.settings || {};
                     const dbTheme = s.themeMode || "light";
 
-                    // Priority: 1. User's local preference, 2. Database default
                     const savedTheme = localStorage.getItem("theme");
                     const themeToApply = savedTheme || dbTheme;
 
                     setThemeState(themeToApply);
                     document.documentElement.setAttribute("data-theme", themeToApply);
 
-                    // Store PDF viewer preference
                     setPdfViewer(s.pdfViewer || "google");
                     setSettings(s);
                 }
             } catch (e) {
                 console.error("Failed to load settings:", e);
-                // Fallback to light
                 setThemeState("light");
                 document.documentElement.setAttribute("data-theme", "light");
             } finally {

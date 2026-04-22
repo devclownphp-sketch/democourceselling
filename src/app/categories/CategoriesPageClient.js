@@ -8,8 +8,7 @@ import { IconFilter } from "@/components/Icons";
 export default function CategoriesPageClient({ courseTypes = [], courses = [] }) {
     const [selectedType, setSelectedType] = useState(null);
 
-    // Filter courses by selected category
-    const filteredCourses = selectedType
+        const filteredCourses = selectedType
         ? courses.filter(course => course.courseTypeId === selectedType)
         : courses;
 

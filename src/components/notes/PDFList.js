@@ -12,8 +12,7 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
     const [viewerType, setViewerType] = useState("modern");
     const timerRef = useRef(null);
 
-    // Load PDF viewer preference
-    useEffect(() => {
+        useEffect(() => {
         async function loadSettings() {
             try {
                 const res = await fetch("/api/settings/public");
@@ -23,7 +22,6 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                     setViewerType(type === "google" ? "modern" : type);
                 }
             } catch (e) {
-                // Use default
             }
         }
         loadSettings();

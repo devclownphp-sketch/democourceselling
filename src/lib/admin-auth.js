@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE_NAME = "admin_session";
+const SUBADMIN_SESSION_COOKIE_NAME = "subadmin_session";
 const SESSION_DAYS = 7;
 
 function sessionExpiryDate() {
@@ -127,4 +128,137 @@ export async function requireAdminApi() {
         admin,
         unauthorized: null,
     };
+}
+
+export async function requireAnyAdmin() {
+    const admin = await getSessionAdmin();
+    if (admin) return { type: "admin", user: admin };
+
+    const subadmin = await getSessionSubAdmin();
+    if (subadmin) return { type: "subadmin", user: subadmin };
+
+    return null;
+}
+
+export async function requireAnyAdminApi() {
+    const result = await requireAnyAdmin();
+    if (!result) {
+        return {
+            user: null,
+            unauthorized: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+        };
+    }
+
+    return {
+        user: result.user,
+        type: result.type,
+        unauthorized: null,
+    };
+}
+
+export async function verifySubAdminCredentials(username, password) {
+    const subadmin = await prisma.subAdmin.findUnique({
+        where: { username },
+        include: { role: true },
+    });
+    if (!subadmin) return null;
+
+    if (!subadmin.isActive) return null;
+
+    const ok = await bcrypt.compare(password, subadmin.passwordHash);
+    if (!ok) return null;
+    return subadmin;
+}
+
+export async function createSubAdminSession(subadminId) {
+    const subadmin = await prisma.subAdmin.findUnique({
+        where: { id: subadminId },
+    });
+
+    if (!subadmin) return null;
+
+    const timeoutMin = subadmin.sessionTimeoutMin || 30;
+    const maxSessions = subadmin.maxSessions || 2;
+
+    const activeSessions = await prisma.subAdminSession.findMany({
+        where: {
+            subAdminId: subadminId,
+            expiresAt: { gt: new Date() },
+        },
+        orderBy: { createdAt: "asc" },
+    });
+
+    while (activeSessions.length >= maxSessions) {
+        const oldest = activeSessions.shift();
+        if (oldest) {
+            await prisma.subAdminSession.delete({ where: { id: oldest.id } }).catch(() => null);
+        }
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = hashToken(token);
+    const expiresAt = new Date(Date.now() + timeoutMin * 60 * 1000);
+
+    await prisma.subAdminSession.create({
+        data: {
+            subAdminId: subadminId,
+            tokenHash,
+            expiresAt,
+        },
+    });
+
+    return { token, expiresAt };
+}
+
+export function attachSubAdminSessionCookie(response, token, expiresAt) {
+    response.cookies.set(SUBADMIN_SESSION_COOKIE_NAME, token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: expiresAt,
+    });
+}
+
+export function clearSubAdminSessionCookie(response) {
+    response.cookies.set(SUBADMIN_SESSION_COOKIE_NAME, "", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 0,
+    });
+}
+
+export async function getSubAdminSession() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SUBADMIN_SESSION_COOKIE_NAME)?.value;
+    if (!token) return null;
+
+    const tokenHash = hashToken(token);
+    const session = await prisma.subAdminSession.findUnique({
+        where: { tokenHash },
+        include: { subAdmin: { include: { role: true } } },
+    });
+
+    if (!session) return null;
+
+    if (session.expiresAt < new Date()) {
+        await prisma.subAdminSession.delete({ where: { id: session.id } }).catch(() => null);
+        return null;
+    }
+
+    return session;
+}
+
+export async function getSessionSubAdmin() {
+    const session = await getSubAdminSession();
+    return session?.subAdmin || null;
+}
+
+export function checkPermission(subadmin, permission) {
+    if (!subadmin) return false;
+    if (!subadmin.role) return true;
+    const permissions = subadmin.role.permissions || [];
+    return permissions.includes(permission);
 }

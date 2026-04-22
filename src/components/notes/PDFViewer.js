@@ -13,20 +13,16 @@ function ModernPDFViewer({ fileUrl, title, siteName = "WEBCOM", siteSlogan = "10
     const [isFullscreen, setIsFullscreen] = useState(false);
     const containerRef = useRef(null);
 
-    // Handle PDF load to get page count
-    useEffect(() => {
+        useEffect(() => {
         if (typeof window !== "undefined") {
-            // For embedded PDFs, we can try to get page count from the viewer
-            const handleLoad = () => {
+                        const handleLoad = () => {
                 setLoading(false);
                 try {
                     const pdfFrame = containerRef.current?.querySelector("embed");
                     if (pdfFrame) {
-                        // Total pages will be detected by the PDF viewer
-                        setTotalPages(34); // Default fallback
+                                                setTotalPages(34);
                     }
                 } catch (e) {
-                    // Ignore
                 }
             };
 
@@ -475,8 +471,32 @@ function EmbedViewer({ fileUrl, title }) {
     );
 }
 
+/* ── S3 Viewer ── */
+function S3Viewer({ fileUrl, title }) {
+    return (
+        <div className="flex flex-col items-center gap-4 p-4">
+            <iframe
+                src={fileUrl}
+                className="w-full rounded-xl border"
+                style={{ height: "600px", borderColor: "var(--border-light)" }}
+                title={title || "S3 PDF Viewer"}
+                loading="lazy"
+            />
+            <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 font-semibold text-white transition hover:brightness-110"
+                style={{ background: "var(--brand-primary)", borderRadius: "var(--radius-lg)" }}
+            >
+                Open in New Tab ↗
+            </a>
+        </div>
+    );
+}
+
 /* ── Main PDF Viewer Component ── */
-export default function PDFViewer({ fileUrl, title, viewerType = "modern" }) {
+export default function PDFViewer({ fileUrl, title, viewerType = "embed" }) {
     if (!fileUrl) {
         return (
             <div className="rounded-xl border p-8 text-center" style={{ borderColor: "var(--border-light)", background: "var(--paper)" }}>
@@ -486,12 +506,11 @@ export default function PDFViewer({ fileUrl, title, viewerType = "modern" }) {
     }
 
     switch (viewerType) {
-        case "pdfjs":
-            return <PDFJSViewer fileUrl={fileUrl} title={title} />;
-        case "embedpdf":
-            return <EmbedViewer fileUrl={fileUrl} title={title} />;
-        case "google":
+        case "s3":
+            return <S3Viewer fileUrl={fileUrl} title={title} />;
+        case "drive":
             return <GoogleDriveViewer fileUrl={fileUrl} title={title} />;
+        case "embed":
         case "modern":
         default:
             return <ModernPDFViewer fileUrl={fileUrl} title={title} />;

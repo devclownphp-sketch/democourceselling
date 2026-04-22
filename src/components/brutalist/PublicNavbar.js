@@ -7,6 +7,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 const NAV_LINKS = [
     { href: "/", label: "Home" },
     { href: "/courses", label: "Courses" },
+    { href: "/study-materials", label: "Study Materials" },
+    { href: "/certificates", label: "Certificates" },
     { href: "/quiz", label: "Quiz" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },

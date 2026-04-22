@@ -27,7 +27,6 @@ export default async function CategoriesServerPage() {
         rating: Number(course.rating || 4.5),
     }));
 
-    // Pass data to client component
     const props = {
         courseTypes,
         courses: normalizedCourses,

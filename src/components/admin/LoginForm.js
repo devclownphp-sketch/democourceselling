@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function LoginForm() {
@@ -46,12 +47,12 @@ export default function LoginForm() {
             onSubmit={onSubmit}
         >
             <div className="login-header">
-                <span className="login-emoji">{"\ud83d\udd10"}</span>
+                <span className="login-emoji">{"🔐"}</span>
                 <h1>Admin Login</h1>
                 <p className="muted-text">Sign in to manage WEBCOM</p>
             </div>
             <label>
-                {"\ud83d\udc64"} Username
+                {"👤"} Username
                 <input
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
@@ -60,7 +61,7 @@ export default function LoginForm() {
                 />
             </label>
             <label>
-                {"\ud83d\udd11"} Password
+                {"🔑"} Password
                 <input
                     type="password"
                     value={password}
@@ -76,7 +77,7 @@ export default function LoginForm() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
             >
-                {loading ? "\u23f3 Logging in..." : "\ud83d\ude80 Login"}
+                {loading ? "⏳ Logging in..." : "🚀 Login"}
             </motion.button>
             {error && (
                 <motion.p
@@ -84,9 +85,14 @@ export default function LoginForm() {
                     animate={{ opacity: 1, y: 0 }}
                     className="error-text"
                 >
-                    {"\u274c"} {error}
+                    {"❌"} {error}
                 </motion.p>
             )}
+            <p style={{ textAlign: "center", marginTop: "0.5rem" }}>
+                <Link href="/admin/login/subadmin" style={{ color: "#6366f1", textDecoration: "underline", fontSize: "0.9rem", fontWeight: 600 }}>
+                    🔐 Login as SubAdmin
+                </Link>
+            </p>
         </motion.form>
     );
 }

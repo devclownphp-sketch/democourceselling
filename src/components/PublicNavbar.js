@@ -40,8 +40,10 @@ export default function PublicNavbar() {
                     {[
                         { href: "/", label: "Home" },
                         { href: "/courses", label: "Courses" },
-                        { href: "/blog", label: "Blog" },
+                        { href: "/study-materials", label: "Study Materials" },
+                        { href: "/certificates", label: "Certificates" },
                         { href: "/quiz", label: "Quiz" },
+                        { href: "/blog", label: "Blog" },
                         { href: "/contact", label: "Contact" },
                     ].map((item) => (
                         <Link
@@ -109,8 +111,9 @@ export default function PublicNavbar() {
                         {[
                             { href: "/", label: "Home" },
                             { href: "/courses", label: "Courses" },
-                            { href: "/blog", label: "Blog" },
+                            { href: "/study-materials", label: "Study Materials" },
                             { href: "/quiz", label: "Quiz" },
+                            { href: "/blog", label: "Blog" },
                             { href: "/contact", label: "Contact" },
                         ].map((item) => (
                             <Link

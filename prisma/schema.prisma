@@ -75,6 +75,11 @@ model Course {
     metricEvents      MetricEvent[]
     driveFolders      DriveFolder[]
     pdfs              CoursePDF[]
+    studyMaterials    StudyMaterial[]
+    certificates      Certificate[]
+    demoContent       Json?         @default("[]")
+    certificateImage  String?
+    totalHours        Float?
 
     @@index([isActive])
     @@index([createdAt])
@@ -100,10 +105,12 @@ model Review {
     name       String
     role       String   @default("Student")
     reviewText String
-    quote      String   @default("") // Short quote for marquee (max 100 chars)
+    quote      String   @default("")
+    avatar     String?  // Path to uploaded avatar image
+    marqueeText String? // Short text for marquee (max 50 chars)
     rating     Int      @default(5)
     sortOrder  Int      @default(0)
-    isFeatured Boolean  @default(false) // Show in marquee
+    isFeatured Boolean  @default(false)
     isActive   Boolean  @default(true)
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
@@ -246,6 +253,7 @@ model CoursePDF {
     courseId   String
     name       String
     url        String
+    viewerType String   @default("embed")
     size       Int      @default(0)
     sortOrder  Int      @default(0)
     createdAt  DateTime @default(now())
@@ -255,6 +263,119 @@ model CoursePDF {
 
     @@index([courseId])
     @@index([sortOrder])
+}
+
+model StudyMaterial {
+    id          String   @id @default(cuid())
+    title       String
+    description String?
+    category    String
+    pdfUrl      String
+    viewerType  String   @default("embed")
+    thumbnail   String?
+    sortOrder   Int      @default(0)
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    courseId    String?
+    course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+    categoryId  String?
+    materialCategory StudyMaterialCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+    @@index([isActive])
+    @@index([sortOrder])
+    @@index([category])
+}
+
+model StudyMaterialCategory {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    icon      String   @default("book")
+    color     String   @default("#6366f1")
+    sortOrder Int      @default(0)
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    materials StudyMaterial[]
+
+    @@index([sortOrder])
+    @@index([isActive])
+}
+
+model CertificateTemplate {
+    id        String   @id @default(cuid())
+    name      String
+    fileUrl   String
+    fields    Json     // Array of { key, label, x, y, fontSize, color, width }
+    isActive  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    certificates Certificate[]
+
+    @@index([isActive])
+}
+
+model Certificate {
+    id          String   @id @default(cuid())
+    templateId  String
+    studentName String
+    courseName  String
+    courseId    String?
+    regId       String   @unique
+    startDate   DateTime
+    endDate     DateTime
+    duration    String
+    issuedAt    DateTime @default(now())
+    downloadUrl String?
+
+    template    CertificateTemplate @relation(fields: [templateId], references: [id])
+    course      Course?             @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+    @@index([regId])
+    @@index([studentName])
+}
+
+model SubAdmin {
+    id                String            @id @default(cuid())
+    username          String            @unique
+    passwordHash      String
+    roleId            String?
+    sessionTimeoutMin Int               @default(30)
+    maxSessions       Int               @default(2)
+    isActive          Boolean           @default(true)
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime          @updatedAt
+
+    role              Role?             @relation(fields: [roleId], references: [id], onDelete: SetNull)
+    sessions          SubAdminSession[]
+
+    @@index([isActive])
+}
+
+model Role {
+    id          String      @id @default(cuid())
+    name        String      @unique
+    permissions Json        // Array of permission strings
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
+    subadmins   SubAdmin[]
+}
+
+model SubAdminSession {
+    id         String   @id @default(cuid())
+    subAdminId String
+    tokenHash  String   @unique
+    expiresAt  DateTime
+    createdAt  DateTime @default(now())
+
+    subAdmin   SubAdmin @relation(fields: [subAdminId], references: [id], onDelete: Cascade)
+
+    @@index([subAdminId])
+    @@index([expiresAt])
 }
 
 model BusinessProfile {
@@ -286,9 +407,10 @@ model SiteSettings {
     textColor          String @default("#0f172a")
     colorSettings      Json?
     // Theme Mode
-    themeMode          String @default("light") // "light" or "dark"
-    // PDF Viewer
-    pdfViewer          String @default("google") // "google", "pdfjs", "embedpdf", "reactpdf"
+    themeMode          String @default("light")
+    // Session Settings (for main Admin)
+    sessionTimeoutMin  Int    @default(30)
+    maxSessions        Int    @default(2)
     // Hero Section
     heroTitle          String @default("Master Computer Skills")
     heroSubtitle       String @default("Practical, job-ready computer education for every student in India.")

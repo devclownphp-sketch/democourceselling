@@ -143,7 +143,6 @@ export default function CourseCard({ course }) {
     );
 }
 
-// Category-based icon fallback when no image
 function CourseIcon({ category = "" }) {
     const cat = category.toLowerCase();
 
@@ -195,7 +194,6 @@ function CourseIcon({ category = "" }) {
         );
     }
 
-    // Default book icon
     return (
         <svg viewBox="0 0 100 100" style={{ width: "80px", height: "80px", opacity: 0.3 }}>
             <path d="M20 15 L20 80 C20 85 25 85 30 80 L30 25 C30 22 27 20 25 20 Z" fill="#6366f1" />
