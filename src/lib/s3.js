@@ -1,29 +1,38 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-const s3Client = new S3Client({
-    region: process.env.AWS_REGION || "ap-southeast-1",
-    credentials: process.env.AWS_ACCESS_KEY_ID ? {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    } : undefined,
-});
+/**
+ * Legacy S3 utility - uses dynamic imports to avoid Turbopack build errors.
+ * Prefer using @/lib/storage.js for new code.
+ */
+const _s3Pkg = ["@aws-sdk", "client-s3"].join("/");
+const _s3PresignerPkg = ["@aws-sdk", "s3-request-presigner"].join("/");
 
 const BUCKET_NAME = process.env.AWS_S3_BUCKET || "webcom-materials";
+
+async function getS3ClientInstance() {
+    const s3Sdk = await import(/* webpackIgnore: true */ _s3Pkg);
+    const client = new s3Sdk.S3Client({
+        region: process.env.AWS_REGION || "ap-southeast-1",
+        credentials: process.env.AWS_ACCESS_KEY_ID ? {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        } : undefined,
+    });
+    return { client, sdk: s3Sdk };
+}
 
 export async function uploadFile(fileBuffer, key, contentType = "application/pdf") {
     if (!process.env.AWS_ACCESS_KEY_ID) {
         throw new Error("AWS credentials not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in environment.");
     }
 
-    const command = new PutObjectCommand({
+    const { client, sdk } = await getS3ClientInstance();
+    const command = new sdk.PutObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
         Body: fileBuffer,
         ContentType: contentType,
     });
 
-    await s3Client.send(command);
+    await client.send(command);
     return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || "ap-southeast-1"}.amazonaws.com/${key}`;
 }
 
@@ -32,12 +41,14 @@ export async function getSignedUrlForDownload(key, expiresIn = 3600) {
         throw new Error("AWS credentials not configured");
     }
 
-    const command = new GetObjectCommand({
+    const { client, sdk } = await getS3ClientInstance();
+    const presignerModule = await import(/* webpackIgnore: true */ _s3PresignerPkg);
+    const command = new sdk.GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
     });
 
-    return getSignedUrl(s3Client, command, { expiresIn });
+    return presignerModule.getSignedUrl(client, command, { expiresIn });
 }
 
 export async function deleteFile(key) {
@@ -45,12 +56,13 @@ export async function deleteFile(key) {
         throw new Error("AWS credentials not configured");
     }
 
-    const command = new DeleteObjectCommand({
+    const { client, sdk } = await getS3ClientInstance();
+    const command = new sdk.DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
     });
 
-    await s3Client.send(command);
+    await client.send(command);
     return true;
 }
 

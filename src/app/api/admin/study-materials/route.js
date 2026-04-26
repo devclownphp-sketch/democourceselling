@@ -8,9 +8,9 @@ const createSchema = z.object({
     description: z.string().trim().optional().default(""),
     category: z.string().trim().min(1, "Category is required"),
     categoryId: z.string().optional().nullable(),
-    pdfUrl: z.string().trim().url("Invalid PDF URL").or(z.string().trim().min(1).startsWith("/")),
+    pdfUrl: z.string().trim().min(1, "PDF URL is required"),
     viewerType: z.enum(["embed", "drive", "s3"]).default("embed"),
-    thumbnail: z.string().trim().url().optional().nullable().default(null),
+    thumbnail: z.string().trim().optional().nullable().default(null),
     sortOrder: z.number().int().min(0).default(0),
     isActive: z.boolean().default(true),
 });

@@ -6,6 +6,7 @@ export default function CourseCard({ course }) {
     const {
         title = "",
         slug = "",
+        courseUrlId = "",
         courseImage = "",
         duration = "",
         rating = 4.5,
@@ -17,24 +18,28 @@ export default function CourseCard({ course }) {
     } = course;
 
     const hasImage = Boolean(courseImage);
+    const href = courseUrlId ? `/courses/${courseUrlId}` : `/courses/${slug}`;
 
     return (
         <Link
-            href={`/courses/${slug}`}
+            href={href}
             className="brutal-course-card"
             style={{ textDecoration: "none", display: "block" }}
         >
-            {/* Image Area */}
             <div
                 className="brutal-course-card-image"
-                style={{
-                    backgroundImage: hasImage ? `url(${courseImage})` : "none",
-                    background: hasImage ? "none" : "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                }}
+                style={!hasImage ? {
+                    background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+                } : undefined}
             >
-                {/* Gradient overlay for text readability */}
+                {hasImage && (
+                    <img
+                        src={courseImage}
+                        alt={title}
+                        className="brutal-card-img"
+                        loading="lazy"
+                    />
+                )}
                 {!hasImage && (
                     <div
                         style={{
@@ -51,7 +56,6 @@ export default function CourseCard({ course }) {
                     </div>
                 )}
 
-                {/* Badges */}
                 <div className="brutal-course-card-badges">
                     <span
                         style={{
@@ -82,14 +86,11 @@ export default function CourseCard({ course }) {
                 </div>
             </div>
 
-            {/* Content Area */}
             <div className="brutal-course-card-content">
-                {/* Title */}
                 <h3 className="brutal-course-card-title">
                     {title}
                 </h3>
 
-                {/* Rating */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", marginTop: "0.5rem" }}>
                     <span style={{ color: "#ffd400", fontWeight: 700 }}>
                         {Number(rating).toFixed(1)}
@@ -100,12 +101,10 @@ export default function CourseCard({ course }) {
                     </span>
                 </div>
 
-                {/* Duration */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.75rem", color: "#666", fontSize: "0.85rem" }}>
                     <span>⏱️ {duration}</span>
                 </div>
 
-                {/* Price */}
                 <div className="brutal-course-card-price">
                     <span className="brutal-course-card-price-current">
                         ₹{Number(offerPrice).toFixed(0)}
@@ -124,7 +123,6 @@ export default function CourseCard({ course }) {
                     )}
                 </div>
 
-                {/* CTA */}
                 <div
                     style={{
                         marginTop: "1rem",

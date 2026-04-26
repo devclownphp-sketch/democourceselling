@@ -153,7 +153,6 @@ export default function ColorSettings() {
 
     return (
         <div className="color-settings">
-            {/* Header */}
             <div className="color-settings-header">
                 <div>
                     <h2>Color Settings</h2>
@@ -176,7 +175,6 @@ export default function ColorSettings() {
                 </div>
             </div>
 
-            {/* Color Sections */}
             {COLOR_SETTINGS.map((section) => (
                 <div key={section.section} className="color-section">
                     <div className="color-section-header">
@@ -225,7 +223,6 @@ export default function ColorSettings() {
                 </div>
             ))}
 
-            {/* Preview Section */}
             <div className="color-preview-section">
                 <h3>Preview</h3>
                 <div className="color-preview-grid">
@@ -255,7 +252,7 @@ export default function ColorSettings() {
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .color-settings {
                     display: flex;
                     flex-direction: column;

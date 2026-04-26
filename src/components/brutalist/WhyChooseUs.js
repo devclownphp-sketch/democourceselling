@@ -72,13 +72,11 @@ export default function WhyChooseUs() {
     return (
         <section className="why-section">
             <div className="why-container">
-                {/* Header */}
                 <div className="why-header">
                     <h2>Why Choose Us</h2>
                     <p>Simple, secure, and truly student-friendly</p>
                 </div>
 
-                {/* Feature Grid */}
                 <div className="brutal-grid-3">
                     {displayFeatures.map((feature, index) => (
                         <div

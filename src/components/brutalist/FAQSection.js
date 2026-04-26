@@ -61,13 +61,11 @@ export default function FAQSection() {
     return (
         <section className="faq-section">
             <div className="faq-container">
-                {/* Header */}
                 <div className="faq-header">
                     <h2>Frequently Asked Questions</h2>
                     <p>Got questions? We have answers.</p>
                 </div>
 
-                {/* FAQ Items */}
                 <div className="faq-list">
                     {displayFaqs.map((faq, index) => (
                         <div

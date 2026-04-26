@@ -4,6 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import { IconPdf, IconX, IconDownload, IconPrint, IconMaximize, IconArrowLeft, IconArrowRight } from "@/components/Icons";
 import PDFViewer from "./PDFViewer";
 
+async function downloadFile(url, filename) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Download failed");
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename || "document.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+        window.open(url, "_blank");
+    }
+}
+
 export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
     const [files, setFiles] = useState(pdfFiles);
     const [loading, setLoading] = useState(pdfFiles.length === 0);
@@ -71,7 +89,7 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                 style={{
                     fontSize: "var(--font-size-lg)",
                     fontWeight: 600,
-                    color: "var(--text-primary)",
+                    color: "var(--text-dark)",
                     marginBottom: "var(--spacing-md)",
                     display: "flex",
                     alignItems: "center",
@@ -83,7 +101,7 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
             </h3>
 
             {loading && (
-                <p style={{ color: "var(--text-tertiary)", fontSize: "var(--font-size-sm)" }}>Loading notes...</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "var(--font-size-sm)" }}>Loading notes...</p>
             )}
 
             {!loading && error && (
@@ -101,10 +119,9 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
             )}
 
             {!loading && !error && files.length === 0 && (
-                <p style={{ color: "var(--text-tertiary)", fontSize: "var(--font-size-sm)" }}>No PDF notes available.</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "var(--font-size-sm)" }}>No PDF notes available.</p>
             )}
 
-            {/* File List */}
             {!loading && !error && files.length > 0 && !selectedFile && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-sm)" }}>
                     {files.map((file, index) => (
@@ -155,7 +172,7 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                         style={{
                                             fontSize: "var(--font-size-sm)",
                                             fontWeight: 700,
-                                            color: "var(--text-primary)",
+                                            color: "var(--text-dark)",
                                             margin: 0,
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
@@ -169,7 +186,7 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                         <p
                                             style={{
                                                 fontSize: "var(--font-size-xs)",
-                                                color: "var(--text-tertiary)",
+                                                color: "var(--text-muted)",
                                                 margin: "2px 0 0",
                                             }}
                                         >
@@ -198,11 +215,12 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                 >
                                     View
                                 </button>
-                                <a
-                                    href={file.downloadUrl || file.url || file.viewUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const url = file.downloadUrl || file.url || file.viewUrl;
+                                        downloadFile(url, file.name);
+                                    }}
                                     style={{
                                         padding: "0.5rem 1rem",
                                         background: "#000",
@@ -220,14 +238,13 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                 >
                                     <IconDownload size={14} />
                                     Download
-                                </a>
+                                </button>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
 
-            {/* PDF Viewer Modal */}
             {selectedFile && (
                 <div
                     style={{
@@ -257,7 +274,6 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Modal Header */}
                         <div
                             style={{
                                 display: "flex",
@@ -294,10 +310,12 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                 </div>
                             </div>
                             <div style={{ display: "flex", gap: "8px" }}>
-                                <a
-                                    href={selectedFile.downloadUrl || selectedFile.url || selectedFile.viewUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const url = selectedFile.downloadUrl || selectedFile.url || selectedFile.viewUrl;
+                                        downloadFile(url, selectedFile.name);
+                                    }}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -309,14 +327,12 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                                         fontSize: "12px",
                                         fontWeight: 600,
                                         color: "#fff",
-                                        textDecoration: "none",
                                         cursor: "pointer",
                                     }}
-                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     <IconDownload size={14} />
                                     Download
-                                </a>
+                                </button>
                                 <button
                                     onClick={() => setSelectedFile(null)}
                                     style={{
@@ -339,7 +355,6 @@ export default function PDFList({ folderId, folderName, pdfFiles = [] }) {
                             </div>
                         </div>
 
-                        {/* Viewer */}
                         <div style={{ flex: 1, overflow: "hidden" }}>
                             <PDFViewer
                                 fileUrl={selectedFile.viewUrl || selectedFile.url || selectedFile.downloadUrl}

@@ -22,7 +22,7 @@ export default async function QuizDetailPage({ params }) {
     }
 
     return (
-        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--ink)" }}>
+        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text-dark)" }}>
             <VisitTracker />
             <QuizAttemptClient quiz={quiz} />
         </div>

@@ -120,7 +120,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {/* Add/Edit Form */}
             <motion.form
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -130,7 +129,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
             >
                 <h3>{editingId ? "Edit Feature" : "Add New Feature"}</h3>
 
-                {/* Icon Picker */}
                 <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     Icon
                     <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
@@ -159,7 +157,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
                     </div>
                 </label>
 
-                {/* Title */}
                 <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     Title
                     <input
@@ -178,7 +175,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
                     />
                 </label>
 
-                {/* Description */}
                 <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     Description
                     <textarea
@@ -199,7 +195,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
                     />
                 </label>
 
-                {/* Color Picker */}
                 <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     Accent Color
                     <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
@@ -230,7 +225,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
                     </div>
                 </label>
 
-                {/* Submit */}
                 <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                     <button
                         type="submit"
@@ -261,7 +255,6 @@ export default function FeatureManager({ initialFeatures = [] }) {
                 </AnimatePresence>
             </motion.form>
 
-            {/* Features List */}
             <section className="panel">
                 <h3>Features ({features.length})</h3>
                 <p className="muted-text">Toggle active/inactive without deleting.</p>

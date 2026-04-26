@@ -3,6 +3,56 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+function LiveSessionTimer({ expiresAt }) {
+    const [timeLeft, setTimeLeft] = useState("");
+
+    useEffect(() => {
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const expiry = new Date(expiresAt).getTime();
+            const diff = expiry - now;
+
+            if (diff <= 0) {
+                setTimeLeft("Expired");
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            if (hours > 0) {
+                setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+            } else if (minutes > 0) {
+                setTimeLeft(`${minutes}m ${seconds}s`);
+            } else {
+                setTimeLeft(`${seconds}s`);
+            }
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+    }, [expiresAt]);
+
+    const isExpiringSoon = () => {
+        const now = new Date().getTime();
+        const expiry = new Date(expiresAt).getTime();
+        return (expiry - now) < 60000;
+    };
+
+    return (
+        <span style={{
+            fontSize: "0.8rem",
+            fontWeight: 700,
+            color: isExpiringSoon() ? "#ef4444" : "#22c55e",
+            fontFamily: "monospace"
+        }}>
+            {timeLeft}
+        </span>
+    );
+}
+
 const PERMISSION_GROUPS = {
     Dashboard: [
         { key: "dashboard.view", label: "View Dashboard" },
@@ -120,7 +170,7 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
         username: "",
         password: "",
         roleId: "",
-        sessionTimeoutMin: 30,
+        sessionTimeoutMin: 10,
         maxSessions: 2,
     });
     const [editingId, setEditingId] = useState("");
@@ -128,6 +178,24 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [activeTab, setActiveTab] = useState("subadmins");
+    useEffect(() => {
+        if (activeTab !== "subadmins") return;
+
+        const interval = setInterval(async () => {
+            try {
+                const response = await fetch("/api/admin/subadmins");
+                if (response.ok) {
+                    const data = await response.json();
+                    setSubAdmins(data.subadmins || []);
+                } else if (response.status === 401) {
+                    clearInterval(interval);
+                }
+            } catch (e) {
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, [activeTab]);
 
     useEffect(() => {
         const styleId = "subadmin-manager-styles";
@@ -146,7 +214,7 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
 
     const resetForm = () => {
         setEditingId("");
-        setForm({ username: "", password: "", roleId: "", sessionTimeoutMin: 30, maxSessions: 2 });
+        setForm({ username: "", password: "", roleId: "", sessionTimeoutMin: 10, maxSessions: 2 });
         setError("");
         setSuccess("");
     };
@@ -157,7 +225,7 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
             username: subadmin.username || "",
             password: "",
             roleId: subadmin.roleId || "",
-            sessionTimeoutMin: Number(subadmin.sessionTimeoutMin) || 30,
+            sessionTimeoutMin: Number(subadmin.sessionTimeoutMin) || 10,
             maxSessions: Number(subadmin.maxSessions) || 2,
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -294,7 +362,7 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
                                     <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                         Session Timeout (minutes)
                                         <select name="sessionTimeoutMin" value={form.sessionTimeoutMin} onChange={onChange} style={inputStyle}>
-                                            {[10, 15, 30, 45, 60].map((min) => <option key={min} value={min}>{min} min</option>)}
+                                            {[5, 10, 15, 30, 45, 60].map((min) => <option key={min} value={min}>{min} min</option>)}
                                         </select>
                                     </label>
                                     <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -335,12 +403,17 @@ export default function SubAdminManager({ initialSubAdmins = [], initialRoles = 
                                             {subadmin.sessions?.length > 0 && (
                                                 <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "#f5f5f5", borderRadius: "10px" }}>
                                                     <p style={{ fontSize: "0.8rem", fontWeight: 600, marginBottom: "0.5rem" }}>Active Sessions:</p>
-                                                    {subadmin.sessions.map((session) => (
-                                                        <div key={session.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                            <span style={{ fontSize: "0.8rem" }}>Expires: {new Date(session.expiresAt).toLocaleString()}</span>
-                                                            <button onClick={() => logoutSession(session.id, subadmin.id)} style={{ padding: "0.2rem 0.6rem", background: "#ef4444", color: "#fff", border: "none", borderRadius: "6px", fontSize: "0.75rem", cursor: "pointer" }}>Logout</button>
-                                                        </div>
-                                                    ))}
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                        {subadmin.sessions.map((session) => (
+                                                            <div key={session.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem", padding: "0.5rem", background: "#fff", borderRadius: "8px", border: "2px solid #000" }}>
+                                                                <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
+                                                                    <span style={{ fontSize: "0.75rem", color: "#666" }}>Expires: {new Date(session.expiresAt).toLocaleString()}</span>
+                                                                    <LiveSessionTimer expiresAt={session.expiresAt} />
+                                                                </div>
+                                                                <button onClick={() => logoutSession(session.id, subadmin.id)} style={{ padding: "0.3rem 0.6rem", background: "#ef4444", color: "#fff", border: "none", borderRadius: "6px", fontSize: "0.75rem", cursor: "pointer", fontWeight: 700 }}>Logout</button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -380,12 +453,29 @@ function RoleManager({ roles, setRoles }) {
     });
 
     const togglePermission = (permKey) => {
-        setForm((prev) => ({
-            ...prev,
-            permissions: prev.permissions.includes(permKey)
-                ? prev.permissions.filter((p) => p !== permKey)
-                : [...prev.permissions, permKey],
-        }));
+        setForm((prev) => {
+            let next = [...prev.permissions];
+            const isView = permKey.endsWith(".view");
+
+            if (next.includes(permKey)) {
+                next = next.filter((p) => p !== permKey);
+                if (isView) {
+                    const prefix = permKey.replace(".view", ".");
+                    next = next.filter((p) => !p.startsWith(prefix));
+                }
+            } else {
+                next.push(permKey);
+                if (!isView) {
+                    const prefix = permKey.split(".")[0];
+                    const viewKey = prefix + ".view";
+                    if (!next.includes(viewKey)) {
+                        next.push(viewKey);
+                    }
+                }
+            }
+
+            return { ...prev, permissions: next };
+        });
     };
 
     const selectAllInGroup = (groupKey, perms) => {
@@ -488,10 +578,18 @@ function RoleManager({ roles, setRoles }) {
                             </div>
                         </div>
 
+                        <div style={{ padding: "0.75rem", background: "#fffbeb", border: "2px solid #f59e0b", borderRadius: "12px", marginBottom: "1rem" }}>
+                            <p style={{ margin: 0, fontSize: "0.8rem", color: "#92400e", fontWeight: 600 }}>
+                                ⚠️ View permission is required before any other permission can be granted for a section.
+                            </p>
+                        </div>
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                             {Object.entries(PERMISSION_GROUPS).map(([group, perms]) => {
                                 const selectedCount = perms.filter((p) => form.permissions.includes(p.key)).length;
                                 const isExpanded = expandedGroups[group];
+                                const viewPerm = perms.find((p) => p.key.endsWith(".view"));
+                                const hasView = viewPerm ? form.permissions.includes(viewPerm.key) : true;
                                 return (
                                     <div key={group} style={{ border: "3px solid #000", borderRadius: "12px", overflow: "hidden" }}>
                                         <div
@@ -509,22 +607,33 @@ function RoleManager({ roles, setRoles }) {
                                         </div>
                                         {isExpanded && (
                                             <div style={{ padding: "1rem", background: "#fff", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                                                {perms.map((perm) => (
-                                                    <label
-                                                        key={perm.key}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        style={{
-                                                            display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.5rem 0.75rem",
-                                                            background: form.permissions.includes(perm.key) ? "#000" : "#fff",
-                                                            color: form.permissions.includes(perm.key) ? "#ffd400" : "#000",
-                                                            border: "2px solid #000", borderRadius: "8px", fontSize: "0.8rem",
-                                                            fontWeight: 600, cursor: "pointer", boxShadow: form.permissions.includes(perm.key) ? "2px 2px 0 #ffd400" : "none",
-                                                        }}
-                                                    >
-                                                        <input type="checkbox" checked={form.permissions.includes(perm.key)} onChange={() => togglePermission(perm.key)} style={{ display: "none" }} />
-                                                        {perm.label}
-                                                    </label>
-                                                ))}
+                                                {perms.map((perm) => {
+                                                    const isView = perm.key.endsWith(".view");
+                                                    const isDisabled = !isView && !hasView;
+                                                    const isSelected = form.permissions.includes(perm.key);
+                                                    return (
+                                                        <label
+                                                            key={perm.key}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            title={isDisabled ? "Enable View permission first" : ""}
+                                                            style={{
+                                                                display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.5rem 0.75rem",
+                                                                background: isDisabled ? "#f0f0f0" : isSelected ? "#000" : "#fff",
+                                                                color: isDisabled ? "#aaa" : isSelected ? "#ffd400" : "#000",
+                                                                border: isDisabled ? "2px dashed #ccc" : "2px solid #000", borderRadius: "8px", fontSize: "0.8rem",
+                                                                fontWeight: 600, cursor: isDisabled ? "not-allowed" : "pointer",
+                                                                boxShadow: isSelected && !isDisabled ? "2px 2px 0 #ffd400" : "none",
+                                                                opacity: isDisabled ? 0.5 : 1,
+                                                                position: "relative",
+                                                            }}
+                                                        >
+                                                            <input type="checkbox" checked={isSelected} disabled={isDisabled} onChange={() => !isDisabled && togglePermission(perm.key)} style={{ display: "none" }} />
+                                                            {isView && <span style={{ fontSize: "0.7rem" }}>👁️</span>}
+                                                            {perm.label}
+                                                            {isDisabled && <span style={{ fontSize: "0.65rem", marginLeft: "0.2rem" }}>🔒</span>}
+                                                        </label>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </div>

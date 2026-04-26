@@ -4,6 +4,13 @@ import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { IconClock, IconStar } from "@/components/Icons";
 
+function difficultyStyle(difficulty) {
+    const d = (difficulty || "Easy").toLowerCase();
+    if (d === "medium") return { bg: "#fef9c3", color: "#854d0e", border: "#ca8a04" };
+    if (d === "hard") return { bg: "#fef2f2", color: "#991b1b", border: "#dc2626" };
+    return { bg: "#ecfdf5", color: "#166534", border: "#16a34a" };
+}
+
 function formatTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -17,6 +24,7 @@ export default function QuizAttemptClient({ quiz }) {
     const submitted = manualSubmitted || secondsLeft <= 0;
 
     const totalQuestions = quiz.questions.length;
+    const ds = difficultyStyle(quiz.difficulty);
 
     useEffect(() => {
         if (submitted) return;
@@ -46,40 +54,95 @@ export default function QuizAttemptClient({ quiz }) {
     };
 
     return (
-        <div className="mx-auto w-[min(980px,94vw)] py-10 md:py-14" style={{ color: "var(--ink)" }}>
+        <div className="mx-auto w-[min(980px,94vw)] py-10 md:py-14" style={{ color: "var(--text-dark)" }}>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <Link href="/quiz" className="text-sm font-semibold hover:underline" style={{ color: "var(--brand)" }}>
-                    Back to Quizzes
+                <Link
+                    href="/quiz"
+                    className="text-sm font-semibold hover:underline"
+                    style={{ color: "var(--primary)" }}
+                >
+                    ← Back to Quizzes
                 </Link>
-                <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm" style={{ border: "1px solid var(--line)", background: "var(--paper)", color: "var(--ink)" }}>
+                <div
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+                    style={{ border: "2px solid var(--border)", background: "var(--paper)", color: "var(--text-dark)" }}
+                >
                     <IconClock size={14} /> {formatTime(Math.max(0, secondsLeft))}
                 </div>
             </div>
 
-            <section className="rounded-2xl p-5 md:p-7" style={{ border: "1px solid var(--line)", background: "var(--paper)" }}>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--brand)" }}>{quiz.category}</p>
-                <h1 className="mt-1 text-3xl font-bold md:text-4xl">{quiz.heading}</h1>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-muted)" }}>
+            <section
+                className="rounded-2xl p-5 md:p-7"
+                style={{ border: "2px solid var(--border)", background: "var(--paper)", boxShadow: "var(--shadow-md)" }}
+            >
+                <div className="flex items-center gap-3 flex-wrap mb-2">
+                    <p
+                        className="text-xs font-semibold uppercase tracking-[0.14em]"
+                        style={{ color: "var(--primary)" }}
+                    >
+                        {quiz.category}
+                    </p>
+                    <span
+                        className="text-xs font-bold px-2 py-1 rounded-full"
+                        style={{ background: ds.bg, color: ds.color, border: `1px solid ${ds.border}` }}
+                    >
+                        {quiz.difficulty || "Easy"}
+                    </span>
+                </div>
+                <h1 className="text-3xl font-bold md:text-4xl" style={{ color: "var(--text-dark)" }}>
+                    {quiz.heading}
+                </h1>
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-muted)" }}>
                     <span>{quiz.title}</span>
-                    <span className="inline-flex items-center gap-1"><IconStar size={13} color="#f59e0b" /> {Number(quiz.rating || 4.5).toFixed(1)}</span>
+                    <span className="inline-flex items-center gap-1">
+                        <IconStar size={13} color="var(--star)" /> {Number(quiz.rating || 4.5).toFixed(1)}
+                    </span>
                     <span>{totalQuestions} Questions</span>
                     <span>{quiz.minutes} Minutes</span>
                 </div>
 
-                <div className="mt-4 h-2 overflow-hidden rounded-full" style={{ background: "#e2e8f0" }}>
-                    <div className="h-full rounded-full" style={{ width: `${progressPercent}%`, background: "linear-gradient(to right, #0ea5e9, #2563eb)" }} />
+                <div className="mt-4 h-3 overflow-hidden rounded-full" style={{ background: "var(--border)" }}>
+                    <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                            width: `${progressPercent}%`,
+                            background: "linear-gradient(to right, var(--secondary), var(--primary))",
+                        }}
+                    />
                 </div>
+                <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                    {progressPercent}% complete — {Object.keys(selected).length} of {totalQuestions} answered
+                </p>
             </section>
 
             <section className="mt-5 space-y-4">
                 {quiz.questions.map((question, index) => {
                     const selectedIndex = selected[question.id];
                     return (
-                        <article key={question.id} className="rounded-xl p-4" style={{ border: "1px solid var(--line)", background: "var(--paper)" }}>
-                            <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-                                Q{index + 1}. {question.questionText}
-                            </p>
-                            <div className="mt-3 space-y-2">
+                        <article
+                            key={question.id}
+                            className="rounded-2xl p-5"
+                            style={{
+                                border: "2px solid var(--border)",
+                                background: "var(--paper)",
+                                boxShadow: "var(--shadow-sm)",
+                            }}
+                        >
+                            <div className="flex items-start gap-3 mb-3">
+                                <span
+                                    className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                                    style={{
+                                        background: "var(--primary)",
+                                        color: "#fff",
+                                    }}
+                                >
+                                    {index + 1}
+                                </span>
+                                <p className="text-sm font-semibold leading-relaxed" style={{ color: "var(--text-dark)" }}>
+                                    {question.questionText}
+                                </p>
+                            </div>
+                            <div className="ml-0 space-y-2">
                                 {question.options.map((option, optionIndex) => {
                                     const isSelected = selectedIndex === optionIndex;
                                     const isCorrect = submitted && question.correctIndex === optionIndex;
@@ -90,14 +153,31 @@ export default function QuizAttemptClient({ quiz }) {
                                             key={`${question.id}-option-${optionIndex}`}
                                             type="button"
                                             onClick={() => chooseOption(question.id, optionIndex)}
-                                            className="w-full rounded-lg px-3 py-2 text-left text-sm transition"
+                                            className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition-all"
                                             style={{
-                                                border: `1px solid ${isCorrect ? "#16a34a" : isWrongSelected ? "#dc2626" : isSelected ? "#3b82f6" : "var(--line)"}`,
-                                                background: isCorrect ? "#ecfdf3" : isWrongSelected ? "#fef2f2" : isSelected ? "#eff6ff" : "var(--paper)",
-                                                color: "var(--ink)",
+                                                border: `2px solid ${isCorrect ? "var(--success)" : isWrongSelected ? "var(--danger)" : isSelected ? "var(--primary)" : "var(--border)"}`,
+                                                background: isCorrect
+                                                    ? "var(--success-light)"
+                                                    : isWrongSelected
+                                                    ? "var(--danger-light)"
+                                                    : isSelected
+                                                    ? "var(--primary-light)"
+                                                    : "var(--paper)",
+                                                color: "var(--text-dark)",
+                                                boxShadow: isSelected && !submitted ? "0 0 0 3px rgba(0, 132, 209, 0.15)" : "none",
                                             }}
                                             disabled={submitted}
                                         >
+                                            <span
+                                                className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold mr-2"
+                                                style={{
+                                                    background: isSelected ? "var(--primary)" : "var(--bg-alt)",
+                                                    color: isSelected ? "#fff" : "var(--text-muted)",
+                                                    border: isSelected ? "none" : "1px solid var(--border)",
+                                                }}
+                                            >
+                                                {String.fromCharCode(65 + optionIndex)}
+                                            </span>
                                             {option}
                                         </button>
                                     );
@@ -108,22 +188,51 @@ export default function QuizAttemptClient({ quiz }) {
                 })}
             </section>
 
-            <section className="mt-6 rounded-xl p-4" style={{ border: "1px solid var(--line)", background: "var(--bg-alt)" }}>
+            <section
+                className="mt-6 rounded-2xl p-5"
+                style={{ border: "2px solid var(--border)", background: "var(--bg-alt)" }}
+            >
                 {!submitted ? (
-                    <div className="inline-actions" style={{ justifyContent: "space-between" }}>
+                    <div className="flex items-center justify-between flex-wrap gap-3">
                         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                             {Object.keys(selected).length}/{totalQuestions} questions answered
                         </p>
-                        <button type="button" className="btn-primary" onClick={submitQuiz}>Submit Quiz</button>
+                        <button
+                            type="button"
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all"
+                            style={{
+                                background: "var(--primary)",
+                                color: "#fff",
+                                boxShadow: "var(--shadow-sm)",
+                            }}
+                            onClick={submitQuiz}
+                        >
+                            Submit Quiz
+                        </button>
                     </div>
                 ) : (
                     <div>
-                        <h2 className="text-xl font-bold" style={{ color: "var(--ink)" }}>
+                        <h2 className="text-xl font-bold" style={{ color: "var(--text-dark)" }}>
                             Your Score: {score}/{totalQuestions}
                         </h2>
                         <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-                            {score === totalQuestions ? "Perfect score." : "Answers are now highlighted with correct and incorrect choices."}
+                            {score === totalQuestions
+                                ? "Perfect score! Well done!"
+                                : `${totalQuestions - score} answer(s) were incorrect. Correct choices are highlighted in green.`}
                         </p>
+                        <div className="mt-3 flex gap-3">
+                            <Link
+                                href="/quiz"
+                                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl font-semibold text-sm transition-all"
+                                style={{
+                                    background: "var(--bg-alt)",
+                                    color: "var(--text-dark)",
+                                    border: "2px solid var(--border)",
+                                }}
+                            >
+                                ← Back to Quizzes
+                            </Link>
+                        </div>
                     </div>
                 )}
             </section>

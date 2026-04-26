@@ -1,8 +1,13 @@
-import { getSessionSubAdmin } from "./admin-auth";
+import { getSessionSubAdmin, getSessionAdmin } from "./admin-auth";
 import { prisma } from "./prisma";
 import { NextResponse } from "next/server";
 
 export async function requireSubAdminPermission(permission) {
+    const admin = await getSessionAdmin();
+    if (admin) {
+        return { authorized: true, subadmin: null, role: null, isAdmin: true };
+    }
+
     const session = await getSessionSubAdmin();
 
     if (!session) {

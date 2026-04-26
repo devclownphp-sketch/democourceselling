@@ -106,7 +106,7 @@ export default function ReviewModal({ isOpen, onClose }) {
                 </form>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .review-modal-overlay {
                     position: fixed;
                     top: 0;

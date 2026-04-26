@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { parseReviewPayload } from "@/lib/review-schema";
+import { parseReviewUpdate } from "@/lib/review-schema";
 
 export async function PUT(request, { params }) {
     const { unauthorized } = await requireAdminApi();
@@ -10,7 +10,7 @@ export async function PUT(request, { params }) {
     try {
         const { id } = await params;
         const payload = await request.json();
-        const parsed = parseReviewPayload(payload);
+        const parsed = parseReviewUpdate(payload);
 
         const review = await prisma.review.update({
             where: { id },

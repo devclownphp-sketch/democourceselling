@@ -2311,12 +2311,24 @@ High contrast, thick borders, bold shadows
 }
 
 .courses-header {
-    background: var(--brutal-yellow);
+    background: linear-gradient(135deg, #ffd400 0%, #ffe066 50%, #ffd400 100%);
     border-bottom: var(--brutal-border-thick);
-    padding: 3rem 1.5rem;
+    padding: 2rem 1.5rem 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.courses-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, #000 0, #000 8px, transparent 8px, transparent 16px);
 }
 
 .courses-header-content {
@@ -2326,28 +2338,30 @@ High contrast, thick borders, bold shadows
 }
 
 .courses-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     margin: 0;
-    opacity: 0.7;
+    color: #000;
+    opacity: 0.5;
 }
 
 .courses-title {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    margin: 0.5rem 0;
+    margin: 0;
     line-height: 1.1;
+    color: #000;
 }
 
 .courses-count {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    opacity: 0.8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(0,0,0,0.55);
 }
 
 .courses-back-btn {
@@ -2405,14 +2419,16 @@ High contrast, thick borders, bold shadows
     background: linear-gradient(135deg, #1a1a2e, #16213e);
 }
 
-.brutal-course-img {
+.brutal-course-img,
+.brutal-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.brutal-course-card:hover .brutal-course-img {
+.brutal-course-card:hover .brutal-course-img,
+.brutal-course-card:hover .brutal-card-img {
     transform: scale(1.05);
 }
 
@@ -2564,10 +2580,22 @@ High contrast, thick borders, bold shadows
 }
 
 .contact-header {
-    background: var(--brutal-yellow);
+    background: linear-gradient(135deg, #ffd400 0%, #ffe066 50%, #ffd400 100%);
     border-bottom: var(--brutal-border-thick);
-    padding: 3rem 1.5rem;
+    padding: 2rem 1.5rem 1.75rem;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, #000 0, #000 8px, transparent 8px, transparent 16px);
 }
 
 .contact-header-content {
@@ -2576,26 +2604,29 @@ High contrast, thick borders, bold shadows
 }
 
 .contact-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     margin: 0;
-    opacity: 0.7;
+    color: #000;
+    opacity: 0.5;
 }
 
 .contact-title {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
+    color: #000;
 }
 
 .contact-desc {
     margin: 0;
-    font-size: 1rem;
-    opacity: 0.8;
+    font-size: 0.95rem;
+    color: rgba(0,0,0,0.55);
+    font-weight: 600;
 }
 
 .contact-container {
@@ -2614,10 +2645,22 @@ High contrast, thick borders, bold shadows
 }
 
 .quiz-header {
-    background: var(--brutal-yellow);
+    background: linear-gradient(135deg, #ffd400 0%, #ffe066 50%, #ffd400 100%);
     border-bottom: var(--brutal-border-thick);
-    padding: 3rem 1.5rem;
+    padding: 2rem 1.5rem 1.75rem;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.quiz-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, #000 0, #000 8px, transparent 8px, transparent 16px);
 }
 
 .quiz-header-content {
@@ -2626,26 +2669,29 @@ High contrast, thick borders, bold shadows
 }
 
 .quiz-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     margin: 0;
-    opacity: 0.7;
+    color: #000;
+    opacity: 0.5;
 }
 
 .quiz-title {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
+    color: #000;
 }
 
 .quiz-desc {
     margin: 0;
-    font-size: 1rem;
-    opacity: 0.8;
+    font-size: 0.95rem;
+    color: rgba(0,0,0,0.55);
+    font-weight: 600;
 }
 
 .quiz-container {
@@ -3462,8 +3508,8 @@ High contrast, thick borders, bold shadows
 }
 
 .contact-info-panel {
-    background: linear-gradient(135deg, #000 0%, #1a1a2e 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #ffd400 0%, #ffe066 100%);
+    color: #000;
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -3496,7 +3542,8 @@ High contrast, thick borders, bold shadows
 }
 
 .contact-stats-banner {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.08);
+    border: 3px solid #000;
     border-radius: 16px;
     padding: 1.25rem;
     display: flex;
@@ -3525,9 +3572,9 @@ High contrast, thick borders, bold shadows
 }
 
 .contact-stat-divider {
-    width: 1px;
+    width: 2px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .contact-details {
@@ -3546,7 +3593,8 @@ High contrast, thick borders, bold shadows
 .contact-detail-icon {
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid #000;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -3570,7 +3618,7 @@ High contrast, thick borders, bold shadows
 .contact-social {
     margin-top: auto;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 2px solid rgba(0, 0, 0, 0.15);
 }
 
 .contact-social-label {
@@ -3589,21 +3637,21 @@ High contrast, thick borders, bold shadows
 .contact-social-btn {
     width: 42px;
     height: 42px;
-    background: rgba(255, 255, 255, 0.15);
+    background: #000;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: #ffd400;
     text-decoration: none;
     transition: all 0.2s ease;
-    border: 2px solid transparent;
+    border: 2px solid #000;
 }
 
 .contact-social-btn:hover {
-    background: #ffd400;
+    background: #fff;
     color: #000;
-    border-color: #ffd400;
+    border-color: #000;
     transform: scale(1.1);
 }
 
@@ -4381,6 +4429,23 @@ High contrast, thick borders, bold shadows
     100% {
         transform: translateX(-50%);
     }
+}
+
+@keyframes marquee-scroll-right {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(50%);
+    }
+}
+
+.marquee-track-rtl {
+    animation-name: marquee-scroll-right !important;
+}
+
+.marquee-track-ltr {
+    animation-name: marquee-scroll-left !important;
 }
 
 .marquee-card {

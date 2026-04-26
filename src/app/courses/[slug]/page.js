@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import VisitTracker from "@/components/VisitTracker";
-import CourseEnrollButton from "@/components/CourseEnrollButton";
-import { IconTarget, IconClock, IconVideo, IconStar, IconMsg } from "@/components/Icons";
+import { IconClock, IconStar, IconCheck, IconDownload, IconMail } from "@/components/Icons";
 
 export const dynamic = "force-dynamic";
 
@@ -17,24 +15,45 @@ function splitLines(text) {
 export default async function CourseDetailsPage({ params }) {
     const { slug } = await params;
 
-    const [course, reviews] = await Promise.all([
-        prisma.course.findUnique({
-            where: { slug },
+    const isUrlIdFormat = /^[A-Z0-9]{5}$/i.test(slug);
+
+    let course;
+    if (isUrlIdFormat) {
+        course = await prisma.course.findFirst({
+            where: {
+                courseUrlId: slug.toUpperCase(),
+                isActive: true,
+            },
             include: {
                 courseType: true,
                 driveFolders: {
                     select: { id: true },
                 },
             },
-        }),
-        prisma.review.findMany({
-            where: { isActive: true },
-            orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }],
-        }),
-    ]);
+        });
+    }
 
-    if (!course || !course.isActive) {
+    if (!course) {
+        course = await prisma.course.findUnique({
+            where: {
+                slug,
+                isActive: true,
+            },
+            include: {
+                courseType: true,
+                driveFolders: {
+                    select: { id: true },
+                },
+            },
+        });
+    }
+
+    if (!course) {
         notFound();
+    }
+
+    if (course.courseUrlId && slug === course.slug) {
+        redirect(`/courses/${course.courseUrlId}`);
     }
 
     const normalizedCourse = {
@@ -44,326 +63,293 @@ export default async function CourseDetailsPage({ params }) {
         originalPrice: Number(course.originalPrice || 0),
         offerPrice: Number(course.offerPrice || 0),
     };
-    const notesHref = `/courses/${normalizedCourse.slug}/notes`;
 
-    const reviewCards = reviews.map((review) => ({
-        name: review.name,
-        role: review.role || "Student",
-        rating: Number(review.rating || 5),
-        text: review.reviewText,
-    }));
-    const marqueeReviews = [...reviewCards, ...reviewCards];
+    const topics = splitLines(normalizedCourse.syllabusTopics);
+    const whoCanJoin = splitLines(normalizedCourse.whoCanJoin);
+    const studyPlan = splitLines(normalizedCourse.studyPlan);
+    const jobsAfter = splitLines(normalizedCourse.jobsAfter);
+    const notesHref = `/courses/${course.slug}/notes`;
 
     return (
-        <div className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text-primary)" }}>
-            <VisitTracker />
-            <section className="mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16" style={{ maxWidth: "1280px" }}>
-                {/* Back Link */}
-                <div className="mb-8">
-                    <Link
-                        href="/courses"
-                        className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-blue-700"
-                        style={{ color: "var(--brand-primary)" }}
-                    >
-                        ← Back to Courses
-                    </Link>
-                </div>
+        <div className="min-h-screen" style={{ background: "#f8f9fc" }}>
+            <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem" }}>
+                <nav style={{ padding: "1rem 0", display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "#64748b" }}>
+                    <Link href="/" style={{ color: "#64748b", textDecoration: "none" }}>Home</Link>
+                    <span>/</span>
+                    <Link href="/courses" style={{ color: "#64748b", textDecoration: "none" }}>Courses</Link>
+                    <span>/</span>
+                    <span style={{ color: "#0f172a" }}>{normalizedCourse.title}</span>
+                </nav>
+            </div>
 
-                {/* Main Content */}
-                <article
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                        border: "1px solid var(--border-light)",
-                        background: "var(--paper)",
-                        boxShadow: "var(--shadow-lg)",
-                    }}
-                >
-                    <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-0">
-                        {/* Sidebar */}
-                        <aside
-                            className="p-8 lg:border-r"
-                            style={{
-                                borderColor: "var(--border-light)",
-                                background: "var(--bg)",
-                            }}
-                        >
-                            {/* Course Image */}
-                            <div
-                                className="aspect-video w-full overflow-hidden rounded-lg mb-6"
-                                style={{
-                                    border: "1px solid var(--border-light)",
-                                    background: "linear-gradient(135deg, #f0f4f8, #d9e8f8)",
-                                }}
-                            >
+            <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem 3rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem", alignItems: "start" }} className="course-detail-grid">
+
+                    <aside style={{ order: 1 }} className="course-sidebar">
+                        <div style={{
+                            background: "#fff",
+                            border: "4px solid #000",
+                            borderRadius: "20px",
+                            overflow: "hidden",
+                            boxShadow: "8px 8px 0 #000",
+                            position: "sticky",
+                            top: "80px",
+                        }}>
+                            <div style={{ aspectRatio: "16/9", background: "linear-gradient(135deg, #1a1a2e, #16213e)", position: "relative" }}>
                                 {normalizedCourse.courseImage ? (
                                     <img
                                         src={normalizedCourse.courseImage}
                                         alt={`${normalizedCourse.title} banner`}
-                                        className="h-full w-full object-cover"
-                                        loading="lazy"
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        loading="eager"
                                     />
-                                ) : null}
-                            </div>
-
-                            {/* Metadata */}
-                            <div className="space-y-4 pb-6" style={{ borderBottom: "1px solid var(--border-light)" }}>
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-                                        Category
-                                    </p>
-                                    <p
-                                        className="mt-2 text-sm font-semibold px-3 py-1 inline-block rounded-md"
-                                        style={{
-                                            background: "var(--brand-primary-light)",
-                                            color: "var(--brand-primary)",
-                                        }}
-                                    >
-                                        {normalizedCourse.courseType?.name || "General"}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-                                        Rating
-                                    </p>
-                                    <div className="mt-2 flex items-center gap-2">
-                                        <div className="flex gap-1">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <IconStar
-                                                    key={i}
-                                                    size={16}
-                                                    color={i < Math.round(normalizedCourse.rating) ? "var(--warning)" : "var(--border-default)"}
-                                                />
-                                            ))}
-                                        </div>
-                                        <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-                                            {normalizedCourse.rating.toFixed(1)}
-                                        </span>
+                                ) : (
+                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3rem", color: "#ffd400" }}>
+                                        📚
                                     </div>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-tertiary)" }}>
-                                        Course Details
-                                    </p>
-                                    <ul className="space-y-1.5 text-sm" style={{ color: "var(--text-secondary)" }}>
-                                        <li className="flex items-center gap-2"><IconClock size={14} /> {normalizedCourse.duration}</li>
-                                        <li className="flex items-center gap-2"><IconVideo size={14} /> {normalizedCourse.classType}</li>
-                                        <li className="flex items-center gap-2"><IconTarget size={14} /> {normalizedCourse.level}</li>
-                                    </ul>
+                                )}
+                                <div style={{ position: "absolute", top: "12px", left: "12px" }}>
+                                    <span style={{
+                                        background: normalizedCourse.courseType?.color || "#10b981",
+                                        color: "#fff",
+                                        padding: "0.3rem 0.8rem",
+                                        borderRadius: "999px",
+                                        fontSize: "0.75rem",
+                                        fontWeight: 700,
+                                        border: "2px solid #000",
+                                    }}>
+                                        {normalizedCourse.courseType?.name || "General"}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Pricing */}
-                            <div className="py-6 space-y-4">
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-                                        Price
-                                    </p>
-                                    <div className="mt-2 flex items-baseline gap-2">
-                                        <span className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
-                                            ₹{normalizedCourse.offerPrice.toFixed(0)}
-                                        </span>
+                            <div style={{ padding: "1.5rem" }}>
+                                <div style={{ marginBottom: "1rem" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                                        <span style={{ fontWeight: 800, fontSize: "2rem", color: "#10b981" }}>₹{normalizedCourse.offerPrice.toFixed(0)}</span>
                                         {normalizedCourse.originalPrice > normalizedCourse.offerPrice && (
                                             <>
-                                                <span className="text-sm line-through" style={{ color: "var(--text-tertiary)" }}>
-                                                    ₹{normalizedCourse.originalPrice.toFixed(0)}
-                                                </span>
-                                                <span className="text-xs font-bold px-2 py-1 rounded" style={{ background: "var(--danger-light)", color: "var(--danger)" }}>
-                                                    Save {normalizedCourse.discountPercent.toFixed(0)}%
+                                                <span style={{ fontSize: "1rem", textDecoration: "line-through", color: "#94a3b8" }}>₹{normalizedCourse.originalPrice.toFixed(0)}</span>
+                                                <span style={{ background: "#ef4444", color: "#fff", padding: "0.2rem 0.5rem", borderRadius: "6px", fontSize: "0.7rem", fontWeight: 700 }}>
+                                                    {normalizedCourse.discountPercent.toFixed(0)}% OFF
                                                 </span>
                                             </>
                                         )}
                                     </div>
                                 </div>
-                                <CourseEnrollButton course={normalizedCourse} />
+
+                                <Link
+                                    href={`https://wa.me/91${normalizedCourse.whatsappNumber?.replace(/\D/g, '') || '9999999999'}?text=${encodeURIComponent(`Hi, I want to enroll in ${normalizedCourse.title}`)}`}
+                                    target="_blank"
+                                    style={{
+                                        display: "block",
+                                        width: "100%",
+                                        padding: "1rem",
+                                        background: "#10b981",
+                                        color: "#fff",
+                                        borderRadius: "16px",
+                                        fontWeight: 800,
+                                        fontSize: "1.1rem",
+                                        textAlign: "center",
+                                        textDecoration: "none",
+                                        border: "4px solid #000",
+                                        boxShadow: "4px 4px 0 #000",
+                                        marginBottom: "0.75rem",
+                                    }}
+                                >
+                                    Start Learning 🚀
+                                </Link>
+
                                 <Link
                                     href={notesHref}
-                                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all hover:-translate-y-px"
                                     style={{
-                                        border: "1px solid var(--border-default)",
-                                        color: "var(--text-primary)",
-                                        background: "var(--paper)",
-                                        boxShadow: "var(--shadow-xs)",
+                                        display: "block",
+                                        width: "100%",
+                                        padding: "0.75rem",
+                                        background: "#fff",
+                                        color: "#0084D1",
+                                        borderRadius: "12px",
+                                        fontWeight: 700,
+                                        textAlign: "center",
+                                        textDecoration: "none",
+                                        border: "3px solid #0084D1",
+                                        marginBottom: "1rem",
                                     }}
                                 >
-                                    <span aria-hidden="true">📄</span>
-                                    <span>View PDF Notes</span>
+                                    📄 View PDF Notes
                                 </Link>
-                            </div>
-                        </aside>
 
-                        {/* Main Content Area */}
-                        <div className="p-8 md:p-10 space-y-10">
-                            {/* Course Title & Description */}
-                            <div>
-                                <h1 className="text-4xl font-bold leading-tight" style={{ letterSpacing: "-0.02em", color: "var(--text-primary)" }}>
-                                    {normalizedCourse.title}
-                                </h1>
-                                <p className="mt-4 text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                                    {normalizedCourse.whatIs}
-                                </p>
-                            </div>
-
-                            {/* What You will Learn */}
-                            <section>
-                                <h2 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-                                    What You&apos;ll Learn
-                                </h2>
-                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {splitLines(normalizedCourse.syllabusTopics).slice(0, 8).map((item, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="flex items-start gap-3 p-3 rounded-lg"
-                                            style={{
-                                                background: "var(--bg)",
-                                                border: "1px solid var(--border-light)",
-                                            }}
-                                        >
-                                            <span style={{ color: "var(--brand-primary)", fontWeight: "bold" }}>✓</span>
-                                            <span style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>{item}</span>
-                                        </div>
-                                    ))}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", padding: "1rem", background: "#f8f9fc", borderRadius: "12px", border: "2px solid #e2e8f0" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        <IconClock size={16} color="#64748b" />
+                                        <span style={{ fontSize: "0.8rem", color: "#475569" }}>{normalizedCourse.duration}</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        <IconStar size={16} color="#f59e0b" />
+                                        <span style={{ fontSize: "0.8rem", color: "#475569" }}>{normalizedCourse.rating.toFixed(1)} Rating</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        <span style={{ fontSize: "0.8rem", color: "#475569" }}>🎯 {normalizedCourse.level}</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        <span style={{ fontSize: "0.8rem", color: "#475569" }}>🎬 {normalizedCourse.classType}</span>
+                                    </div>
                                 </div>
-                            </section>
 
-                            {/* Course Info Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <article
-                                    className="p-6 rounded-lg"
-                                    style={{
-                                        border: "1px solid var(--border-light)",
-                                        background: "var(--bg)",
-                                    }}
-                                >
-                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Who Can Join</h3>
-                                    <ul className="mt-3 space-y-2">
-                                        {splitLines(normalizedCourse.whoCanJoin).map((item, idx) => (
-                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
-                                                <span className="text-brand-primary">•</span>
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
+                                <div style={{ marginTop: "1rem", padding: "1rem", background: "#f0f9ff", borderRadius: "12px", border: "2px solid #0084D1" }}>
+                                    <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#0084D1", marginBottom: "0.5rem", textTransform: "uppercase" }}>This Course Includes</p>
+                                    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                                        <li style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "#475569" }}>
+                                            <IconCheck size={14} color="#10b981" /> {normalizedCourse.liveQna}
+                                        </li>
+                                        <li style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "#475569" }}>
+                                            <IconDownload size={14} color="#10b981" /> {normalizedCourse.pdfNotes}
+                                        </li>
+                                        <li style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "#475569" }}>
+                                            <IconMail size={14} color="#10b981" /> {normalizedCourse.callSupport}
+                                        </li>
+                                        <li style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "#475569" }}>
+                                            <IconCheck size={14} color="#10b981" /> {normalizedCourse.lifetimeAccess ? "Lifetime Access" : "Limited Access"}
+                                        </li>
                                     </ul>
-                                </article>
-
-                                <article
-                                    className="p-6 rounded-lg"
-                                    style={{
-                                        border: "1px solid var(--border-light)",
-                                        background: "var(--bg)",
-                                    }}
-                                >
-                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>How to Study</h3>
-                                    <ul className="mt-3 space-y-2">
-                                        {splitLines(normalizedCourse.studyPlan).map((item, idx) => (
-                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
-                                                <span className="text-brand-primary">•</span>
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </article>
-
-                                <article
-                                    className="p-6 rounded-lg"
-                                    style={{
-                                        border: "1px solid var(--border-light)",
-                                        background: "var(--bg)",
-                                    }}
-                                >
-                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>After Completion</h3>
-                                    <ul className="mt-3 space-y-2">
-                                        {splitLines(normalizedCourse.jobsAfter).map((item, idx) => (
-                                            <li key={idx} className="text-sm flex gap-2" style={{ color: "var(--text-secondary)" }}>
-                                                <span className="text-brand-primary">•</span>
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </article>
-
-                                <article
-                                    className="p-6 rounded-lg"
-                                    style={{
-                                        border: "1px solid var(--border-light)",
-                                        background: "var(--bg)",
-                                    }}
-                                >
-                                    <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Support Included</h3>
-                                    <ul className="mt-3 space-y-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                                        <li>• {normalizedCourse.liveQna}</li>
-                                        <li>• {normalizedCourse.pdfNotes}</li>
-                                        <li>• {normalizedCourse.callSupport}</li>
-                                        <li>• {normalizedCourse.lifetimeAccess ? "Lifetime Access" : "Limited Access"}</li>
-                                    </ul>
-                                </article>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </article>
+                    </aside>
 
-                {/* Reviews Section */}
-                {marqueeReviews.length > 0 && (
-                    <section className="mt-16">
-                        <div className="mb-8">
-                            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--brand-primary)" }}>
-                                Student Feedback
+                    <main style={{ order: 2 }} className="course-main">
+                        <div style={{ marginBottom: "2rem" }}>
+                            <h1 style={{
+                                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                                fontWeight: 800,
+                                color: "#0f172a",
+                                lineHeight: 1.2,
+                                marginBottom: "0.75rem",
+                            }}>
+                                {normalizedCourse.title}
+                            </h1>
+                            <p style={{ fontSize: "1rem", color: "#475569", lineHeight: 1.6 }}>
+                                {normalizedCourse.whatIs}
                             </p>
-                            <h2 className="mt-2 text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
-                                Loved by Learners
-                            </h2>
                         </div>
-                        <div className="overflow-hidden rounded-lg" style={{ border: "1px solid var(--border-light)" }}>
-                            <div className="marquee-track flex gap-4 p-6" style={{ background: "var(--paper)" }}>
-                                {marqueeReviews.map((review, idx) => (
-                                    <article
-                                        key={idx}
-                                        className="shrink-0 w-80 p-6 rounded-lg"
-                                        style={{
-                                            border: "1px solid var(--border-light)",
-                                            background: "var(--paper)",
-                                        }}
-                                    >
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div
-                                                className="flex items-center justify-center w-12 h-12 rounded-full font-bold text-sm"
-                                                style={{
-                                                    background: "var(--brand-primary-light)",
-                                                    color: "var(--brand-primary)",
-                                                }}
-                                            >
-                                                {review.name?.[0]?.toUpperCase() || "U"}
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
-                                                    {review.name}
-                                                </p>
-                                                <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                                                    {review.role}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-1 mb-3">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <IconStar
-                                                    key={i}
-                                                    size={14}
-                                                    color={i < (review.rating || 5) ? "var(--warning)" : "var(--border-default)"}
-                                                />
-                                            ))}
-                                        </div>
-                                        <p
-                                            className="text-sm leading-relaxed line-clamp-4"
-                                            style={{ color: "var(--text-secondary)" }}
-                                        >
-                                            {review.text}
-                                        </p>
-                                    </article>
+
+                        <div style={{
+                            background: "linear-gradient(135deg, #f0f9ff, #f5f3ff)",
+                            border: "3px solid #e2e8f0",
+                            borderRadius: "20px",
+                            padding: "1.5rem",
+                            marginBottom: "2rem",
+                        }}>
+                            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+                                What You'll Learn ✓
+                            </h2>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "0.75rem" }}>
+                                {topics.slice(0, 8).map((item, idx) => (
+                                    <div key={idx} style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: "0.75rem",
+                                        padding: "0.75rem",
+                                        background: "#fff",
+                                        borderRadius: "12px",
+                                        border: "2px solid #e2e8f0",
+                                    }}>
+                                        <span style={{ color: "#10b981", fontWeight: 900, fontSize: "1.2rem", flexShrink: 0 }}>✓</span>
+                                        <span style={{ color: "#475569", fontSize: "0.9rem" }}>{item}</span>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                    </section>
-                )}
-            </section>
+
+                        <div style={{
+                            background: "#fff",
+                            border: "4px solid #000",
+                            borderRadius: "20px",
+                            overflow: "hidden",
+                            boxShadow: "6px 6px 0 #000",
+                            marginBottom: "2rem",
+                        }}>
+                            <div style={{ background: "#0084D1", padding: "1rem 1.5rem", borderBottom: "3px solid #000" }}>
+                                <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#fff", margin: 0 }}>👥 Who Can Join</h2>
+                            </div>
+                            <div style={{ padding: "1.5rem" }}>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                    {whoCanJoin.map((item, idx) => (
+                                        <li key={idx} style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "#475569" }}>
+                                            <span style={{ width: "24px", height: "24px", background: "#f0f9ff", border: "2px solid #0084D1", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 700, color: "#0084D1", flexShrink: 0 }}>{idx + 1}</span>
+                                            <span>{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style={{
+                            background: "#fff",
+                            border: "4px solid #000",
+                            borderRadius: "20px",
+                            overflow: "hidden",
+                            boxShadow: "6px 6px 0 #000",
+                            marginBottom: "2rem",
+                        }}>
+                            <div style={{ background: "#10b981", padding: "1rem 1.5rem", borderBottom: "3px solid #000" }}>
+                                <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#fff", margin: 0 }}>📚 How to Study</h2>
+                            </div>
+                            <div style={{ padding: "1.5rem" }}>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                    {studyPlan.map((item, idx) => (
+                                        <li key={idx} style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "#475569" }}>
+                                            <span style={{ color: "#10b981", fontWeight: 900 }}>→</span>
+                                            <span>{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style={{
+                            background: "#fff",
+                            border: "4px solid #000",
+                            borderRadius: "20px",
+                            overflow: "hidden",
+                            boxShadow: "6px 6px 0 #000",
+                        }}>
+                            <div style={{ background: "#6f42c1", padding: "1rem 1.5rem", borderBottom: "3px solid #000" }}>
+                                <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#fff", margin: 0 }}>💼 Jobs After Completion</h2>
+                            </div>
+                            <div style={{ padding: "1.5rem" }}>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                    {jobsAfter.map((item, idx) => (
+                                        <li key={idx} style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "#475569" }}>
+                                            <span style={{ color: "#6f42c1", fontWeight: 900 }}>★</span>
+                                            <span>{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+
+            <style>{`
+                @media (min-width: 1024px) {
+                    .course-detail-grid {
+                        grid-template-columns: 380px 1fr !important;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .course-sidebar {
+                        order: 2 !important;
+                    }
+                    .course-main {
+                        order: 1 !important;
+                    }
+                    .course-sidebar > div {
+                        position: static !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

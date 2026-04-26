@@ -36,6 +36,7 @@ export async function GET(request) {
                       { studentName: { contains: query, mode: "insensitive" } },
                       { courseName: { contains: query, mode: "insensitive" } },
                       { regId: { contains: query, mode: "insensitive" } },
+                      { certificateId: { contains: query, mode: "insensitive" } },
                       { id: { contains: query } },
                   ],
               }

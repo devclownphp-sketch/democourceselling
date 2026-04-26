@@ -16,7 +16,6 @@ export default function CategoriesPageClient({ courseTypes = [], courses = [] })
 
     return (
         <div className="categories-page">
-            {/* Header */}
             <div className="categories-header">
                 <div className="categories-header-content">
                     <h1>Explore Categories</h1>
@@ -24,9 +23,7 @@ export default function CategoriesPageClient({ courseTypes = [], courses = [] })
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="categories-main">
-                {/* Sidebar - Simple category list */}
                 <aside className="categories-sidebar">
                     <div className="sidebar-header">
                         <IconFilter size={20} />
@@ -62,7 +59,6 @@ export default function CategoriesPageClient({ courseTypes = [], courses = [] })
                     </div>
                 </aside>
 
-                {/* Content - Course grid */}
                 <div className="categories-content">
                     <div className="categories-results-header">
                         <p className="results-count">
@@ -100,16 +96,28 @@ export default function CategoriesPageClient({ courseTypes = [], courses = [] })
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .categories-page {
                     min-height: 100vh;
                     background: #f8f9fc;
                 }
 
                 .categories-header {
-                    background: #ffd400;
+                    background: linear-gradient(135deg, #ffd400 0%, #ffe066 50%, #ffd400 100%);
                     border-bottom: 4px solid #000;
-                    padding: 3rem 1.5rem;
+                    padding: 2rem 1.5rem 1.75rem;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .categories-header::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: repeating-linear-gradient(90deg, #000 0, #000 8px, transparent 8px, transparent 16px);
                 }
 
                 .categories-header-content {
@@ -118,17 +126,19 @@ export default function CategoriesPageClient({ courseTypes = [], courses = [] })
                 }
 
                 .categories-header h1 {
-                    font-size: clamp(2rem, 5vw, 3rem);
+                    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
                     font-weight: 900;
                     text-transform: uppercase;
                     letter-spacing: -0.02em;
                     margin: 0;
+                    color: #000;
                 }
 
                 .categories-header p {
-                    margin: 0.5rem 0 0;
-                    font-size: 1.1rem;
-                    opacity: 0.8;
+                    margin: 0.25rem 0 0;
+                    font-size: 0.95rem;
+                    color: rgba(0,0,0,0.55);
+                    font-weight: 600;
                 }
 
                 .categories-main {

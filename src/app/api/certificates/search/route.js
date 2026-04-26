@@ -12,26 +12,29 @@ export async function GET(request) {
 
     try {
         let certificate = null;
+        const searchValue = value.trim();
 
         if (type === "regId") {
-            const regId = value.toUpperCase();
-            certificate = await prisma.certificate.findUnique({
-                where: { regId },
+            certificate = await prisma.certificate.findFirst({
+                where: {
+                    regId: {
+                        equals: searchValue,
+                        mode: "insensitive",
+                    },
+                },
                 include: { template: true },
             });
         } else if (type === "certId") {
-            const certId = value.toUpperCase().replace(/-/g, "");
-            if (certId.length === 7) {
-                certificate = await prisma.certificate.findFirst({
-                    where: {
-                        OR: [
-                            { regId: { endsWith: certId } },
-                            { studentName: { contains: certId, mode: "insensitive" } },
-                        ],
+            const certId = searchValue.toUpperCase().replace(/[^A-Z]/g, "");
+            certificate = await prisma.certificate.findFirst({
+                where: {
+                    certificateId: {
+                        equals: certId,
+                        mode: "insensitive",
                     },
-                    include: { template: true },
-                });
-            }
+                },
+                include: { template: true },
+            });
         }
 
         if (!certificate) {
@@ -45,6 +48,7 @@ export async function GET(request) {
             found: true,
             certificate: {
                 id: certificate.id,
+                certificateId: certificate.certificateId,
                 regId: certificate.regId,
                 studentName: certificate.studentName,
                 courseName: certificate.courseName,

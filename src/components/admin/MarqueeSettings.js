@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function MarqueeSettings() {
-    const [settings, setSettings] = useState({ speed: 30, direction: "ltr", isEnabled: true });
+    const [settings, setSettings] = useState({ speed: 20, direction: "ltr", isEnabled: true, minReviewsForAuto: 1 });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
@@ -15,7 +15,7 @@ export default function MarqueeSettings() {
                 const res = await fetch("/api/admin/marquee-settings");
                 if (res.ok) {
                     const data = await res.json();
-                    setSettings(data.settings);
+                    setSettings(data.settings || { speed: 20, direction: "ltr", isEnabled: true, minReviewsForAuto: 1 });
                 }
             } catch (e) {
                 console.error(e);
@@ -61,7 +61,6 @@ export default function MarqueeSettings() {
             <p className="muted-text">Configure the student reviews marquee animation on the home page.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1.5rem" }}>
-                {/* Enable Toggle */}
                 <label style={{ display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer" }}>
                     <input
                         type="checkbox"
@@ -74,27 +73,25 @@ export default function MarqueeSettings() {
                     </span>
                 </label>
 
-                {/* Speed Slider */}
                 <div>
                     <label style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
                         <span style={{ fontWeight: 600 }}>Animation Speed</span>
-                        <span style={{ color: "#666" }}>{settings.speed} seconds</span>
+                        <span style={{ color: "#666" }}>{settings.speed} seconds per cycle</span>
                     </label>
                     <input
                         type="range"
-                        min="10"
+                        min="1"
                         max="60"
                         value={settings.speed}
                         onChange={(e) => setSettings((s) => ({ ...s, speed: parseInt(e.target.value) }))}
                         style={{ width: "100%", accentColor: "#000" }}
                     />
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#666", marginTop: "0.25rem" }}>
-                        <span>Faster (10s)</span>
-                        <span>Slower (60s)</span>
+                        <span>Fastest (1s)</span>
+                        <span>Slowest (60s)</span>
                     </div>
                 </div>
 
-                {/* Direction Toggle */}
                 <div>
                     <label style={{ fontWeight: 600, marginBottom: "0.75rem", display: "block" }}>Scroll Direction</label>
                     <div style={{ display: "flex", gap: "1rem" }}>
@@ -133,7 +130,6 @@ export default function MarqueeSettings() {
                     </div>
                 </div>
 
-                {/* Preview */}
                 <div style={{
                     padding: "1.5rem",
                     background: "#ffd400",
@@ -143,7 +139,7 @@ export default function MarqueeSettings() {
                     <p style={{ fontWeight: 700, marginBottom: "1rem", fontSize: "0.9rem" }}>Preview</p>
                     <div style={{
                         overflow: "hidden",
-                        background: "#fff",
+                        background: "#0a0a0a",
                         border: "4px solid #000",
                         borderRadius: "12px",
                         padding: "0.5rem",
@@ -151,18 +147,18 @@ export default function MarqueeSettings() {
                         <div style={{
                             display: "flex",
                             gap: "1rem",
-                            animation: `marqueePreview ${settings.speed}s linear infinite`,
+                            animationName: "marqueePreview",
+                            animationDuration: `${settings.speed}s`,
+                            animationTimingFunction: "linear",
+                            animationIterationCount: "infinite",
                             animationDirection: settings.direction === "rtl" ? "reverse" : "normal",
                         }}>
-                            <span style={{ whiteSpace: "nowrap", fontWeight: 700 }}>Sample Review →</span>
-                            <span style={{ whiteSpace: "nowrap", fontWeight: 700 }}>★★★★★</span>
-                            <span style={{ whiteSpace: "nowrap", fontWeight: 700 }}>Another Review →</span>
-                            <span style={{ whiteSpace: "nowrap", fontWeight: 700 }}>★★★★★</span>
+                            <span style={{ whiteSpace: "nowrap", fontWeight: 700, color: "#fff" }}>★★★★★ Review 1 →</span>
+                            <span style={{ whiteSpace: "nowrap", fontWeight: 700, color: "#ffd400" }}>★★★★★ Review 2 →</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Save Button */}
                 <button
                     onClick={handleSave}
                     disabled={saving}
@@ -191,7 +187,7 @@ export default function MarqueeSettings() {
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 @keyframes marqueePreview {
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
     { href: "/", label: "Home" },
@@ -54,7 +53,6 @@ export default function PublicNavbar() {
                             {link.label}
                         </Link>
                     ))}
-                    <ThemeToggle />
                     <Link href="/admin" className="public-navbar-admin">
                         Admin
                     </Link>
@@ -81,7 +79,6 @@ export default function PublicNavbar() {
                         </Link>
                     ))}
                     <div className="public-navbar-mobile-footer">
-                        <ThemeToggle />
                         <Link href="/admin" onClick={() => setMenuOpen(false)} className="public-navbar-admin">
                             Admin
                         </Link>

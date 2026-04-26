@@ -41,6 +41,7 @@ model AdminSession {
 
 model Course {
     id                String        @id @default(cuid())
+    courseUrlId       String?       @unique  // 5-char unique ID for URL (e.g., "ABC12")
     title             String
     slug              String        @unique
     rating            Float         @default(4.5)
@@ -152,12 +153,13 @@ model Feature {
 }
 
 model MarqueeSettings {
-    id         String @id @default("default")
-    speed      Int    @default(30) // Seconds for one cycle (10-60)
-    direction  String @default("ltr") // "ltr" or "rtl"
-    isEnabled  Boolean @default(true)
-    updatedAt  DateTime @updatedAt
-    createdAt  DateTime @default(now())
+    id                String @id @default("default")
+    speed             Int    @default(30) // Seconds for one cycle (10-60)
+    direction         String @default("ltr") // "ltr" or "rtl"
+    isEnabled         Boolean @default(true)
+    minReviewsForAuto Int    @default(3) // Minimum reviews needed to auto-enable marquee
+    updatedAt         DateTime @updatedAt
+    createdAt         DateTime @default(now())
 }
 
 model ContactSubmission {
@@ -227,6 +229,7 @@ model Blog {
     slug          String   @unique
     excerpt       String
     content       String
+    contentBlocks Json     @default("[]")
     featuredImage String   @default("")
     isPublished   Boolean  @default(false)
     createdAt     DateTime @default(now())
@@ -250,7 +253,7 @@ model DriveFolder {
 
 model CoursePDF {
     id         Int      @id @default(autoincrement())
-    courseId   String
+    courseId   String?  // Optional - allows PDFs without a course
     name       String
     url        String
     viewerType String   @default("embed")
@@ -259,7 +262,7 @@ model CoursePDF {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
-    course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    course     Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
     @@index([courseId])
     @@index([sortOrder])
@@ -319,31 +322,36 @@ model CertificateTemplate {
 }
 
 model Certificate {
-    id          String   @id @default(cuid())
-    templateId  String
-    studentName String
-    courseName  String
-    courseId    String?
-    regId       String   @unique
-    startDate   DateTime
-    endDate     DateTime
-    duration    String
-    issuedAt    DateTime @default(now())
-    downloadUrl String?
+    id            String   @id @default(cuid())
+    certificateId String   @unique // 7-letter uppercase random ID
+    templateId    String
+    studentName   String
+    courseName    String
+    courseId       String?
+    regId         String   @unique
+    startDate     DateTime
+    endDate       DateTime
+    duration      String
+    issuedAt      DateTime @default(now())
+    downloadUrl     String?
+    termsAccepted   Boolean  @default(false)
+    termsAcceptedAt DateTime?
 
     template    CertificateTemplate @relation(fields: [templateId], references: [id])
     course      Course?             @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
+    @@index([certificateId])
     @@index([regId])
     @@index([studentName])
 }
 
 model SubAdmin {
     id                String            @id @default(cuid())
+    urlId             String?           @unique  // Random ID for URL (e.g., "ABC12")
     username          String            @unique
     passwordHash      String
     roleId            String?
-    sessionTimeoutMin Int               @default(30)
+    sessionTimeoutMin Int               @default(10)  // Default 10 minutes
     maxSessions       Int               @default(2)
     isActive          Boolean           @default(true)
     createdAt         DateTime          @default(now())
@@ -409,7 +417,7 @@ model SiteSettings {
     // Theme Mode
     themeMode          String @default("light")
     // Session Settings (for main Admin)
-    sessionTimeoutMin  Int    @default(30)
+    sessionTimeoutMin  Int    @default(10)  // Default 10 minutes
     maxSessions        Int    @default(2)
     // Hero Section
     heroTitle          String @default("Master Computer Skills")
@@ -423,6 +431,9 @@ model SiteSettings {
     footerCopyright    String @default("© 2026 WEBCOM. All Rights Reserved. Made with ❤️ in India")
     // Social Links
     googleReviewUrl    String @default("")
+    // Storage Configuration
+    storageProvider    String @default("local")  // "local" | "s3" | "r2" | "gcs"
+    storageConfig      Json?  // { bucket, region, accessKeyId, secretAccessKey, endpoint, accountId, projectId, credentials }
     updatedAt          DateTime @updatedAt
     createdAt          DateTime @default(now())
 }

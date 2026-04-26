@@ -10,13 +10,13 @@ export default async function AdminPanelLayout({ children }) {
     if (!admin && !subadmin) {
         redirect("/admin/login");
     }
-
-    const user = admin || subadmin;
-    const userType = admin ? "admin" : "subadmin";
+    if (subadmin && subadmin.urlId) {
+        redirect(`/${subadmin.urlId}/dashboard`);
+    }
 
     return (
         <SettingsProvider>
-            <AdminShell user={user} userType={userType}>{children}</AdminShell>
+            <AdminShell user={admin} userType="admin">{children}</AdminShell>
         </SettingsProvider>
     );
 }

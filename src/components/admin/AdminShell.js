@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoMark, IconDashboard, IconBook, IconMail, IconUsers, IconSettings, IconLogout, IconUser, IconShield, IconStar, IconBox, IconQuiz, IconBlog, IconPdf, IconQuestion, IconCertificate } from "@/components/Icons";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: IconDashboard },
@@ -74,7 +73,6 @@ export default function AdminShell({ user, userType, children }) {
                         <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.5rem", borderRadius: "999px", background: userType === "subadmin" ? "#6366f1" : "#22c55e", color: "#fff", fontWeight: 700 }}>{badge}</span>
                     </div>
                     <div style={{ marginTop: "0.75rem" }}>
-                        <ThemeToggle />
                     </div>
                 </div>
                 <nav className="admin-nav">

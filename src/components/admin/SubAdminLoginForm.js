@@ -18,6 +18,8 @@ export default function SubAdminLoginForm() {
         setError("");
 
         try {
+            await fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
+
             const response = await fetch("/api/admin/login/subadmin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -29,7 +31,11 @@ export default function SubAdminLoginForm() {
                 throw new Error(data.error || "Login failed.");
             }
 
-            router.push("/admin");
+            const urlId = data.urlId;
+            if (!urlId) {
+                throw new Error("Session error - please try again");
+            }
+            router.push(`/${urlId}/dashboard`);
             router.refresh();
         } catch (submitError) {
             setError(submitError.message || "Login failed.");

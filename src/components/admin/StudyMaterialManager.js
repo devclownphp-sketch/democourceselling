@@ -103,9 +103,23 @@ function SortableItem({ material, onEdit, onDelete, onToggle }) {
         </motion.div>
     );
 }
+function sanitizeMaterial(m) {
+    return {
+        id: m?.id ?? "",
+        title: m?.title ?? "",
+        description: m?.description ?? "",
+        category: m?.category ?? "",
+        pdfUrl: (m?.pdfUrl ?? "") || "",
+        viewerType: m?.viewerType ?? "embed",
+        thumbnail: (m?.thumbnail ?? "") || "",
+        sortOrder: m?.sortOrder ?? 0,
+        isActive: m?.isActive ?? true,
+    };
+}
 
 export default function StudyMaterialManager({ initialMaterials = [], categories = [] }) {
-    const [materials, setMaterials] = useState(initialMaterials);
+    const safeMaterials = Array.isArray(initialMaterials) ? initialMaterials.map(sanitizeMaterial) : [];
+    const [materials, setMaterials] = useState(safeMaterials);
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -140,7 +154,8 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
         if (val === "__new__") {
             setForm((prev) => ({ ...prev, categoryId: "", category: "" }));
         } else {
-            setForm((prev) => ({ ...prev, categoryId: val, category: val }));
+            const selectedCat = categories.find(c => c.id === val);
+            setForm((prev) => ({ ...prev, categoryId: val, category: selectedCat?.name || val }));
         }
     };
 
@@ -208,10 +223,10 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
             if (!response.ok) throw new Error(data.error || "Failed to save");
 
             if (editingId) {
-                setMaterials((prev) => prev.map((m) => (m.id === editingId ? data.material : m)));
+                setMaterials((prev) => prev.map((m) => (m.id === editingId ? sanitizeMaterial(data.material) : m)));
                 setSuccess("Material updated!");
             } else {
-                setMaterials((prev) => [data.material, ...prev]);
+                setMaterials((prev) => [sanitizeMaterial(data.material), ...prev]);
                 setSuccess("Material added!");
             }
             resetForm();
@@ -231,7 +246,9 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
             });
             const data = await response.json();
             if (response.ok) {
-                setMaterials((prev) => prev.map((m) => (m.id === material.id ? data.material : m)));
+                setMaterials((prev) => prev.map((m) =>
+                    m.id === material.id ? { ...sanitizeMaterial(data.material), materialCategory: m.materialCategory } : m
+                ));
             }
         } catch (e) {
             console.error(e);
@@ -284,7 +301,7 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
 
         try {
             setLoading(true);
-            const response = await fetch("/api/admin/upload/pdf", {
+            const response = await fetch("/api/admin/pdfs/upload", {
                 method: "POST",
                 body: formData,
             });
@@ -292,8 +309,13 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
             if (!response.ok) throw new Error("Upload failed");
 
             const data = await response.json();
-            setForm((prev) => ({ ...prev, pdfUrl: data.url }));
-            setSuccess("PDF uploaded!");
+            const url = data.url || data.pdf?.url;
+            if (url) {
+                setForm((prev) => ({ ...prev, pdfUrl: url }));
+                setSuccess("PDF uploaded!");
+            } else {
+                throw new Error("Upload returned no URL");
+            }
         } catch (err) {
             setError("Failed to upload PDF");
         } finally {
@@ -318,8 +340,13 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
             if (!response.ok) throw new Error("Upload failed");
 
             const data = await response.json();
-            setForm((prev) => ({ ...prev, thumbnail: data.url }));
-            setSuccess("Thumbnail uploaded!");
+            const url = data.url || data.image?.url;
+            if (url) {
+                setForm((prev) => ({ ...prev, thumbnail: url }));
+                setSuccess("Thumbnail uploaded!");
+            } else {
+                throw new Error("Upload returned no URL");
+            }
         } catch (err) {
             setError("Failed to upload thumbnail");
         } finally {
@@ -358,8 +385,12 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
                             onChange={onChange}
                             placeholder="Brief description..."
                             rows={2}
+                            maxLength={300}
                             style={{ padding: "0.75rem 1rem", border: "4px solid #000", borderRadius: "16px", fontSize: "1rem", resize: "vertical" }}
                         />
+                        <span style={{ fontSize: "0.75rem", textAlign: "right", color: (form.description || "").length > 270 ? "#ef4444" : "#999" }}>
+                            {(form.description || "").length}/300
+                        </span>
                     </label>
 
                     <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -372,8 +403,8 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
                             style={{ padding: "0.75rem 1rem", border: "4px solid #000", borderRadius: "16px", fontSize: "1rem" }}
                         >
                             <option value="">Select category...</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            {categories.map((cat, idx) => (
+                                <option key={cat.id || `cat-${idx}`} value={cat.id}>{cat.name}</option>
                             ))}
                         </select>
                         <span style={{ fontSize: "0.8rem", color: "#666" }}>
@@ -501,11 +532,11 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
                 </p>
 
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={materials.map((m) => m.id)} strategy={verticalListSortingStrategy}>
+                    <SortableContext items={materials.map((m, i) => m.id || `mat-${i}`)} strategy={verticalListSortingStrategy}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
-                            {materials.map((material) => (
+                            {materials.map((material, idx) => (
                                 <SortableItem
-                                    key={material.id}
+                                    key={material.id || `mat-${idx}`}
                                     material={material}
                                     onEdit={startEdit}
                                     onDelete={deleteMaterial}
@@ -522,7 +553,7 @@ export default function StudyMaterialManager({ initialMaterials = [], categories
                 </DndContext>
             </section>
 
-            <style jsx>{`
+            <style>{`
                 .sm-item {
                     display: flex;
                     align-items: center;

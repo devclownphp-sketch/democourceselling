@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseCoursePayload } from "@/lib/course-schema";
-import { requireAdminApi } from "@/lib/admin-auth";
+import { requireAdminApi, generateUrlId } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 
@@ -14,6 +14,15 @@ async function createUniqueSlug(baseTitle) {
         if (!exists) return slug;
         index += 1;
         slug = `${base}-${index}`;
+    }
+}
+
+async function generateUniqueCourseUrlId() {
+    let urlId = generateUrlId();
+    while (true) {
+        const exists = await prisma.course.findUnique({ where: { courseUrlId: urlId } });
+        if (!exists) return urlId;
+        urlId = generateUrlId();
     }
 }
 
@@ -36,11 +45,13 @@ export async function POST(request) {
         const payload = await request.json();
         const parsed = parseCoursePayload(payload);
         const slug = await createUniqueSlug(parsed.title);
+        const courseUrlId = await generateUniqueCourseUrlId();
 
         const course = await prisma.course.create({
             data: {
                 ...parsed,
                 slug,
+                courseUrlId,
                 adminId: admin.id,
             },
             include: { courseType: true },

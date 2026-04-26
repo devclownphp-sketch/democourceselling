@@ -109,7 +109,6 @@ export default function AdminFAQsClient({ initialFaqs = [] }) {
 
     return (
         <div className="stack-lg">
-            {/* Add/Edit Form */}
             <motion.form
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -265,7 +264,6 @@ export default function AdminFAQsClient({ initialFaqs = [] }) {
                 </AnimatePresence>
             </motion.form>
 
-            {/* FAQ List */}
             <section className="panel">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                     <div>

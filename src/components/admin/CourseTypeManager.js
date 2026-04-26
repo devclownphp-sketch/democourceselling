@@ -213,7 +213,6 @@ export default function CourseTypeManager({ initialCourseTypes }) {
                     👁️ Show in course type list
                 </label>
 
-                {/* Preview */}
                 <div style={{ padding: "1rem", borderRadius: "12px", background: "var(--bg-alt)", border: "1px solid var(--border)" }}>
                     <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>Preview:</p>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

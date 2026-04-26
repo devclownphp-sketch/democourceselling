@@ -3,7 +3,6 @@ import { clearSessionCookie, clearSubAdminSessionCookie, getSession, getSubAdmin
 import { prisma } from "@/lib/prisma";
 
 export async function POST() {
-    // Check for admin session
     const adminSession = await getSession();
     if (adminSession) {
         await prisma.adminSession.delete({ where: { id: adminSession.id } }).catch(() => null);
@@ -11,8 +10,6 @@ export async function POST() {
         clearSessionCookie(response);
         return response;
     }
-
-    // Check for subadmin session
     const subadminSession = await getSubAdminSession();
     if (subadminSession) {
         const fullSession = await prisma.subAdminSession.findUnique({

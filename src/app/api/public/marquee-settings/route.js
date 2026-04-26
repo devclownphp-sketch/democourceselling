@@ -8,11 +8,11 @@ export async function GET() {
         });
 
         return NextResponse.json({
-            settings: settings || { speed: 30, direction: "ltr", isEnabled: true }
+            settings: settings || { speed: 30, direction: "ltr", isEnabled: true, minReviewsForAuto: 3 }
         });
     } catch (error) {
         return NextResponse.json({
-            settings: { speed: 30, direction: "ltr", isEnabled: true }
+            settings: { speed: 30, direction: "ltr", isEnabled: true, minReviewsForAuto: 3 }
         }, { status: 200 });
     }
 }

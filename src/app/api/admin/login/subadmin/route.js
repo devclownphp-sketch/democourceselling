@@ -24,13 +24,13 @@ export async function POST(request) {
             return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
         }
 
-        const { token, expiresAt } = await createSubAdminSession(subadmin.id);
-        if (!token) {
+        const result = await createSubAdminSession(subadmin);
+        if (!result || !result.token) {
             return NextResponse.json({ error: "Failed to create session." }, { status: 500 });
         }
 
-        const response = NextResponse.json({ ok: true, username: subadmin.username });
-        attachSubAdminSessionCookie(response, token, expiresAt);
+        const response = NextResponse.json({ ok: true, username: subadmin.username, urlId: result.urlId });
+        attachSubAdminSessionCookie(response, result.token, result.expiresAt, result.urlId);
         return response;
     } catch {
         return NextResponse.json({ error: "Login failed." }, { status: 500 });

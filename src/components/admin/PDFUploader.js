@@ -43,7 +43,11 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
                 }
 
                 const data = await res.json();
-                setPdfs(prev => [...prev, data.pdf]);
+                if (courseId) {
+                    setPdfs([data.pdf]);
+                } else {
+                    setPdfs(prev => [...prev, data.pdf]);
+                }
             }
 
             if (onUploadComplete) {
@@ -89,8 +93,6 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
         const [removed] = newPdfs.splice(fromIndex, 1);
         newPdfs.splice(toIndex, 0, removed);
         setPdfs(newPdfs);
-
-        // Update server with new order
         try {
             await fetch(`/api/admin/pdfs/reorder`, {
                 method: "PUT",
@@ -107,7 +109,6 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
 
     return (
         <div className="pdf-uploader">
-            {/* Drop Zone */}
             <div
                 className={`pdf-drop-zone ${dragOver ? "drag-over" : ""} ${uploading ? "uploading" : ""}`}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -140,7 +141,6 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
                 </div>
             </div>
 
-            {/* Error Message */}
             {error && (
                 <div className="pdf-error">
                     <span>⚠️ {error}</span>
@@ -148,7 +148,6 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
                 </div>
             )}
 
-            {/* PDF List */}
             {pdfs.length > 0 && (
                 <div className="pdf-list">
                     <div className="pdf-list-header">
@@ -190,7 +189,7 @@ export default function PDFUploader({ courseId, existingPdfs = [], onUploadCompl
                 </div>
             )}
 
-            <style jsx>{`
+            <style>{`
                 .pdf-uploader {
                     display: flex;
                     flex-direction: column;

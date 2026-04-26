@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { prisma } from "@/lib/prisma";
+import { requireAdminApi } from "@/lib/admin-auth";
+import { uploadFile, StorageFolders } from "@/lib/storage";
+import { unlink } from "fs/promises";
+import path from "path";
 
 export async function POST(request) {
-    try {
-        // Check admin authentication
-        const token = request.cookies.get("admin_token")?.value;
-        if (!token) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+    const { unauthorized } = await requireAdminApi();
+    if (unauthorized) return unauthorized;
 
+    try {
         const formData = await request.formData();
         const file = formData.get("file");
         const courseId = formData.get("courseId");
@@ -23,41 +22,64 @@ export async function POST(request) {
             return NextResponse.json({ error: "Only PDF files are allowed" }, { status: 400 });
         }
 
-        // Max size: 50MB
         const maxSize = 50 * 1024 * 1024;
         if (file.size > maxSize) {
             return NextResponse.json({ error: "File size must be less than 50MB" }, { status: 400 });
         }
 
-        // Create uploads directory if it doesn't exist
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "pdfs");
-        await mkdir(uploadDir, { recursive: true });
-
-        // Generate unique filename
-        const timestamp = Date.now();
-        const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-        const filename = `${timestamp}-${originalName}`;
-        const filepath = path.join(uploadDir, filename);
-
-        // Write file
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        await writeFile(filepath, buffer);
 
-        // Create PDF record in database
-        const pdf = await prisma.coursePDF.create({
-            data: {
-                courseId: courseId || "",
-                name: file.name,
-                url: `/uploads/pdfs/${filename}`,
-                size: file.size,
-                sortOrder: 0,
-            },
+        const result = await uploadFile(buffer, StorageFolders.COURSE_PDFS, file.name, "application/pdf");
+
+        let createdPdf;
+
+        if (courseId && courseId.trim() !== "") {
+            const existingPdfs = await prisma.coursePDF.findMany({
+                where: { courseId: courseId },
+                orderBy: { createdAt: "desc" },
+            });
+
+            for (const existingPdf of existingPdfs) {
+                try {
+                    const filepath = path.join(process.cwd(), "public", existingPdf.url);
+                    await unlink(filepath);
+                } catch (err) {
+                    console.warn("Could not delete old file:", err.message);
+                }
+            }
+
+            await prisma.coursePDF.deleteMany({
+                where: { courseId: courseId },
+            });
+
+            createdPdf = await prisma.coursePDF.create({
+                data: {
+                    courseId: courseId,
+                    name: file.name,
+                    url: result.url,
+                    size: file.size,
+                    sortOrder: 0,
+                },
+            });
+        } else {
+            createdPdf = await prisma.coursePDF.create({
+                data: {
+                    name: file.name,
+                    url: result.url,
+                    size: file.size,
+                    sortOrder: 0,
+                },
+            });
+        }
+
+        return NextResponse.json({
+            pdf: createdPdf,
+            success: true,
+            storageProvider: result.provider
         });
-
-        return NextResponse.json({ pdf, success: true });
     } catch (error) {
         console.error("PDF upload error:", error);
-        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+        return NextResponse.json({ error: error.message || "Upload failed" }, { status: 500 });
     }
 }

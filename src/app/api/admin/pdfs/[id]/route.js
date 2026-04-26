@@ -2,27 +2,27 @@ import { NextResponse } from "next/server";
 import { unlink } from "fs/promises";
 import path from "path";
 import { prisma } from "@/lib/prisma";
+import { requireAdminApi } from "@/lib/admin-auth";
 
 export async function DELETE(request, { params }) {
+    const { unauthorized } = await requireAdminApi();
+    if (unauthorized) return unauthorized;
+
     try {
-        // Check admin authentication
-        const token = request.cookies.get("admin_token")?.value;
-        if (!token) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const { id } = await params;
+        const pdfId = parseInt(id, 10);
+
+        if (isNaN(pdfId)) {
+            return NextResponse.json({ error: "Invalid PDF ID" }, { status: 400 });
         }
 
-        const { id } = params;
-
-        // Get PDF record
         const pdf = await prisma.coursePDF.findUnique({
-            where: { id },
+            where: { id: pdfId },
         });
 
         if (!pdf) {
             return NextResponse.json({ error: "PDF not found" }, { status: 404 });
         }
-
-        // Delete file from disk
         const filepath = path.join(process.cwd(), "public", pdf.url);
         try {
             await unlink(filepath);
@@ -30,14 +30,13 @@ export async function DELETE(request, { params }) {
             console.warn("File not found on disk:", err.message);
         }
 
-        // Delete from database
         await prisma.coursePDF.delete({
-            where: { id },
+            where: { id: pdfId },
         });
 
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("PDF delete error:", error);
-        return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+        return NextResponse.json({ error: error.message || "Delete failed" }, { status: 500 });
     }
 }

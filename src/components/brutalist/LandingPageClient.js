@@ -116,7 +116,6 @@ function BrutalHero({ siteSettings = {} }) {
             overflow: "hidden",
             borderBottom: "4px solid #ffd400",
         }}>
-            {/* Hero Content */}
             <div style={{ textAlign: "center", marginBottom: "40px", maxWidth: "900px" }}>
                 <h1 style={{
                     fontSize: "clamp(2.5rem, 8vw, 6rem)",
@@ -137,7 +136,6 @@ function BrutalHero({ siteSettings = {} }) {
                 </p>
             </div>
 
-            {/* DESIGN Letters */}
             <div style={{
                 display: "flex",
                 justifyContent: "center",
@@ -150,7 +148,6 @@ function BrutalHero({ siteSettings = {} }) {
                 ))}
             </div>
 
-            {/* CTA Button */}
             <Link
                 href="/courses"
                 style={{
@@ -182,7 +179,6 @@ function BrutalHero({ siteSettings = {} }) {
                 <IconArrowRight size={22} />
             </Link>
 
-            {/* Stats */}
             <div style={{
                 display: "flex",
                 justifyContent: "center",
@@ -246,7 +242,6 @@ function BrutalHero({ siteSettings = {} }) {
                 </div>
             </div>
 
-            {/* Marquee Banner */}
             <div style={{
                 position: "absolute",
                 bottom: 0,
@@ -295,7 +290,6 @@ function CategoriesSection({ courseTypes = [] }) {
             borderBottom: "4px solid #000",
         }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1.5rem" }}>
-                {/* Header */}
                 <div style={{ textAlign: "center", marginBottom: "3rem" }}>
                     <h2 style={{
                         fontSize: "clamp(2rem, 5vw, 3rem)",
@@ -311,7 +305,6 @@ function CategoriesSection({ courseTypes = [] }) {
                     </p>
                 </div>
 
-                {/* Categories Grid */}
                 <div style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
@@ -376,7 +369,6 @@ function CategoriesSection({ courseTypes = [] }) {
                     ))}
                 </div>
 
-                {/* View All Link */}
                 <div style={{ textAlign: "center", marginTop: "2rem" }}>
                     <Link
                         href="/categories"
@@ -411,7 +403,6 @@ function CoursesSection({ courses = [] }) {
             borderBottom: "4px solid #000",
         }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1.5rem" }}>
-                {/* Header */}
                 <div style={{
                     display: "flex",
                     alignItems: "center",
@@ -445,7 +436,6 @@ function CoursesSection({ courses = [] }) {
                     </div>
                 </div>
 
-                {/* Courses Grid */}
                 {courses.length > 0 ? (
                     <>
                         <div style={{
@@ -458,7 +448,6 @@ function CoursesSection({ courses = [] }) {
                             ))}
                         </div>
 
-                        {/* View All Button */}
                         {courses.length > 6 && (
                             <div style={{ textAlign: "center", marginTop: "2rem" }}>
                                 <Link
@@ -514,173 +503,25 @@ function CoursesSection({ courses = [] }) {
     );
 }
 
-function RealLearnersSection({ reviews = [] }) {
-    const displayReviews = reviews.filter(r => r.isActive).slice(0, 3);
-
-    if (displayReviews.length === 0) return null;
-
-    return (
-        <section style={{
-            padding: "4rem 0",
-            background: "#ffd400",
-            borderBottom: "4px solid #000",
-        }}>
-            <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 1.5rem" }}>
-                <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-                    <h2 style={{
-                        fontSize: "clamp(2rem, 5vw, 3rem)",
-                        fontWeight: 900,
-                        textTransform: "uppercase",
-                        letterSpacing: "-0.02em",
-                        margin: "0 0 0.5rem",
-                        color: "#000",
-                    }}>
-                        Real Learners, Real Outcomes
-                    </h2>
-                    <p style={{
-                        fontSize: "1.1rem",
-                        opacity: 0.8,
-                        margin: 0,
-                        color: "#000",
-                    }}>
-                        Hear from students who transformed their careers
-                    </p>
-                </div>
-
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                    gap: "1.5rem",
-                }}>
-                    {displayReviews.map((review, index) => (
-                        <div
-                            key={review.id}
-                            style={{
-                                background: "#fff",
-                                border: "4px solid #000",
-                                borderRadius: "20px",
-                                padding: "1.5rem",
-                                boxShadow: "6px 6px 0 #000",
-                            }}
-                        >
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.75rem",
-                                marginBottom: "1rem",
-                            }}>
-                                <div style={{
-                                    width: "48px",
-                                    height: "48px",
-                                    background: "#000",
-                                    color: "#ffd400",
-                                    borderRadius: "50%",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontWeight: 900,
-                                    fontSize: "1.2rem",
-                                }}>
-                                    {review.name?.charAt(0)?.toUpperCase() || "S"}
-                                </div>
-                                <div>
-                                    <p style={{
-                                        fontWeight: 800,
-                                        fontSize: "1rem",
-                                        margin: 0,
-                                    }}>
-                                        {review.name}
-                                    </p>
-                                    <p style={{
-                                        fontSize: "0.8rem",
-                                        opacity: 0.7,
-                                        margin: 0,
-                                    }}>
-                                        {review.role}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div style={{
-                                display: "flex",
-                                gap: "2px",
-                                marginBottom: "0.75rem",
-                            }}>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <span key={i} style={{
-                                        color: i < review.rating ? "#ffd400" : "#ddd",
-                                        fontSize: "1rem",
-                                    }}>
-                                        ★
-                                    </span>
-                                ))}
-                            </div>
-
-                            <p style={{
-                                fontSize: "0.95rem",
-                                lineHeight: 1.5,
-                                margin: 0,
-                                fontStyle: "italic",
-                            }}>
-                                "{review.reviewText || review.quote}"
-                            </p>
-                        </div>
-                    ))}
-                </div>
-
-                <div style={{ textAlign: "center", marginTop: "2rem" }}>
-                    <Link
-                        href="/courses"
-                        style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "0.75rem 1.5rem",
-                            background: "#000",
-                            color: "#ffd400",
-                            borderRadius: "12px",
-                            fontWeight: 700,
-                            textDecoration: "none",
-                            border: "3px solid #000",
-                            boxShadow: "4px 4px 0 #000",
-                        }}
-                    >
-                        Start Your Journey
-                        <span style={{ fontSize: "1.2rem" }}>→</span>
-                    </Link>
-                </div>
-            </div>
-        </section>
-    );
-}
-
 export default function BrutalLandingPage({ courses = [], reviews = [], siteSettings = {} }) {
     const mergedSettings = { ...siteSettings };
 
     return (
         <main style={{ background: "#fff", color: "#000" }}>
-            {/* Hero */}
             <BrutalHero siteSettings={mergedSettings} />
 
-            {/* Categories */}
             <CategoriesSection />
 
-            {/* Courses */}
             <CoursesSection courses={courses} />
 
-            {/* Trusted By Stats */}
             <TrustedByStats siteSettings={mergedSettings} />
 
-            {/* Reviews Marquee */}
             <ReviewMarquee reviews={reviews} />
 
-            {/* Why Choose Us */}
             <WhyChooseUs />
 
-            {/* FAQ */}
             <FAQSection />
 
-            {/* CTA Section */}
             <section style={{
                 padding: "4rem 0",
                 background: "#000",
@@ -720,7 +561,6 @@ export default function BrutalLandingPage({ courses = [], reviews = [], siteSett
                 </div>
             </section>
 
-            {/* Footer */}
             <Footer siteSettings={mergedSettings} />
         </main>
     );

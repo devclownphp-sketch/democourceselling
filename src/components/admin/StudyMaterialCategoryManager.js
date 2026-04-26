@@ -235,8 +235,8 @@ export default function StudyMaterialCategoryManager({ initialCategories = [] })
             <section className="panel">
                 <h3>📂 All Categories ({categories.length})</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                    {categories.map((cat) => (
-                        <div key={cat.id} className="cert-item">
+                    {categories.map((cat, idx) => (
+                        <div key={cat.id || `cat-${idx}`} className="cert-item">
                             <div style={{ display: "flex", alignItems: "center", gap: "1rem", flex: 1 }}>
                                 <div
                                     style={{

@@ -620,7 +620,7 @@ export default function ReviewManager({ initialReviews = [], googleReviewUrl = "
                 </DndContext>
             </section>
 
-            <style jsx>{`
+            <style>{`
                 .review-sortable-item {
                     display: flex;
                     align-items: flex-start;

@@ -47,7 +47,6 @@ export async function GET() {
 
 export async function PUT(request) {
     try {
-        // Check admin authentication
         const token = request.cookies.get("admin_token")?.value;
         if (!token) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

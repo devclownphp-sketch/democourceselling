@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-auth";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { uploadFile, StorageFolders } from "@/lib/storage";
 
 export async function POST(request) {
     const { unauthorized } = await requireAdminApi();
@@ -28,20 +26,16 @@ export async function POST(request) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "study-materials");
-        if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-        }
+        const result = await uploadFile(buffer, StorageFolders.STUDY_MATERIALS, file.name, "application/pdf");
 
-        const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.pdf`;
-        const filepath = path.join(uploadDir, filename);
-        await writeFile(filepath, buffer);
-
-        const url = `/uploads/study-materials/${filename}`;
-
-        return NextResponse.json({ ok: true, url });
+        return NextResponse.json({
+            ok: true,
+            url: result.url,
+            key: result.key,
+            provider: result.provider
+        });
     } catch (error) {
-        console.error("Upload error:", error);
-        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+        console.error("PDF upload error:", error);
+        return NextResponse.json({ error: error.message || "Upload failed" }, { status: 500 });
     }
 }

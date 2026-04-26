@@ -97,7 +97,6 @@ export default function FAQManager({ initialFaqs = [] }) {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {/* Add/Edit Form */}
             <motion.form
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -204,7 +203,6 @@ export default function FAQManager({ initialFaqs = [] }) {
                 </AnimatePresence>
             </motion.form>
 
-            {/* FAQ List */}
             <section className="panel">
                 <h3>FAQs ({faqs.length})</h3>
                 <p className="muted-text">Toggle active/inactive without deleting.</p>

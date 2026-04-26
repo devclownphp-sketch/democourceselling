@@ -1,144 +1,171 @@
 /**
- * Global Color Tokens for course_selling
- * This file contains all CSS color variables used throughout the application
- * Each color key includes: value, description, and where it's used
- *
- * USAGE: Import this file in globals.css or use the class system
- * ADMIN: Manage colors via Site Settings in admin panel
+ * ============================================================================
+ * GLOBAL DESIGN TOKENS - STP Computer Education
+ * ============================================================================
+ * 
+ * This is the SINGLE SOURCE OF TRUTH for all colors in the application.
+ * To change the site's appearance, update the values here.
+ * 
+ * HOW TO USE:
+ *   - In CSS:  color: var(--brutal-yellow);
+ *   - In JS:   getComputedStyle(document.documentElement).getPropertyValue('--brutal-yellow')
+ * 
+ * SECTIONS:
+ *   1. Brutalist Design Tokens (borders, shadows, radius)
+ *   2. Primary Brutalist Colors (main accent palette)
+ *   3. Text Colors (readable on all backgrounds)
+ *   4. Background Colors (page, cards, inputs)
+ *   5. Form Input Colors (fields, focus states)
+ *   6. Brand Colors (primary CTA, links)
+ *   7. Semantic Colors (success, warning, error, info)
+ *   8. Border Colors (light to dark)
+ *   9. Rating Colors (star ratings)
+ *  10. Admin Panel Colors (sidebar, panels)
+ * 
+ * ADMIN: Colors can also be managed via Admin Panel → Settings → Colors
+ * ============================================================================
  */
 
 :root {
     /* ========================================
-     * BRUTALIST DESIGN TOKENS
+     * 1. BRUTALIST DESIGN TOKENS
+     * Used across ALL panels, cards, modals
      * ======================================== */
 
-    /* Border Tokens */
-    --border-thick: 4px solid #000;
-    --border-thin: 2px solid #000;
+    --border-thick: 4px solid #000;      /* Card borders, panel borders, input borders */
+    --border-thin: 2px solid #000;       /* Inner borders, dividers, secondary borders */
 
-    /* Shadow Tokens */
-    --shadow-brutal: 8px 8px 0 #000;
-    --shadow-brutal-sm: 4px 4px 0 #000;
-    --shadow-brutal-lg: 12px 12px 0 #000;
+    --shadow-brutal: 8px 8px 0 #000;    /* Primary card shadow (panels, cards) */
+    --shadow-brutal-sm: 4px 4px 0 #000; /* Smaller shadows (buttons, tags, chips) */
+    --shadow-brutal-lg: 12px 12px 0 #000; /* Large shadows (modals, hero sections) */
 
-    /* Border Radius Tokens */
-    --radius-brutal: 24px;
-    --radius-brutal-sm: 16px;
+    --radius-brutal: 24px;              /* Large border-radius (panels, modals, hero) */
+    --radius-brutal-sm: 16px;           /* Small border-radius (buttons, inputs, cards) */
 
     /* ========================================
-     * PRIMARY BRUTALIST COLORS
+     * 2. PRIMARY BRUTALIST COLORS
+     * Core palette for the entire site
      * ======================================== */
 
-    --brutal-yellow: #ffd400;           /* Main accent - buttons, highlights, badges */
-    --brutal-black: #000;               /* Borders, text, strong elements */
-    --brutal-white: #fff;               /* Cards, backgrounds, text on dark */
+    --brutal-yellow: #ffd400;           /* ⭐ Main accent - buttons, active tabs, highlights, badges, sidebar */
+    --brutal-black: #000;               /* Borders, text headings, strong elements, dark buttons */
+    --brutal-white: #fff;               /* Card backgrounds, text on dark, clean surfaces */
 
     /* ========================================
-     * TEXT COLORS (with contrast guarantee)
+     * 3. TEXT COLORS
+     * Guaranteed contrast ratios for readability
      * ======================================== */
 
-    --text-primary: #0f172a;            /* Main text - dark for light backgrounds */
-    --text-secondary: #475569;          /* Secondary text, descriptions */
-    --text-tertiary: #64748b;           /* Tertiary text, placeholders, captions */
-    --text-on-dark: #ffffff;            /* Text on dark/black backgrounds */
+    --text-primary: #0f172a;            /* Main body text - dark on light backgrounds */
+    --text-secondary: #475569;          /* Descriptions, subtitles, secondary info */
+    --text-tertiary: #64748b;           /* Captions, timestamps, placeholders */
+    --text-on-dark: #ffffff;            /* Text on black/dark backgrounds */
     --text-on-yellow: #000000;          /* Text on yellow accent backgrounds */
 
-    /* Placeholder text - MUST be darker than #999 */
-    --placeholder-color: #94a3b8;        /* Visible placeholder text */
+    --placeholder-color: #94a3b8;       /* Input placeholder text - visible but subtle */
 
     /* ========================================
-     * BACKGROUND COLORS
+     * 4. BACKGROUND COLORS
+     * Page, card, and surface backgrounds
      * ======================================== */
 
-    --bg-primary: #f8f9fc;              /* Main page background */
-    --bg-secondary: #f0f2f8;            /* Secondary background, cards */
-    --bg-dark: #0a0a0a;                 /* Dark theme background */
-    --bg-card: #ffffff;                /* Card backgrounds */
-    --bg-elevated: #fafbfd;            /* Elevated surfaces */
-    --bg-input: #f5f5f5;               /* Input field backgrounds - MUST be lighter than text */
-    --bg-input-focus: #ffffff;          /* Input focus state background */
+    --bg-primary: #f8f9fc;              /* Main page/body background */
+    --bg-secondary: #f0f2f8;            /* Secondary sections, alt-row backgrounds */
+    --bg-dark: #0a0a0a;                 /* Dark theme body background, footer */
+    --bg-card: #ffffff;                 /* Card/panel surface background */
+    --bg-elevated: #fafbfd;             /* Elevated surfaces (dropdowns, tooltips) */
+    --bg-input: #f5f5f5;               /* Input field resting background */
+    --bg-input-focus: #ffffff;          /* Input field focused background */
 
     /* ========================================
-     * FORM INPUT COLORS
+     * 5. FORM INPUT COLORS
+     * Text fields, selects, textareas
      * ======================================== */
 
-    /* Input field - CRITICAL for visibility */
-    --input-bg: #f5f5f5;                /* Background for text inputs */
+    --input-bg: #f5f5f5;                /* Background for text/select inputs */
     --input-bg-focus: #ffffff;          /* Background when input is focused */
-    --input-border: #000000;            /* Input border color */
+    --input-border: #000000;            /* Input border color (matches brutalist) */
     --input-border-focus: #000000;      /* Input border on focus */
-    --input-text: #0f172a;             /* Text inside input fields */
-    --input-placeholder: #64748b;       /* Placeholder text - MUST be visible */
+    --input-text: #0f172a;              /* Text typed inside input fields */
+    --input-placeholder: #64748b;       /* Placeholder text inside inputs */
 
     /* ========================================
-     * BRAND COLORS
+     * 6. BRAND COLORS
+     * Primary CTA buttons, links, branded elements
      * ======================================== */
 
-    --brand-primary: #2563eb;          /* Primary buttons, links */
-    --brand-primary-dark: #1d4ed8;      /* Primary hover state */
-    --brand-primary-light: #dbeafe;    /* Primary light backgrounds */
+    --brand-primary: #2563eb;           /* Primary CTA buttons, links, active nav */
+    --brand-primary-dark: #1d4ed8;      /* Primary button hover/pressed state */
+    --brand-primary-light: #dbeafe;     /* Primary tinted backgrounds (badges, pills) */
 
-    --brand-secondary: #0ea5e9;        /* Secondary accent */
+    --brand-secondary: #0ea5e9;         /* Secondary accent (info highlights, secondary CTA) */
 
     /* ========================================
-     * SEMANTIC COLORS
+     * 7. SEMANTIC COLORS
+     * Status indicators, alerts, toasts
      * ======================================== */
 
-    --success: #10b981;                /* Success states, positive actions */
-    --success-light: #ecfdf5;          /* Success backgrounds */
-    --success-text: #059669;           /* Success text */
+    --success: #10b981;                 /* ✅ Success states - save confirmed, active status */
+    --success-light: #ecfdf5;           /* Success toast/alert background */
+    --success-text: #059669;            /* Success text (stronger contrast) */
 
-    --warning: #f59e0b;                /* Warning states */
-    --warning-light: #fffbeb;          /* Warning backgrounds */
+    --warning: #f59e0b;                 /* ⚠️ Warning states - attention needed */
+    --warning-light: #fffbeb;           /* Warning toast/alert background */
 
-    --danger: #ef4444;                 /* Error states, delete actions */
-    --danger-light: #fef2f2;           /* Error backgrounds */
-    --danger-text: #dc2626;            /* Error text */
+    --danger: #ef4444;                  /* ❌ Error/delete - destructive actions, validation errors */
+    --danger-light: #fef2f2;            /* Error toast/alert background */
+    --danger-text: #dc2626;             /* Error text (stronger contrast) */
 
-    --info: #3b82f6;                   /* Info states */
-    --info-light: #eff6ff;            /* Info backgrounds */
+    --info: #3b82f6;                    /* ℹ️ Info states - tips, notifications */
+    --info-light: #eff6ff;              /* Info toast/alert background */
 
     /* ========================================
-     * BORDER COLORS
+     * 8. BORDER COLORS
+     * Light to dark for different contexts
      * ======================================== */
 
-    --border-light: #e2e8f0;          /* Light borders */
-    --border-default: #cbd5e1;         /* Default borders */
-    --border-strong: #94a3b8;         /* Strong borders */
-    --border-dark: #000000;           /* Dark/brutalist borders */
+    --border-light: #e2e8f0;            /* Subtle dividers, table borders */
+    --border-default: #cbd5e1;          /* Default element borders */
+    --border-strong: #94a3b8;           /* Stronger borders (active sections) */
+    --border-dark: #000000;             /* Brutalist borders, maximum contrast */
 
     /* ========================================
-     * RATING COLORS
+     * 9. RATING COLORS
+     * Star ratings on course cards
      * ======================================== */
 
-    --rating-star-active: #ffd400;     /* Active/filled star rating */
-    --rating-star-inactive: #555555;  /* Inactive/empty star rating */
+    --rating-star-active: #ffd400;      /* ⭐ Filled/active star */
+    --rating-star-inactive: #555555;    /* Empty/inactive star */
 
     /* ========================================
-     * ADMIN COLORS
+     * 10. ADMIN PANEL COLORS
+     * Sidebar, panel backgrounds, admin accent
      * ======================================== */
 
-    --admin-sidebar-bg: #ffd400;        /* Admin sidebar background */
-    --admin-sidebar-text: #000000;      /* Admin sidebar text */
-    --admin-panel-bg: #ffffff;          /* Admin panel background */
-    --admin-accent: #2563eb;           /* Admin accent color */
+    --admin-sidebar-bg: #ffd400;        /* Admin sidebar background (yellow) */
+    --admin-sidebar-text: #000000;      /* Admin sidebar text (black) */
+    --admin-panel-bg: #ffffff;          /* Admin content panel background */
+    --admin-accent: #2563eb;            /* Admin accent color (blue, for links/buttons) */
 }
 
-/* Dark Theme Overrides */
+/* ============================================================================
+ * DARK THEME OVERRIDES
+ * Applied when [data-theme="dark"] is set on <html> or <body>
+ * ============================================================================ */
 [data-theme="dark"] {
-    --text-primary: #ffffff;
-    --text-secondary: #94a3b8;
-    --text-tertiary: #64748b;
+    --text-primary: #ffffff;            /* White text on dark backgrounds */
+    --text-secondary: #94a3b8;          /* Muted text */
+    --text-tertiary: #64748b;           /* Very muted text */
 
-    --placeholder-color: #94a3b8;
+    --placeholder-color: #94a3b8;       /* Placeholder visibility on dark */
 
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a2e;
-    --bg-card: #1a1a2e;
-    --bg-elevated: #242438;
+    --bg-primary: #0a0a0a;              /* Dark page background */
+    --bg-secondary: #1a1a2e;            /* Dark secondary background */
+    --bg-card: #1a1a2e;                 /* Dark card background */
+    --bg-elevated: #242438;             /* Dark elevated surfaces */
 
-    --input-bg: #242438;
-    --input-bg-focus: #2a2a40;
-    --input-text: #ffffff;
-    --input-placeholder: #94a3b8;
+    --input-bg: #242438;                /* Dark input background */
+    --input-bg-focus: #2a2a40;          /* Dark input focus background */
+    --input-text: #ffffff;              /* White input text */
+    --input-placeholder: #94a3b8;       /* Visible placeholder on dark */
 }

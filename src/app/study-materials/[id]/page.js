@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import PDFViewer from "@/components/notes/PDFViewer";
+import DownloadButton from "./DownloadButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudyMaterialViewPage({ params }) {
+    const { id } = await params;
     const material = await prisma.studyMaterial.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { course: { select: { title: true, slug: true } } },
     });
 
@@ -17,17 +19,47 @@ export default async function StudyMaterialViewPage({ params }) {
     const viewerType = material.viewerType || "embed";
 
     return (
-        <div className="smv-page">
-            <div className="smv-header">
-                <div className="smv-header-content">
-                    <a href="/study-materials" className="smv-back-btn">
+        <div style={{ minHeight: "100vh", background: "#F9FAFB" }}>
+            <div style={{
+                background: "linear-gradient(135deg, #ffd400 0%, #ffe066 50%, #ffd400 100%)",
+                borderBottom: "4px solid #000",
+                padding: "1.5rem",
+                position: "relative",
+                overflow: "hidden",
+            }}>
+                <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: "4px",
+                    background: "repeating-linear-gradient(90deg, #000 0, #000 8px, transparent 8px, transparent 16px)",
+                }} />
+                <div style={{ maxWidth: "1400px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    <a href="/study-materials" style={{
+                        display: "inline-flex", alignItems: "center",
+                        padding: "0.4rem 0.8rem", background: "#000", color: "#ffd400",
+                        borderRadius: "10px", fontWeight: 700, textDecoration: "none",
+                        border: "2px solid #000", width: "fit-content", fontSize: "0.8rem",
+                    }}>
                         ← Back to Materials
                     </a>
-                    <div className="smv-info">
-                        <span className="smv-category">{material.category}</span>
-                        <h1>{material.title}</h1>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                        <span style={{
+                            display: "inline-block", padding: "0.2rem 0.6rem",
+                            background: "#000", color: "#ffd400", borderRadius: "8px",
+                            fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase",
+                            width: "fit-content",
+                        }}>
+                            {material.category}
+                        </span>
+                        <h1 style={{
+                            fontSize: "clamp(1.15rem, 2.5vw, 1.5rem)", fontWeight: 900,
+                            margin: 0, color: "#000", textTransform: "uppercase",
+                        }}>
+                            {material.title}
+                        </h1>
                         {material.course && (
-                            <a href={`/courses/${material.course.slug}`} className="smv-course-link">
+                            <a href={`/courses/${material.course.slug}`} style={{
+                                color: "rgba(0,0,0,0.55)", textDecoration: "none",
+                                fontWeight: 700, fontSize: "0.85rem",
+                            }}>
                                 📚 {material.course.title}
                             </a>
                         )}
@@ -35,146 +67,17 @@ export default async function StudyMaterialViewPage({ params }) {
                 </div>
             </div>
 
-            <div className="smv-content">
+            <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "1.5rem" }}>
                 <PDFViewer
-                    url={material.pdfUrl}
+                    fileUrl={material.pdfUrl}
                     viewerType={viewerType}
                     title={material.title}
                 />
             </div>
 
-            <div className="smv-actions">
-                <a href={material.pdfUrl} download className="smv-download-btn">
-                    ⬇ Download PDF
-                </a>
+            <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 1.5rem 1.5rem", display: "flex", justifyContent: "center" }}>
+                <DownloadButton url={material.pdfUrl} filename={material.title + ".pdf"} />
             </div>
-
-            <style jsx>{`
-                .smv-page {
-                    min-height: 100vh;
-                    background: #f8f9fc;
-                }
-
-                .smv-header {
-                    background: #ffd400;
-                    border-bottom: 4px solid #000;
-                    padding: 1.5rem;
-                }
-
-                .smv-header-content {
-                    max-width: 1400px;
-                    margin: 0 auto;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-
-                .smv-back-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    padding: 0.5rem 1rem;
-                    background: #000;
-                    color: #fff;
-                    border-radius: 10px;
-                    font-weight: 700;
-                    text-decoration: none;
-                    border: 3px solid #000;
-                    box-shadow: 3px 3px 0 #000;
-                    width: fit-content;
-                }
-
-                .smv-back-btn:hover {
-                    transform: translate(-2px, -2px);
-                    box-shadow: 5px 5px 0 #000;
-                }
-
-                .smv-info {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                }
-
-                .smv-category {
-                    display: inline-block;
-                    padding: 0.25rem 0.75rem;
-                    background: #000;
-                    color: #ffd400;
-                    border-radius: 999px;
-                    font-size: 0.75rem;
-                    font-weight: 800;
-                    text-transform: uppercase;
-                    width: fit-content;
-                }
-
-                .smv-header h1 {
-                    font-size: clamp(1.5rem, 4vw, 2rem);
-                    font-weight: 900;
-                    margin: 0;
-                    text-transform: uppercase;
-                }
-
-                .smv-course-link {
-                    color: #000;
-                    text-decoration: none;
-                    font-weight: 600;
-                    font-size: 0.9rem;
-                }
-
-                .smv-course-link:hover {
-                    text-decoration: underline;
-                }
-
-                .smv-content {
-                    max-width: 1400px;
-                    margin: 0 auto;
-                    padding: 1.5rem;
-                }
-
-                .smv-actions {
-                    max-width: 1400px;
-                    margin: 0 auto;
-                    padding: 0 1.5rem 1.5rem;
-                    display: flex;
-                    justify-content: center;
-                }
-
-                .smv-download-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.75rem 1.5rem;
-                    background: #000;
-                    color: #ffd400;
-                    border-radius: 12px;
-                    font-weight: 700;
-                    text-decoration: none;
-                    border: 4px solid #000;
-                    box-shadow: 4px 4px 0 #000;
-                }
-
-                .smv-download-btn:hover {
-                    transform: translate(-2px, -2px);
-                    box-shadow: 6px 6px 0 #000;
-                }
-
-                [data-theme="dark"] .smv-page {
-                    background: #0a0a0f;
-                }
-
-                [data-theme="dark"] .smv-header {
-                    background: #1a1a2e;
-                    border-bottom-color: #ffd400;
-                }
-
-                [data-theme="dark"] .smv-back-btn {
-                    background: #ffd400;
-                    color: #000;
-                }
-
-                [data-theme="dark"] .smv-header h1 {
-                    color: #ffffff;
-                }
-            `}</style>
         </div>
     );
 }

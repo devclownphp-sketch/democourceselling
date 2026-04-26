@@ -45,7 +45,6 @@ export default function AdminContactsClient({ initialContacts }) {
                 </div>
             </section>
 
-            {/* Message Modal */}
             {selectedContact && (
                 <div className="message-modal-overlay" onClick={() => setSelectedContact(null)}>
                     <div className="message-modal" onClick={(e) => e.stopPropagation()}>
@@ -92,7 +91,7 @@ export default function AdminContactsClient({ initialContacts }) {
                 </div>
             )}
 
-            <style jsx>{`
+            <style>{`
                 .view-message-btn {
                     background: #ffd400;
                     color: #000;

@@ -54,10 +54,8 @@ export default function ContactForm({ businessProfile }) {
 
     return (
         <div className="contact-form-wrapper">
-            {/* Main Contact Card */}
             <div className="contact-form-card">
                 <div className="contact-form-grid">
-                    {/* Left Panel - Info */}
                     <div className="contact-info-panel">
                         <div className="contact-info-header">
                             <p>Get in Touch</p>
@@ -67,7 +65,6 @@ export default function ContactForm({ businessProfile }) {
                             </p>
                         </div>
 
-                        {/* Stats Banner */}
                         <div className="contact-stats-banner">
                             <div className="contact-stat-item">
                                 <p className="contact-stat-number">40K+</p>
@@ -80,7 +77,6 @@ export default function ContactForm({ businessProfile }) {
                             </div>
                         </div>
 
-                        {/* Contact Details */}
                         <div className="contact-details">
                             <div className="contact-detail-item">
                                 <div className="contact-detail-icon"><IconPhone size={18} /></div>
@@ -107,7 +103,6 @@ export default function ContactForm({ businessProfile }) {
                             </div>
                         </div>
 
-                        {/* Social Links */}
                         <div className="contact-social">
                             <p className="contact-social-label">Follow Us</p>
                             <div className="contact-social-links">
@@ -129,9 +124,7 @@ export default function ContactForm({ businessProfile }) {
                         </div>
                     </div>
 
-                    {/* Right Panel - Form */}
                     <div className="contact-form-panel">
-                        {/* Map Embed */}
                         {businessProfile.mapEmbedUrl && (
                             <div className="contact-map-embed">
                                 <iframe
@@ -144,13 +137,11 @@ export default function ContactForm({ businessProfile }) {
                             </div>
                         )}
 
-                        {/* Form Header */}
                         <div className="contact-form-header">
                             <h3>Send us a message</h3>
                             <p>Fill in the form below and we'll get back to you shortly.</p>
                         </div>
 
-                        {/* Form */}
                         <form onSubmit={onSubmit} className="contact-form">
                             <div className="contact-form-row">
                                 <div className="contact-form-field">
@@ -210,7 +201,6 @@ export default function ContactForm({ businessProfile }) {
                                 {loading ? "Sending..." : "Send Message"}
                             </button>
 
-                            {/* Result Message */}
                             {result.message && (
                                 <div className={`contact-result ${result.type}`}>
                                     <IconCheck size={18} />
@@ -222,7 +212,6 @@ export default function ContactForm({ businessProfile }) {
                 </div>
             </div>
 
-            {/* Quick Contact Cards */}
             <div className="contact-quick-cards">
                 <div className="contact-quick-card">
                     <div className="contact-quick-icon"><IconPhone size={24} /></div>

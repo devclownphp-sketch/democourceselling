@@ -56,6 +56,16 @@ const textareas = new Set([
     "studyPlan", "jobsAfter", "startLearningText",
 ]);
 
+const FIELD_MAX_LENGTHS = {
+    shortDescription: 200,
+    whatIs: 500,
+    whoCanJoin: 1000,
+    syllabusTopics: 1500,
+    studyPlan: 1000,
+    jobsAfter: 1000,
+    startLearningText: 300,
+};
+
 const IMAGE_WIDTH = 1200;
 const IMAGE_HEIGHT = 675;
 
@@ -157,12 +167,35 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
 
         try {
             setError("");
-            const dataUrl = await readFileAsDataUrl(file);
-            const resized = await resizeToCover(dataUrl);
-            setForm((prev) => ({ ...prev, courseImage: resized }));
+            setLoading(true);
+
+            if (form.courseImage) {
+                await fetch("/api/admin/upload/course-image/delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url: form.courseImage }),
+                }).catch(() => {});
+            }
+
+            const formDataUpload = new FormData();
+            formDataUpload.append("file", file);
+
+            const response = await fetch("/api/admin/upload/course-image", {
+                method: "POST",
+                body: formDataUpload,
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Upload failed");
+            }
+
+            const data = await response.json();
+            setForm((prev) => ({ ...prev, courseImage: data.url }));
         } catch (imageError) {
-            setError(imageError.message || "Could not process selected image.");
+            setError(imageError.message || "Could not upload image.");
         } finally {
+            setLoading(false);
             event.target.value = "";
         }
     };
@@ -247,7 +280,6 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                 <label>
                     🖼️ Course Banner Image ({IMAGE_WIDTH}x{IMAGE_HEIGHT})
                     <input type="file" accept="image/*" onChange={onPickImage} />
-                    <input name="courseImage" value={form.courseImage} onChange={onChange} placeholder="Or paste image URL/data URL" />
                     {form.courseImage ? (
                         <>
                             <img
@@ -258,19 +290,30 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                             <button type="button" className="btn-ghost" onClick={() => setForm((prev) => ({ ...prev, courseImage: "" }))}>Clear Image</button>
                         </>
                     ) : (
-                        <span className="muted-text">Selected images are auto-resized and cropped to a fixed card size.</span>
+                        <span className="muted-text">Click upload button to add course image.</span>
                     )}
                 </label>
-                {fieldGroups.map(([name, label, emoji]) => (
-                    <label key={name}>
-                        {emoji} {label}
-                        {textareas.has(name) ? (
-                            <textarea rows={name === "shortDescription" ? 3 : 5} name={name} value={form[name]} onChange={onChange} required />
-                        ) : (
-                            <input name={name} value={form[name]} onChange={onChange} required />
-                        )}
-                    </label>
-                ))}
+                {fieldGroups.map(([name, label, emoji]) => {
+                    const maxLen = FIELD_MAX_LENGTHS[name];
+                    const currentLen = (form[name] || "").length;
+                    return (
+                        <label key={name}>
+                            {emoji} {label}
+                            {textareas.has(name) ? (
+                                <>
+                                    <textarea rows={name === "shortDescription" ? 3 : 5} name={name} value={form[name]} onChange={onChange} required maxLength={maxLen || undefined} />
+                                    {maxLen && (
+                                        <span style={{ fontSize: "0.75rem", textAlign: "right", color: currentLen > maxLen * 0.9 ? "#ef4444" : "#999" }}>
+                                            {currentLen}/{maxLen}
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                <input name={name} value={form[name]} onChange={onChange} required />
+                            )}
+                        </label>
+                    );
+                })}
 
                 <div className="price-row">
                     <label>
@@ -377,6 +420,10 @@ export default function CourseManager({ initialCourses, courseTypes = [] }) {
                     </table>
                 </div>
             </section>
+
+            <style>{`
+                /* Scroll buttons removed - using global ScrollToTop from layout.js */
+            `}</style>
         </div>
     );
 }

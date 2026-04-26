@@ -7,7 +7,6 @@ const blankQuestion = {
     questionText: "",
     options: ["", "", "", ""],
     correctIndex: "0",
-    sortOrder: "0",
 };
 
 const defaultQuiz = {
@@ -21,12 +20,11 @@ const defaultQuiz = {
     questions: [{ ...blankQuestion }],
 };
 
-function normalizeQuestion(question, index) {
+function normalizeQuestion(question) {
     return {
         questionText: question.questionText,
         options: Array.isArray(question.options) ? question.options : ["", "", "", ""],
         correctIndex: String(question.correctIndex ?? 0),
-        sortOrder: String(question.sortOrder ?? index),
     };
 }
 
@@ -70,7 +68,7 @@ export default function QuizManager({ initialQuizzes }) {
             ...prev,
             questions: [
                 ...prev.questions,
-                { ...blankQuestion, sortOrder: String(prev.questions.length) },
+                { ...blankQuestion },
             ],
         }));
     };
@@ -81,7 +79,7 @@ export default function QuizManager({ initialQuizzes }) {
             const next = prev.questions.filter((_, questionIndex) => questionIndex !== index);
             return {
                 ...prev,
-                questions: next.map((question, nextIndex) => ({ ...question, sortOrder: String(nextIndex) })),
+                questions: next,
             };
         });
     };
@@ -96,7 +94,7 @@ export default function QuizManager({ initialQuizzes }) {
             rating: String(quiz.rating),
             sortOrder: String(quiz.sortOrder),
             isActive: Boolean(quiz.isActive),
-            questions: (quiz.questions || []).map((question, index) => normalizeQuestion(question, index)),
+            questions: (quiz.questions || []).map((question) => normalizeQuestion(question)),
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -123,7 +121,7 @@ export default function QuizManager({ initialQuizzes }) {
                 questionText: question.questionText,
                 options: question.options,
                 correctIndex: Number(question.correctIndex),
-                sortOrder: Number(question.sortOrder || index),
+                sortOrder: index,
             })),
         };
 
@@ -239,21 +237,15 @@ export default function QuizManager({ initialQuizzes }) {
                                         </label>
                                     ))}
                                 </div>
-                                <div className="price-row">
-                                    <label>
-                                        Correct Option
-                                        <select value={question.correctIndex} onChange={(event) => setQuestionField(index, "correctIndex", event.target.value)}>
-                                            <option value="0">Option 1</option>
-                                            <option value="1">Option 2</option>
-                                            <option value="2">Option 3</option>
-                                            <option value="3">Option 4</option>
-                                        </select>
-                                    </label>
-                                    <label>
-                                        Question Order
-                                        <input type="number" min="0" value={question.sortOrder} onChange={(event) => setQuestionField(index, "sortOrder", event.target.value)} required />
-                                    </label>
-                                </div>
+                                <label>
+                                    Correct Option
+                                    <select value={question.correctIndex} onChange={(event) => setQuestionField(index, "correctIndex", event.target.value)}>
+                                        <option value="0">Option 1</option>
+                                        <option value="1">Option 2</option>
+                                        <option value="2">Option 3</option>
+                                        <option value="3">Option 4</option>
+                                    </select>
+                                </label>
                             </article>
                         ))}
                     </div>

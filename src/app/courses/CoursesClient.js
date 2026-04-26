@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { IconClock, IconStar, IconSearch, IconFilter } from "@/components/Icons";
+import { IconClock, IconStar, IconSearch } from "@/components/Icons";
 
 export default function CoursesClient({ courses = [], courseTypes = [] }) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -40,7 +40,6 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
 
     return (
         <div className="courses-page">
-            {/* Header */}
             <div className="courses-header">
                 <div className="courses-header-content">
                     <p className="courses-subtitle">Our Library</p>
@@ -50,7 +49,6 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
                 <Link href="/" className="courses-back-btn">← Back to Home</Link>
             </div>
 
-            {/* Minimalist Filter Bar - Toggle Buttons */}
             <div className="courses-filter-bar">
                 <div className="courses-filter-actions">
                     <Link href="/categories" className="explore-categories-btn">
@@ -132,7 +130,6 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
                 </div>
             </div>
 
-            {/* Course Grid */}
             <div className="courses-container">
                 <div className="courses-results-info">
                     Showing <strong>{filteredCourses.length}</strong> of <strong>{courses.length}</strong> courses
@@ -147,7 +144,7 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
                     {filteredCourses.map((course) => (
                         <Link
                             key={course.id}
-                            href={`/courses/${course.slug}`}
+                            href={`/courses/${course.courseUrlId || course.slug}`}
                             className="brutal-course-card"
                         >
                             <div className="brutal-course-image">
@@ -225,7 +222,7 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .courses-filter-bar {
                     background: #fff;
                     border-bottom: 4px solid #000;
@@ -498,7 +495,23 @@ export default function CoursesClient({ courses = [], courseTypes = [] }) {
                 [data-theme="dark"] .courses-results-info strong {
                     color: #ffd400;
                 }
-            `}</style>
+
+                .scroll-progress-container {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 100;
+                    pointer-events: none;
+                }
+
+                .scroll-progress-bar {
+                    height: 4px;
+                    background: linear-gradient(90deg, #0084D1, #ffd400);
+                    transition: width 0.1s ease;
+                }
+
+                `}</style>
         </div>
     );
 }

@@ -72,11 +72,15 @@ logs/
 # misc generated
 .turbo/
 .cache/
+.gemini/
 
 # temp folders
 old version/
 course_selling/
 designs/
 *.docx
-*.pdf
-*.png
+
+# temp files
+dev.db
+check-courses.js
+check.ps1

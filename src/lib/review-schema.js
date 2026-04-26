@@ -20,7 +20,12 @@ const reviewSchema = z.object({
     isFeatured: z.boolean().default(false),
     isActive: z.boolean().default(true),
 });
+const reviewUpdateSchema = reviewSchema.partial();
 
 export function parseReviewPayload(payload) {
     return reviewSchema.parse(payload);
+}
+
+export function parseReviewUpdate(payload) {
+    return reviewUpdateSchema.parse(payload);
 }

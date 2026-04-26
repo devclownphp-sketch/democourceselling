@@ -4,32 +4,11 @@ import { useState, useEffect } from "react";
 
 const TABS = [
     { id: "colors", label: "🎨 Colors" },
-    { id: "theme", label: "🌓 Theme" },
-    { id: "pdf", label: "📄 PDF Viewer" },
     { id: "hero", label: "🏠 Hero" },
     { id: "stats", label: "📊 Stats" },
     { id: "social", label: "🔗 Social" },
-];
-
-const PDF_VIEWERS = [
-    {
-        id: "google",
-        name: "Google Drive Viewer",
-        desc: "Fast, reliable preview via Google Drive. Best for shared Drive files.",
-        icon: "🗂️",
-    },
-    {
-        id: "pdfjs",
-        name: "Mozilla PDF.js",
-        desc: "Open-source PDF renderer by Mozilla. No external dependencies.",
-        icon: "📰",
-    },
-    {
-        id: "embedpdf",
-        name: "Embed PDF Viewer",
-        desc: "Native browser PDF embed with full-screen support.",
-        icon: "📑",
-    },
+    { id: "security", label: "🔒 Security" },
+    { id: "storage", label: "💾 Storage" },
 ];
 
 export default function SiteSettingsForm() {
@@ -37,7 +16,7 @@ export default function SiteSettingsForm() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
-    const [activeTab, setActiveTab] = useState("theme");
+    const [activeTab, setActiveTab] = useState("colors");
 
     useEffect(() => {
         fetch("/api/admin/site-settings")
@@ -71,8 +50,6 @@ export default function SiteSettingsForm() {
             if (!res.ok) throw new Error(data.error);
 
             setMessage({ type: "success", text: "Settings saved successfully! 🌟" });
-
-            // If theme changed, reload to apply
             if (data.settings?.themeMode) {
                 setTimeout(() => window.location.reload(), 1000);
             }
@@ -97,7 +74,6 @@ export default function SiteSettingsForm() {
                 <h1>⚙️ Site Settings</h1>
                 <p className="muted-text">Customize your website appearance and functionality.</p>
 
-                {/* Tabs */}
                 <div style={{
                     display: "flex",
                     gap: "0.5rem",
@@ -126,7 +102,6 @@ export default function SiteSettingsForm() {
                     ))}
                 </div>
 
-                {/* Colors Tab */}
                 {activeTab === "colors" && (
                     <section>
                         <h3 className="text-lg font-semibold mb-4">Color Palette</h3>
@@ -203,199 +178,6 @@ export default function SiteSettingsForm() {
                     </section>
                 )}
 
-                {/* Theme Tab */}
-                {activeTab === "theme" && (
-                    <section>
-                        <h3 className="text-lg font-semibold mb-4">Theme Settings</h3>
-                        <p className="muted-text mb-6">Choose your website appearance.</p>
-
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                            gap: "1rem",
-                            marginTop: "1rem"
-                        }}>
-                            <label
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    gap: "0.75rem",
-                                    padding: "1.5rem",
-                                    borderRadius: "var(--radius-xl)",
-                                    border: settings.themeMode === "light" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
-                                    cursor: "pointer",
-                                    background: "var(--paper)",
-                                    transition: "all 0.2s ease"
-                                }}
-                            >
-                                <input
-                                    type="radio"
-                                    name="themeMode"
-                                    value="light"
-                                    checked={settings.themeMode === "light"}
-                                    onChange={(e) => handleChange("themeMode", e.target.value)}
-                                    style={{ display: "none" }}
-                                />
-                                <div style={{
-                                    width: "80px",
-                                    height: "60px",
-                                    borderRadius: "var(--radius-md)",
-                                    background: "linear-gradient(180deg, #f8f9fc 0%, #e2e8f0 100%)",
-                                    border: "1px solid #e2e8f0",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: "1.5rem"
-                                }}>
-                                    ☀️
-                                </div>
-                                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>Light Mode</span>
-                                <span style={{ fontSize: "0.8rem", color: "var(--text-tertiary)", textAlign: "center" }}>
-                                    Clean, bright appearance
-                                </span>
-                                {settings.themeMode === "light" && (
-                                    <span style={{
-                                        position: "absolute",
-                                        top: "0.5rem",
-                                        right: "0.5rem",
-                                        background: "var(--brand-primary)",
-                                        color: "#fff",
-                                        padding: "0.2rem 0.5rem",
-                                        borderRadius: "var(--radius-sm)",
-                                        fontSize: "0.7rem",
-                                        fontWeight: 600
-                                    }}>
-                                        ACTIVE
-                                    </span>
-                                )}
-                            </label>
-
-                            <label
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    gap: "0.75rem",
-                                    padding: "1.5rem",
-                                    borderRadius: "var(--radius-xl)",
-                                    border: settings.themeMode === "dark" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
-                                    cursor: "pointer",
-                                    background: "var(--paper)",
-                                    position: "relative",
-                                    transition: "all 0.2s ease"
-                                }}
-                            >
-                                <input
-                                    type="radio"
-                                    name="themeMode"
-                                    value="dark"
-                                    checked={settings.themeMode === "dark"}
-                                    onChange={(e) => handleChange("themeMode", e.target.value)}
-                                    style={{ display: "none" }}
-                                />
-                                <div style={{
-                                    width: "80px",
-                                    height: "60px",
-                                    borderRadius: "var(--radius-md)",
-                                    background: "linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%)",
-                                    border: "1px solid #2d2d3a",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: "1.5rem"
-                                }}>
-                                    🌙
-                                </div>
-                                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>Dark Mode</span>
-                                <span style={{ fontSize: "0.8rem", color: "var(--text-tertiary)", textAlign: "center" }}>
-                                    Easy on the eyes
-                                </span>
-                                {settings.themeMode === "dark" && (
-                                    <span style={{
-                                        position: "absolute",
-                                        top: "0.5rem",
-                                        right: "0.5rem",
-                                        background: "var(--brand-primary)",
-                                        color: "#fff",
-                                        padding: "0.2rem 0.5rem",
-                                        borderRadius: "var(--radius-sm)",
-                                        fontSize: "0.7rem",
-                                        fontWeight: 600
-                                    }}>
-                                        ACTIVE
-                                    </span>
-                                )}
-                            </label>
-                        </div>
-                    </section>
-                )}
-
-                {/* PDF Viewer Tab */}
-                {activeTab === "pdf" && (
-                    <section>
-                        <h3 className="text-lg font-semibold mb-4">PDF Viewer Settings</h3>
-                        <p className="muted-text mb-6">Choose how PDF documents are displayed to users.</p>
-
-                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                            {PDF_VIEWERS.map((viewer) => (
-                                <label
-                                    key={viewer.id}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "flex-start",
-                                        gap: "1rem",
-                                        padding: "1.25rem",
-                                        borderRadius: "var(--radius-lg)",
-                                        border: settings.pdfViewer === viewer.id
-                                            ? "3px solid var(--brand-primary)"
-                                            : "2px solid var(--border-light)",
-                                        cursor: "pointer",
-                                        background: settings.pdfViewer === viewer.id
-                                            ? "var(--brand-primary-light)"
-                                            : "var(--paper)",
-                                        transition: "all 0.2s ease"
-                                    }}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="pdfViewer"
-                                        value={viewer.id}
-                                        checked={settings.pdfViewer === viewer.id}
-                                        onChange={(e) => handleChange("pdfViewer", e.target.value)}
-                                        style={{ marginTop: "0.25rem" }}
-                                    />
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                                            <span style={{ fontSize: "1.25rem" }}>{viewer.icon}</span>
-                                            <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                                                {viewer.name}
-                                            </span>
-                                        </div>
-                                        <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.875rem" }}>
-                                            {viewer.desc}
-                                        </p>
-                                    </div>
-                                    {settings.pdfViewer === viewer.id && (
-                                        <span style={{
-                                            background: "var(--brand-primary)",
-                                            color: "#fff",
-                                            padding: "0.25rem 0.75rem",
-                                            borderRadius: "var(--radius-sm)",
-                                            fontSize: "0.75rem",
-                                            fontWeight: 600,
-                                            whiteSpace: "nowrap"
-                                        }}>
-                                            SELECTED ✓
-                                        </span>
-                                    )}
-                                </label>
-                            ))}
-                        </div>
-                    </section>
-                )}
-
-                {/* Hero Tab */}
                 {activeTab === "hero" && (
                     <section>
                         <h3 className="text-lg font-semibold mb-4">Hero Section</h3>
@@ -429,7 +211,6 @@ export default function SiteSettingsForm() {
                     </section>
                 )}
 
-                {/* Stats Tab */}
                 {activeTab === "stats" && (
                     <section>
                         <h3 className="text-lg font-semibold mb-4">Statistics</h3>
@@ -465,7 +246,6 @@ export default function SiteSettingsForm() {
                     </section>
                 )}
 
-                {/* Social Tab */}
                 {activeTab === "social" && (
                     <section>
                         <h3 className="text-lg font-semibold mb-4">External Links</h3>
@@ -487,6 +267,187 @@ export default function SiteSettingsForm() {
                                 placeholder="© 2026 WEBCOM. All Rights Reserved."
                             />
                         </label>
+                    </section>
+                )}
+
+                {activeTab === "storage" && (
+                    <section>
+                        <h3 className="text-lg font-semibold mb-4">Storage Settings</h3>
+                        <p className="muted-text mb-6">Configure where files (images, PDFs, course content) are stored.</p>
+
+                        <div style={{ display: "grid", gap: "1.5rem", maxWidth: "600px" }}>
+                            <div>
+                                <label style={{ fontWeight: 600, marginBottom: "0.75rem", display: "block" }}>Storage Provider</label>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.75rem" }}>
+                                    <button
+                                        onClick={() => handleChange("storageProvider", "local")}
+                                        style={{
+                                            padding: "1rem",
+                                            borderRadius: "var(--radius-lg)",
+                                            border: settings.storageProvider === "local" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
+                                            background: settings.storageProvider === "local" ? "var(--brand-primary-light)" : "var(--paper)",
+                                            cursor: "pointer",
+                                            textAlign: "left",
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>💾 Local Storage</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Default for development</div>
+                                    </button>
+                                    <button
+                                        onClick={() => handleChange("storageProvider", "s3")}
+                                        style={{
+                                            padding: "1rem",
+                                            borderRadius: "var(--radius-lg)",
+                                            border: settings.storageProvider === "s3" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
+                                            background: settings.storageProvider === "s3" ? "var(--brand-primary-light)" : "var(--paper)",
+                                            cursor: "pointer",
+                                            textAlign: "left",
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>☁️ AWS S3</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Amazon Cloud Storage</div>
+                                    </button>
+                                    <button
+                                        onClick={() => handleChange("storageProvider", "r2")}
+                                        style={{
+                                            padding: "1rem",
+                                            borderRadius: "var(--radius-lg)",
+                                            border: settings.storageProvider === "r2" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
+                                            background: settings.storageProvider === "r2" ? "var(--brand-primary-light)" : "var(--paper)",
+                                            cursor: "pointer",
+                                            textAlign: "left",
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>🌥️ Cloudflare R2</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>S3-compatible storage</div>
+                                    </button>
+                                    <button
+                                        onClick={() => handleChange("storageProvider", "gcs")}
+                                        style={{
+                                            padding: "1rem",
+                                            borderRadius: "var(--radius-lg)",
+                                            border: settings.storageProvider === "gcs" ? "3px solid var(--brand-primary)" : "2px solid var(--border-light)",
+                                            background: settings.storageProvider === "gcs" ? "var(--brand-primary-light)" : "var(--paper)",
+                                            cursor: "pointer",
+                                            textAlign: "left",
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>🔷 Google Cloud</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>GCS Bucket Storage</div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {settings.storageProvider !== "local" && (
+                                <div style={{ padding: "1rem", background: "var(--paper)", borderRadius: "var(--radius-lg)", border: "2px solid var(--border-light)" }}>
+                                    <h4 style={{ fontWeight: 600, marginBottom: "1rem" }}>Bucket Configuration</h4>
+                                    <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                                        Bucket Name
+                                        <input
+                                            type="text"
+                                            value={settings.storageBucket || ""}
+                                            onChange={(e) => handleChange("storageBucket", e.target.value)}
+                                            placeholder="my-bucket-name"
+                                            style={{ padding: "0.75rem", border: "2px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                        />
+                                    </label>
+                                    <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                                        Region
+                                        <input
+                                            type="text"
+                                            value={settings.storageRegion || ""}
+                                            onChange={(e) => handleChange("storageRegion", e.target.value)}
+                                            placeholder="ap-southeast-1"
+                                            style={{ padding: "0.75rem", border: "2px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                        />
+                                    </label>
+                                    <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                                        Access Key ID
+                                        <input
+                                            type="text"
+                                            value={settings.storageAccessKey || ""}
+                                            onChange={(e) => handleChange("storageAccessKey", e.target.value)}
+                                            placeholder="AKIA..."
+                                            style={{ padding: "0.75rem", border: "2px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                        />
+                                    </label>
+                                    <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                                        Secret Access Key
+                                        <input
+                                            type="password"
+                                            value={settings.storageSecretKey || ""}
+                                            onChange={(e) => handleChange("storageSecretKey", e.target.value)}
+                                            placeholder="••••••••"
+                                            style={{ padding: "0.75rem", border: "2px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                        />
+                                    </label>
+                                    {settings.storageProvider === "r2" && (
+                                        <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                            R2 Account ID
+                                            <input
+                                                type="text"
+                                                value={settings.storageAccountId || ""}
+                                                onChange={(e) => handleChange("storageAccountId", e.target.value)}
+                                                placeholder="abc123..."
+                                                style={{ padding: "0.75rem", border: "2px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                            />
+                                        </label>
+                                    )}
+                                </div>
+                            )}
+
+                            <div style={{ padding: "1rem", background: "#f0fdf4", borderRadius: "var(--radius-lg)", border: "2px solid #10b981" }}>
+                                <p style={{ margin: 0, fontSize: "0.85rem", color: "#166534" }}>
+                                    <strong>Local Storage:</strong> Files stored in /public/uploads (default for development). Works without any cloud credentials.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {activeTab === "security" && (
+                    <section>
+                        <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
+                        <p className="muted-text mb-6">Configure session timeout and concurrent session limits for admin accounts.</p>
+
+                        <div style={{ display: "grid", gap: "1.5rem", maxWidth: "500px" }}>
+                            <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                Session Timeout (minutes)
+                                <select
+                                    value={settings.sessionTimeoutMin || 30}
+                                    onChange={(e) => handleChange("sessionTimeoutMin", parseInt(e.target.value))}
+                                    style={{ padding: "0.75rem 1rem", border: "3px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                >
+                                    <option value={10}>10 minutes</option>
+                                    <option value={15}>15 minutes</option>
+                                    <option value={30}>30 minutes</option>
+                                    <option value={45}>45 minutes</option>
+                                    <option value={60}>60 minutes</option>
+                                    <option value={120}>2 hours</option>
+                                    <option value={240}>4 hours</option>
+                                </select>
+                                <span style={{ fontSize: "0.8rem", color: "var(--text-tertiary)" }}>
+                                    Admin will be logged out after this period of inactivity
+                                </span>
+                            </label>
+
+                            <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                Max Concurrent Sessions
+                                <select
+                                    value={settings.maxSessions || 1}
+                                    onChange={(e) => handleChange("maxSessions", parseInt(e.target.value))}
+                                    style={{ padding: "0.75rem 1rem", border: "3px solid var(--border)", borderRadius: "var(--radius)", fontSize: "1rem" }}
+                                >
+                                    <option value={1}>1 session</option>
+                                    <option value={2}>2 sessions</option>
+                                    <option value={3}>3 sessions</option>
+                                    <option value={5}>5 sessions</option>
+                                </select>
+                                <span style={{ fontSize: "0.8rem", color: "var(--text-tertiary)" }}>
+                                    Maximum concurrent admin sessions allowed
+                                </span>
+                            </label>
+                        </div>
                     </section>
                 )}
 

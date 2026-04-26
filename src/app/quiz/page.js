@@ -20,7 +20,6 @@ export default async function QuizListPage() {
         <div className="quiz-page">
             <VisitTracker />
 
-            {/* Header */}
             <div className="quiz-header">
                 <div className="quiz-header-content">
                     <p className="quiz-subtitle">Practice Tests</p>
@@ -29,7 +28,6 @@ export default async function QuizListPage() {
                 </div>
             </div>
 
-            {/* Quiz Grid */}
             <div className="quiz-container">
                 <div className="quiz-grid">
                     {quizzes.map((quiz) => (

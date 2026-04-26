@@ -17,7 +17,6 @@ export default function CourseEnrollButton({ course }) {
                 }),
             });
         } catch {
-            // Ignore tracking errors and continue to WhatsApp.
         } finally {
             setIsLoading(false);
         }

@@ -19,12 +19,12 @@ export async function POST(request) {
         const payload = await request.json();
         const parsed = loginSchema.safeParse(payload);
         if (!parsed.success) {
-            return NextResponse.json({ error: "Invalid username or password format." }, { status: 400 });
+            return NextResponse.json({ error: "Invalid username or password." }, { status: 400 });
         }
 
         const admin = await verifyAdminCredentials(parsed.data.username, parsed.data.password);
         if (!admin) {
-            return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+            return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
         }
 
         const { token, expiresAt } = await createAdminSession(admin.id);

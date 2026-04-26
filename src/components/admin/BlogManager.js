@@ -18,6 +18,7 @@ export default function BlogManager() {
         title: "",
         excerpt: "",
         content: "",
+        contentBlocks: [],
         featuredImage: "",
         isPublished: false,
     });
@@ -67,6 +68,7 @@ export default function BlogManager() {
             title: "",
             excerpt: "",
             content: "",
+            contentBlocks: [],
             featuredImage: "",
             isPublished: false,
         });
@@ -146,6 +148,7 @@ export default function BlogManager() {
             title: blog.title,
             excerpt: blog.excerpt,
             content: blog.content,
+            contentBlocks: blog.contentBlocks || [],
             featuredImage: blog.featuredImage || "",
             isPublished: blog.isPublished,
         });
@@ -240,11 +243,199 @@ export default function BlogManager() {
                         <textarea
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                            placeholder="Full blog content"
-                            rows="10"
+                            placeholder="Main blog content (intro text)"
+                            rows="6"
                             required
                         />
                         <small>{formData.content.length} characters (minimum 20)</small>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Content Blocks</label>
+                        <p style={{ fontSize: "0.8rem", color: "#666", margin: "0 0 1rem" }}>
+                            Add headings, text, and images. Use controls to reorder blocks freely.
+                        </p>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                            {formData.contentBlocks.map((block, idx) => (
+                                <div key={idx} style={{
+                                    border: "3px solid #000", borderRadius: "14px", overflow: "hidden",
+                                    background: block.type === "heading" ? "#fffbeb" : block.type === "image" ? "#f0f9ff" : "#fff",
+                                    display: "flex",
+                                }}>
+                                    <div style={{
+                                        background: block.type === "heading" ? "#ffd400" : block.type === "image" ? "#3b82f6" : "#000",
+                                        color: block.type === "image" || block.type === "text" ? "#fff" : "#000",
+                                        width: "44px", minWidth: "44px", display: "flex", flexDirection: "column",
+                                        alignItems: "center", justifyContent: "center", gap: "0.35rem",
+                                        cursor: "grab", userSelect: "none", fontSize: "0.75rem", fontWeight: 900,
+                                        borderRight: "3px solid #000",
+                                    }}>
+                                        <span style={{ fontSize: "1rem" }}>⋮⋮</span>
+                                        <span style={{ fontSize: "0.85rem", fontWeight: 900 }}>{idx + 1}</span>
+                                    </div>
+
+                                    <div style={{ flex: 1, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                                            <span style={{
+                                                fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase",
+                                                padding: "0.2rem 0.5rem", borderRadius: "6px",
+                                                background: block.type === "heading" ? "#ffd400" : block.type === "image" ? "#3b82f6" : "#000",
+                                                color: block.type === "image" ? "#fff" : block.type === "heading" ? "#000" : "#fff",
+                                            }}>
+                                                {block.type === "heading" ? "📝 Heading" : block.type === "image" ? "🖼️ Image" : "📄 Text"}
+                                            </span>
+                                            <div style={{ display: "flex", gap: "0.2rem", alignItems: "center", flexWrap: "wrap" }}>
+                                                {idx > 0 && (
+                                                    <button type="button" title="Move to top" onClick={() => {
+                                                        const blocks = [...formData.contentBlocks];
+                                                        const item = blocks.splice(idx, 1)[0];
+                                                        blocks.unshift(item);
+                                                        setFormData({ ...formData, contentBlocks: blocks });
+                                                    }} style={blockBtnStyle}>⤒</button>
+                                                )}
+                                                {idx > 0 && (
+                                                    <button type="button" title="Move up" onClick={() => {
+                                                        const blocks = [...formData.contentBlocks];
+                                                        [blocks[idx - 1], blocks[idx]] = [blocks[idx], blocks[idx - 1]];
+                                                        setFormData({ ...formData, contentBlocks: blocks });
+                                                    }} style={blockBtnStyle}>▲</button>
+                                                )}
+                                                {idx < formData.contentBlocks.length - 1 && (
+                                                    <button type="button" title="Move down" onClick={() => {
+                                                        const blocks = [...formData.contentBlocks];
+                                                        [blocks[idx], blocks[idx + 1]] = [blocks[idx + 1], blocks[idx]];
+                                                        setFormData({ ...formData, contentBlocks: blocks });
+                                                    }} style={blockBtnStyle}>▼</button>
+                                                )}
+                                                {idx < formData.contentBlocks.length - 1 && (
+                                                    <button type="button" title="Move to bottom" onClick={() => {
+                                                        const blocks = [...formData.contentBlocks];
+                                                        const item = blocks.splice(idx, 1)[0];
+                                                        blocks.push(item);
+                                                        setFormData({ ...formData, contentBlocks: blocks });
+                                                    }} style={blockBtnStyle}>⤓</button>
+                                                )}
+                                                {formData.contentBlocks.length > 1 && (
+                                                    <select
+                                                        value={idx}
+                                                        onChange={(e) => {
+                                                            const target = Number(e.target.value);
+                                                            if (target === idx) return;
+                                                            const blocks = [...formData.contentBlocks];
+                                                            const item = blocks.splice(idx, 1)[0];
+                                                            blocks.splice(target, 0, item);
+                                                            setFormData({ ...formData, contentBlocks: blocks });
+                                                        }}
+                                                        style={{ padding: "0.2rem 0.3rem", border: "2px solid #000", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", background: "#f5f5f5" }}
+                                                        title="Jump to position"
+                                                    >
+                                                        {formData.contentBlocks.map((_, i) => (
+                                                            <option key={i} value={i}>Pos {i + 1}</option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                                <button type="button" title="Duplicate" onClick={() => {
+                                                    const blocks = [...formData.contentBlocks];
+                                                    blocks.splice(idx + 1, 0, { ...block });
+                                                    setFormData({ ...formData, contentBlocks: blocks });
+                                                }} style={{ ...blockBtnStyle, background: "#6366f1", color: "#fff" }}>⧉</button>
+                                                <button type="button" title="Delete" onClick={() => {
+                                                    setFormData({ ...formData, contentBlocks: formData.contentBlocks.filter((_, i) => i !== idx) });
+                                                }} style={{ ...blockBtnStyle, background: "#ef4444", color: "#fff" }}>✕</button>
+                                            </div>
+                                        </div>
+                                        {block.type === "heading" && (
+                                            <input
+                                                type="text"
+                                                value={block.value}
+                                                onChange={(e) => {
+                                                    const blocks = [...formData.contentBlocks];
+                                                    blocks[idx] = { ...blocks[idx], value: e.target.value };
+                                                    setFormData({ ...formData, contentBlocks: blocks });
+                                                }}
+                                                placeholder="Section heading..."
+                                                style={{ width: "100%", padding: "0.65rem", border: "2px solid #000", borderRadius: "8px", fontSize: "1rem", fontWeight: 700 }}
+                                            />
+                                        )}
+                                        {block.type === "text" && (
+                                            <textarea
+                                                value={block.value}
+                                                onChange={(e) => {
+                                                    const blocks = [...formData.contentBlocks];
+                                                    blocks[idx] = { ...blocks[idx], value: e.target.value };
+                                                    setFormData({ ...formData, contentBlocks: blocks });
+                                                }}
+                                                placeholder="Paragraph text..."
+                                                rows="4"
+                                                style={{ width: "100%", padding: "0.65rem", border: "2px solid #000", borderRadius: "8px", fontSize: "0.9rem", resize: "vertical" }}
+                                            />
+                                        )}
+                                        {block.type === "image" && (
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                                                    <button type="button" onClick={() => {
+                                                        const input = document.createElement("input");
+                                                        input.type = "file";
+                                                        input.accept = "image/*";
+                                                        input.onchange = async (ev) => {
+                                                            const file = ev.target.files?.[0];
+                                                            if (!file) return;
+                                                            const fd = new FormData();
+                                                            fd.append("file", file);
+                                                            try {
+                                                                const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+                                                                if (!res.ok) throw new Error();
+                                                                const data = await res.json();
+                                                                const blocks = [...formData.contentBlocks];
+                                                                blocks[idx] = { ...blocks[idx], value: data.url };
+                                                                setFormData({ ...formData, contentBlocks: blocks });
+                                                            } catch { setError("Failed to upload block image"); }
+                                                        };
+                                                        input.click();
+                                                    }} style={{ ...blockBtnStyle, background: "#ffd400", fontSize: "0.8rem", padding: "0.4rem 0.8rem" }}>Upload</button>
+                                                    <span style={{ fontSize: "0.75rem", color: "#666" }}>OR</span>
+                                                    <input
+                                                        type="text"
+                                                        value={block.value}
+                                                        onChange={(e) => {
+                                                            const blocks = [...formData.contentBlocks];
+                                                            blocks[idx] = { ...blocks[idx], value: e.target.value };
+                                                            setFormData({ ...formData, contentBlocks: blocks });
+                                                        }}
+                                                        placeholder="Paste image URL"
+                                                        style={{ flex: 1, minWidth: "180px", padding: "0.5rem", border: "2px solid #000", borderRadius: "8px", fontSize: "0.85rem" }}
+                                                    />
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    value={block.caption || ""}
+                                                    onChange={(e) => {
+                                                        const blocks = [...formData.contentBlocks];
+                                                        blocks[idx] = { ...blocks[idx], caption: e.target.value };
+                                                        setFormData({ ...formData, contentBlocks: blocks });
+                                                    }}
+                                                    placeholder="Image caption (optional)"
+                                                    style={{ padding: "0.5rem", border: "2px solid #ccc", borderRadius: "8px", fontSize: "0.85rem" }}
+                                                />
+                                                {block.value && (
+                                                    <div style={{ borderRadius: "10px", overflow: "hidden", border: "2px solid #000", maxHeight: "200px" }}>
+                                                        <img src={block.value} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", flexWrap: "wrap" }}>
+                            <button type="button" onClick={() => setFormData({ ...formData, contentBlocks: [...formData.contentBlocks, { type: "heading", value: "" }] })}
+                                style={{ ...blockAddBtn, background: "#ffd400" }}>+ Heading</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, contentBlocks: [...formData.contentBlocks, { type: "text", value: "" }] })}
+                                style={{ ...blockAddBtn, background: "#000", color: "#fff" }}>+ Text</button>
+                            <button type="button" onClick={() => setFormData({ ...formData, contentBlocks: [...formData.contentBlocks, { type: "image", value: "", caption: "" }] })}
+                                style={{ ...blockAddBtn, background: "#3b82f6", color: "#fff" }}>+ Image</button>
+                        </div>
                     </div>
 
                     <div className="form-group">
@@ -388,7 +579,7 @@ export default function BlogManager() {
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .admin-form {
                     background: #fff;
                     border: 4px solid #000;
@@ -653,3 +844,15 @@ export default function BlogManager() {
         </div>
     );
 }
+
+const blockBtnStyle = {
+    padding: "0.25rem 0.5rem", border: "2px solid #000", borderRadius: "6px",
+    fontSize: "0.8rem", fontWeight: 700, cursor: "pointer", background: "#fff", color: "#000",
+    lineHeight: 1,
+};
+
+const blockAddBtn = {
+    padding: "0.6rem 1.25rem", border: "3px solid #000", borderRadius: "10px",
+    fontSize: "0.85rem", fontWeight: 700, cursor: "pointer",
+    boxShadow: "3px 3px 0 #000", transition: "all 0.15s ease",
+};

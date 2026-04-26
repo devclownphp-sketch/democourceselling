@@ -21,7 +21,6 @@ export default function Footer({ siteSettings = {} }) {
             color: "#fff",
             borderTop: "4px solid #ffd400",
         }}>
-            {/* Main Footer Content */}
             <div style={{
                 maxWidth: "1100px",
                 margin: "0 auto",
@@ -32,7 +31,6 @@ export default function Footer({ siteSettings = {} }) {
                     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                     gap: "2rem",
                 }}>
-                    {/* Brand Column */}
                     <div>
                         <h3 style={{
                             fontSize: "2rem",
@@ -50,7 +48,6 @@ export default function Footer({ siteSettings = {} }) {
                         }}>
                             100% Free Computer Courses, PDF Notes, and Quiz for every student in India.
                         </p>
-                        {/* Social Icons */}
                         <div style={{
                             display: "flex",
                             gap: "0.75rem",
@@ -175,7 +172,6 @@ export default function Footer({ siteSettings = {} }) {
                         </div>
                     </div>
 
-                    {/* Quick Links */}
                     <div>
                         <h4 style={{
                             fontSize: "1rem",
@@ -223,7 +219,6 @@ export default function Footer({ siteSettings = {} }) {
                         </div>
                     </div>
 
-                    {/* Contact Info */}
                     <div>
                         <h4 style={{
                             fontSize: "1rem",
@@ -299,7 +294,6 @@ export default function Footer({ siteSettings = {} }) {
                 </div>
             </div>
 
-            {/* Copyright Bar */}
             <div style={{
                 background: "#ffd400",
                 padding: "1rem 1.5rem",
